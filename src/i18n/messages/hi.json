@@ -31,7 +31,9 @@
     "emergency_contact": "आपातकालीन संपर्क"
   },
   "circle": {
-    "medicines": "दवाइयाँ"
+    "medicines": "दवाइयाँ",
+    "appointments": "अपॉइंटमेंट",
+    "tasks": "काम"
   },
   "meds": {
     "iTookIt": "मैंने ले ली",
@@ -40,5 +42,9 @@
   },
   "inbox": {
     "checking": "मैं देख रहा/रही हूँ"
+  },
+  "tasks": {
+    "illDoIt": "मैं कर दूँगा/दूँगी",
+    "markDone": "हो गया"
   }
 }
