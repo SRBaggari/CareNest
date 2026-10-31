@@ -6,6 +6,7 @@ import { AppError } from "@/server/http";
 import { localeSchema, nameSchema, timeZoneSchema } from "@/server/validation";
 import { authorize, loadCircleAccess, type CircleAccess, type ServiceContext } from "./access";
 import { recordAudit } from "./audit";
+import { clearFutureUnansweredDoses } from "./medications";
 
 /** Local emergency numbers for the countries we expect first; 112 works across the EU and in India. */
 const EMERGENCY_NUMBERS: Record<string, string> = { IN: "112", US: "911", CA: "911", GB: "999", AU: "000", NZ: "111" };
@@ -216,6 +217,10 @@ export async function updateCircle(ctx: ServiceContext, circleId: string, input:
     { action: "circle.updated", metadata: { fields: [...Object.keys(defined), ...(name !== undefined ? ["name"] : [])] } },
     name !== undefined ? { name } : undefined,
   );
+  // Doses follow the recipient's wall clock: after a move, upcoming doses are regenerated in the new zone.
+  if (input.timeZone && input.timeZone !== access.profile.timeZone) {
+    await clearFutureUnansweredDoses(ctx.db, { circleId, after: ctx.now });
+  }
   return getCircle(ctx, circleId);
 }
 

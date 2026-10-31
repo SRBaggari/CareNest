@@ -211,6 +211,7 @@
     "medication_created": "added the medicine {name}",
     "medication_updated": "changed the medicine {name}",
     "medication_stopped": "stopped the medicine {name}",
-    "medication_restocked": "updated the stock of {name}"
+    "medication_restocked": "updated the stock of {name}",
+    "dose_corrected": "corrected a dose of {name}"
   }
 }
