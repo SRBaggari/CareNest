@@ -312,3 +312,30 @@ export const notificationPreferences = pgTable("notification_preferences", {
   quietEnd: text("quiet_end"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * Outgoing email queue. Rows are claimed with a lock so concurrent workers never double-send,
+ * retried with backoff, and their body is erased once delivered or abandoned (bodies can contain
+ * single-use invitation links).
+ */
+export const emailOutbox = pgTable(
+  "email_outbox",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    toAddress: text("to_address").notNull(),
+    subject: text("subject").notNull(),
+    body: text("body"),
+    kind: text("kind").notNull(),
+    notificationId: uuid("notification_id").references(() => notifications.id, { onDelete: "set null" }),
+    /** sent = accepted by the mail provider; logged = no provider configured, only written to the server log. */
+    status: text("status", { enum: ["pending", "sending", "sent", "logged", "failed"] }).notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    nextAttemptAt: timestamp("next_attempt_at", { withTimezone: true }).notNull(),
+    lockedUntil: timestamp("locked_until", { withTimezone: true }),
+    lastError: text("last_error"),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    dedupeKey: text("dedupe_key").notNull().unique(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("email_outbox_due_idx").on(t.status, t.nextAttemptAt), index("email_outbox_notification_idx").on(t.notificationId)],
+);
