@@ -4,7 +4,10 @@
   },
   "common": {
     "skipToContent": "मुख्य सामग्री पर जाएँ",
-    "language": "भाषा"
+    "language": "भाषा",
+    "signOut": "साइन आउट करें",
+    "home": "होम",
+    "account": "खाता"
   },
   "landing": {
     "getStarted": "शुरू करें",
@@ -12,5 +15,10 @@
   },
   "safety": {
     "notEmergencyService": "CareNest आपातकालीन सेवा नहीं है। आपात स्थिति में अपने स्थानीय आपातकालीन नंबर पर कॉल करें।"
+  },
+  "auth": {
+    "email": "ईमेल पता",
+    "password": "पासवर्ड",
+    "loginSubmit": "साइन इन करें"
   }
 }

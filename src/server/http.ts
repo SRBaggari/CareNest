@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import { z } from "zod";
 
 export type ErrorCode =
@@ -54,6 +55,8 @@ export async function handle(fn: () => Promise<Response>): Promise<Response> {
   try {
     return await fn();
   } catch (err) {
+    // Let Next.js control-flow errors (dynamic bail-out during prerender, redirect, notFound) through.
+    unstable_rethrow(err);
     if (err instanceof AppError) return errorResponse(err);
     if (err instanceof z.ZodError) {
       return errorResponse(
