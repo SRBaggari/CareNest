@@ -7,6 +7,7 @@ import { uuidSchema } from "@/server/validation";
 import { authorize, loadCircleAccess, requireWritable, type CircleAccess, type DbOrTx, type ServiceContext } from "./access";
 import { recordAudit } from "./audit";
 import { HELPER_ROLES, resolveActiveMember } from "./members";
+import { createFollowUpTasks } from "./tasks";
 
 const optionalText = (max: number) =>
   z
@@ -65,6 +66,11 @@ export const assignHelperSchema = z.object({
 export const completeAppointmentSchema = z.object({
   outcomeNote: optionalText(4000),
   followUp: optionalText(2000),
+  /** Practical next steps to track as tasks, e.g. "Book blood test". */
+  followUpTasks: z
+    .array(z.object({ title: z.string().trim().min(1).max(200), dueAt: instant.nullable().optional() }))
+    .max(10)
+    .default([]),
 });
 
 const transportMember = alias(memberships, "transport_member");
@@ -308,8 +314,9 @@ export async function completeAppointment(
   ctx: ServiceContext,
   circleId: string,
   appointmentId: string,
-  input: z.infer<typeof completeAppointmentSchema>,
+  input: z.input<typeof completeAppointmentSchema>,
 ) {
+  const followUps = input.followUpTasks ?? [];
   const access = await loadCircleAccess(ctx.db, circleId, ctx.userId, ctx.now);
   requireWritable(access);
   await ctx.db.transaction(async (tx) => {
@@ -331,6 +338,9 @@ export async function completeAppointment(
         updatedAt: ctx.now,
       })
       .where(eq(appointments.id, appointmentId));
+    if (followUps.length > 0) {
+      await createFollowUpTasks(tx, { circleId, appointmentId, tasks: followUps, userId: ctx.userId, now: ctx.now });
+    }
     await recordAudit(tx, {
       circleId,
       actorUserId: ctx.userId,

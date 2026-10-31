@@ -50,6 +50,13 @@
       "when": 1793459228747,
       "tag": "0006_appointments",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793459562487,
+      "tag": "0007_tasks",
+      "breakpoints": true
     }
   ]
 }
