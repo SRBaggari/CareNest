@@ -62,3 +62,8 @@ export function assertSameOrigin(request: Request): void {
     throw new AppError("forbidden", "This request did not come from CareNest.");
   }
 }
+
+/** Public origin for links we hand out (invitations, notifications). */
+export function appOrigin(request: Request): string {
+  return process.env.APP_URL ? new URL(process.env.APP_URL).origin : new URL(request.url).origin;
+}
