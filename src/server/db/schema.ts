@@ -339,3 +339,46 @@ export const emailOutbox = pgTable(
   },
   (t) => [index("email_outbox_due_idx").on(t.status, t.nextAttemptAt), index("email_outbox_notification_idx").on(t.notificationId)],
 );
+
+// ── Appointments (M5) ────────────────────────────────────────────────────────────────────────
+
+export const appointments = pgTable(
+  "appointments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    kind: text("kind", { enum: ["in_person", "virtual", "home_visit"] }).notNull().default("in_person"),
+    clinician: text("clinician"),
+    location: text("location"),
+    virtualUrl: text("virtual_url"),
+    startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+    endsAt: timestamp("ends_at", { withTimezone: true }),
+    reason: text("reason"),
+    /** Questions the family wants to ask; prepared before the visit. */
+    questions: text("questions"),
+    status: text("status", { enum: ["scheduled", "completed", "cancelled"] }).notNull().default("scheduled"),
+    transportNeeded: boolean("transport_needed").notNull().default(true),
+    /** Who has said they will take the recipient there. This is a commitment, not a booking. */
+    transportMemberId: uuid("transport_member_id").references(() => memberships.id, { onDelete: "set null" }),
+    transportNote: text("transport_note"),
+    companionMemberId: uuid("companion_member_id").references(() => memberships.id, { onDelete: "set null" }),
+    /** Post-visit summary as reported by a member (not a clinical record). */
+    outcomeNote: text("outcome_note"),
+    followUp: text("follow_up"),
+    outcomeBy: uuid("outcome_by").references(() => users.id, { onDelete: "set null" }),
+    outcomeAt: timestamp("outcome_at", { withTimezone: true }),
+    cancelReason: text("cancel_reason"),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    cancelledBy: uuid("cancelled_by").references(() => users.id, { onDelete: "set null" }),
+    reminderSentAt: timestamp("reminder_sent_at", { withTimezone: true }),
+    transportAlertedAt: timestamp("transport_alerted_at", { withTimezone: true }),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("appointments_circle_starts_idx").on(t.circleId, t.startsAt)],
+);

@@ -216,7 +216,15 @@
     "medication_updated": "changed the medicine {name}",
     "medication_stopped": "stopped the medicine {name}",
     "medication_restocked": "updated the stock of {name}",
-    "dose_corrected": "corrected a dose of {name}"
+    "dose_corrected": "corrected a dose of {name}",
+    "appointment_created": "scheduled the appointment {name}",
+    "appointment_updated": "changed the appointment {name}",
+    "appointment_rescheduled": "rescheduled the appointment {name}",
+    "appointment_cancelled": "cancelled the appointment {name}",
+    "appointment_transport_changed": "changed who is driving to {name}",
+    "appointment_companion_changed": "changed who is going along to {name}",
+    "appointment_completed": "recorded the outcome of {name}",
+    "appointment_outcome_corrected": "corrected the outcome of {name}"
   },
   "meds": {
     "dayTitle": "Doses for {date}",
