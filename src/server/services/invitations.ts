@@ -9,6 +9,7 @@ import { emailSchema, uuidSchema } from "@/server/validation";
 import { authorize, type ServiceContext } from "./access";
 import type { Db } from "@/server/db";
 import { recordAudit } from "./audit";
+import { emailDeliveryConfigured, enqueueEmail } from "@/server/notifications/email";
 
 export const INVITATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 export const INVITATIONS_PER_USER_PER_DAY = 30;
@@ -97,6 +98,24 @@ export async function createInvitation(
       metadata: { email: input.email, role: input.role, accessExpiresAt },
       now: ctx.now,
     });
+    const [inviter] = await tx.select({ name: users.name }).from(users).where(eq(users.id, ctx.userId));
+    const [profile] = await tx.select({ name: careProfiles.displayName }).from(careProfiles).where(eq(careProfiles.circleId, circleId));
+    // The link is single-use and expires; the outbox erases the body once the email is sent.
+    await enqueueEmail(tx, {
+      to: input.email,
+      subject: `${inviter.name} invited you to help care for ${profile.name} on CareNest`,
+      text: [
+        `${inviter.name} has invited you to join "${access.circle.name}" on CareNest, the care circle for ${profile.name}.`,
+        "",
+        `Open this link to accept (it works once and expires in 7 days):`,
+        `${appOrigin}/invite/${token}`,
+        "",
+        "If you weren't expecting this, you can ignore this email.",
+      ].join("\n"),
+      kind: "invitation",
+      dedupeKey: `invitation:${row.id}`,
+      notBefore: ctx.now,
+    });
     return row;
   });
 
@@ -109,8 +128,9 @@ export async function createInvitation(
       expiresAt: invitation.expiresAt,
       status: "pending" as const,
     },
-    // Returned once; only its hash is stored. Email delivery arrives with the notification channels (M4).
+    // Returned once; only its hash is stored. Also emailed when an email provider is configured.
     inviteUrl: `${appOrigin}/invite/${token}`,
+    emailDelivery: emailDeliveryConfigured() ? ("queued" as const) : ("not_configured" as const),
   };
 }
 
