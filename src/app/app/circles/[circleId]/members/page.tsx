@@ -114,6 +114,7 @@ export default async function MembersPage({ params }: PageProps<"/app/circles/[c
                 temporaryHint: t("circle.inviteTemporaryHint"),
                 submit: t("circle.sendInvite"),
                 created: t("circle.inviteCreated"),
+                emailed: t("circle.inviteEmailed"),
                 copy: t("common.copy"),
                 copied: t("common.copied"),
               }}

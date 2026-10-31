@@ -1,6 +1,6 @@
 # CareNest — Product & Engineering Plan
 
-> Status: living document. Last updated 2026-10-31 (M0–M3 complete).
+> Status: living document. Last updated 2026-10-31 (M0–M4 complete).
 > Target: working, demonstrable MVP (Tier 1) on **2026-12-01**.
 > Every section marks what is **implemented**, **in progress**, or **planned** — see the roadmap table at the end.
 
@@ -164,7 +164,7 @@ Each journey becomes an end-to-end/integration test suite.
 | ORM / migrations | **Drizzle ORM + drizzle-kit** | Typed SQL, plain SQL migrations committed to git, first-class PGlite + node-postgres drivers. |
 | Validation | **Zod** | Shared schemas for API input and forms. |
 | Auth | Own session auth: scrypt password hashing (Node crypto), random session tokens stored **hashed** in DB, httpOnly SameSite=Lax cookies, Origin checks on mutations, login rate limiting | Small, auditable, no third-party dependency for the most sensitive path. OAuth/passkeys later. |
-| Background work | **DB-backed job queue** (`jobs` table, `FOR UPDATE SKIP LOCKED`) + worker process | No Redis to operate; jobs are durable, retryable, idempotent. |
+| Background work | **Idempotent worker tick** (`npm run worker`, or `POST /api/internal/tick` from cron) + **email outbox** claimed with `FOR UPDATE SKIP LOCKED` | No Redis or generic job table: each step claims rows with a conditional UPDATE and notifications have unique dedupe keys, so ticks can overlap or retry safely. (Changed from the original `jobs`-table design in M4 — simpler with the same guarantees.) |
 | Notifications | Outbox (`notifications` + `notification_deliveries`) with channel adapters: in-app (real), email (SMTP adapter; console transport in dev) | Delivery ≠ acknowledgment — tracked separately. |
 | Time | **Luxon** with IANA zones | DST-correct schedule expansion. |
 | i18n | **next-intl** (no locale routing; per-user preference) | Strings in `messages/*.json` from day one. |
@@ -270,8 +270,8 @@ user is not a member of, to avoid leaking existence.
 | M1 Auth | Nov 2 – 5 | Register, login, logout, sessions, rate limiting, Origin checks, account page | ✅ done (tag `m1`) |
 | M2 Care circles | Nov 1 – 9 | Circles, care profile, memberships, invitations, permission engine, consent, audit log, circle switcher | ✅ done (tag `m2`) |
 | M3 Medications | Nov 9 – 14 | Medications, schedules (tz/DST), dose generation, confirm/skip/refuse/proxy, unconfirmed, refill counts | ✅ done (tag `m3`) |
-| M4 Notifications | Nov 14 – 18 | Worker + job queue, reminders, escalation, quiet hours, email adapter, delivery tracking | 🚧 next |
-| M5 Appointments & tasks | Nov 18 – 21 | Appointments with transport/companion, tasks (recurring, overdue escalation) | planned |
+| M4 Notifications | Nov 14 – 18 | Worker + job queue, reminders, escalation, quiet hours, email adapter, delivery tracking | ✅ done (tag `m4`) |
+| M5 Appointments & tasks | Nov 18 – 21 | Appointments with transport/companion, tasks (recurring, overdue escalation) | 🚧 next |
 | M6 Caregiver & timeline | Nov 21 – 24 | Visits check-in/out, observations, handover, care updates, unified timeline with corrections | planned |
 | M7 Emergency | Nov 24 – 27 | Contacts, info card, assistance request, alert sequence, acknowledgments, failure visibility | planned |
 | M8 Dashboards & hardening | Nov 27 – Dec 1 | Elder/family/caregiver dashboards, a11y (axe), Playwright journeys A–F, hi/te/ta strings, deploy config, user docs, labeled demo seed | planned |
@@ -284,11 +284,13 @@ user is not a member of, to avoid leaking existence.
 - No push/SMS channels until Tier 2, so time-critical alerts rely on in-app + email.
 - Check-in records are self-reported; they do not verify physical presence.
 - Clinician role is an access level only; professional credentials are **not** verified.
-- Invitations are shared as copy-paste links until the email channel ships (M4).
 - A signed-in non-member opening a circle URL sees the not-found page, but with HTTP 200 (the page
   streams); the JSON API returns a real 404.
 - Hindi, Telugu and Tamil strings are partial and need review by native speakers.
-- Dose reminders and unconfirmed-dose alerts are not sent yet (M4); until then, statuses are visible in the app only.
-- Doses are generated when someone opens the medicines view; the M4 worker will generate them ahead of time.
+- Email delivery uses SMTP (`SMTP_URL`). It is tested against a fake transport only; it has **not** been
+  verified against a real provider yet. Without `SMTP_URL`, emails are logged and shown as "not sent".
+- Notifications are in-app and email only: no push or SMS yet (Tier 2), so a phone that is not checking
+  email or the app will not ring.
+- The worker processes every active circle each tick; fine for MVP scale, needs batching for thousands of circles.
 - No regulatory compliance (HIPAA, GDPR, DPDP Act 2023) is claimed; an assessment is required before
   production use with real patient data.

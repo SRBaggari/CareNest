@@ -7,7 +7,8 @@
     "language": "भाषा",
     "signOut": "साइन आउट करें",
     "home": "होम",
-    "account": "खाता"
+    "account": "खाता",
+    "notifications": "सूचनाएँ"
   },
   "landing": {
     "getStarted": "शुरू करें",
@@ -36,5 +37,8 @@
     "iTookIt": "मैंने ले ली",
     "status_taken": "ले ली गई",
     "status_unconfirmed": "पुष्टि नहीं हुई"
+  },
+  "inbox": {
+    "checking": "मैं देख रहा/रही हूँ"
   }
 }

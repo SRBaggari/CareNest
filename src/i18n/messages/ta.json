@@ -7,7 +7,8 @@
     "language": "மொழி",
     "signOut": "வெளியேறு",
     "home": "முகப்பு",
-    "account": "கணக்கு"
+    "account": "கணக்கு",
+    "notifications": "அறிவிப்புகள்"
   },
   "landing": {
     "getStarted": "தொடங்குங்கள்",
@@ -36,5 +37,8 @@
     "iTookIt": "நான் எடுத்துக்கொண்டேன்",
     "status_taken": "எடுத்துக்கொள்ளப்பட்டது",
     "status_unconfirmed": "உறுதிப்படுத்தப்படவில்லை"
+  },
+  "inbox": {
+    "checking": "நான் பார்த்துக்கொள்கிறேன்"
   }
 }

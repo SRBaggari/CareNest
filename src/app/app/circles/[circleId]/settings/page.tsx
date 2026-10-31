@@ -6,6 +6,8 @@ import { countryOptions } from "@/lib/countries";
 import { timeZoneOptions } from "@/lib/time-zones";
 import { orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
+import { getMyAlertSettings } from "@/server/services/notifications";
+import { AlertSettingsForm } from "./alert-settings-form";
 import { PrivacyForm, ProfileEditForm } from "./settings-forms";
 
 export const metadata: Metadata = { title: "Settings & privacy" };
@@ -14,6 +16,7 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
   const { circleId } = await params;
   const { ctx } = await pageContext(`/app/circles/${circleId}/settings`);
   const circle = await orNotFound(getCircle(ctx, circleId));
+  const alerts = await getMyAlertSettings(ctx, circleId);
   const { locale, t } = await getRequestTranslator();
   const p = circle.profile;
   const name = p.preferredName ?? p.displayName;
@@ -56,6 +59,32 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
           />
         </section>
       )}
+
+      <section aria-labelledby="alerts-heading" className="rounded-xl border border-border bg-surface p-6">
+        <h2 id="alerts-heading" className="text-2xl font-semibold">
+          {t("alerts.title")}
+        </h2>
+        {alerts.canReceiveMedicationAlerts ? (
+          <>
+            <p className="mt-2 text-muted">{t("alerts.intro", { name })}</p>
+            {role === "admin" && <p className="mt-2 text-muted">{t("alerts.escalationNote")}</p>}
+            <AlertSettingsForm
+              url={`/api/v1/circles/${circleId}/my-alerts`}
+              settings={alerts.settings}
+              labels={{
+                ...messages,
+                doseReminders: t("alerts.doseReminders"),
+                unconfirmedDoses: t("alerts.unconfirmedDoses"),
+                refills: t("alerts.refills"),
+                save: t("common.save"),
+                saved: t("common.saved"),
+              }}
+            />
+          </>
+        ) : (
+          <p className="mt-2">{t("alerts.notShared", { name })}</p>
+        )}
+      </section>
 
       <section aria-labelledby="privacy-heading" className="rounded-xl border border-border bg-surface p-6">
         <h2 id="privacy-heading" className="text-2xl font-semibold">
