@@ -14,7 +14,7 @@ async function loop() {
     try {
       const summary = await runTick(db, new Date());
       const busy =
-        summary.reminders + summary.unconfirmedAlerts + summary.escalations + summary.refillAlerts +
+        summary.assistanceEscalations + summary.reminders + summary.unconfirmedAlerts + summary.escalations + summary.refillAlerts +
         Object.values(summary.coordination).reduce((a, b) => a + b, 0) + summary.emails.sent + summary.emails.failed;
       if (busy > 0) console.info(new Date().toISOString(), JSON.stringify(summary));
     } catch (err) {

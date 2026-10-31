@@ -248,7 +248,11 @@
     "emergency_info_updated": "updated the emergency information card",
     "emergency_contact_added": "added the emergency contact {name}",
     "emergency_contact_updated": "changed the emergency contact {name}",
-    "emergency_contact_removed": "removed the emergency contact {name}"
+    "emergency_contact_removed": "removed the emergency contact {name}",
+    "assistance_raised": "asked for help",
+    "assistance_acknowledged": "responded to a request for help",
+    "assistance_resolved": "resolved a request for help",
+    "assistance_cancelled": "cancelled a request for help"
   },
   "meds": {
     "dayTitle": "Doses for {date}",
@@ -391,7 +395,22 @@
     "updateImportantTitle": "Important update from {author}",
     "updateImportantBody": "{body}",
     "updateEmailSubject": "Important update about {name}",
-    "updateEmailBody": "{author} posted an important update in {name}'s care circle. Open CareNest: {link}"
+    "updateEmailBody": "{author} posted an important update in {name}'s care circle. Open CareNest: {link}",
+    "assistTitle": "{who} needs help",
+    "assistTitleSelf": "{name} asked for help",
+    "assistBody": "{message}{location}CareNest has NOT contacted emergency services. If this is an emergency, call {number}. Open CareNest and tap “I'm responding” so others know.",
+    "assistMessage": "“{message}” ",
+    "assistLocation": "Shared location: {link} ",
+    "assistRepeatTitle": "Still no response: {name} needs help",
+    "assistPractice": "[PRACTICE] ",
+    "assistEmailSubject": "URGENT: {name} needs help",
+    "assistEmailBody": "Someone in {name}'s care circle asked for help. CareNest has NOT contacted emergency services — if this is an emergency, call {number}. Open CareNest now: {link}",
+    "assistAckTitle": "{responder} is responding to {name}'s request for help",
+    "assistAckBody": "{responder} said they are handling it.",
+    "assistResolvedTitle": "Resolved: {name}'s request for help",
+    "assistResolvedBody": "{responder}: {note}",
+    "assistCancelledTitle": "False alarm: {name}'s request for help was cancelled",
+    "assistCancelledBody": "{responder} cancelled the alert."
   },
   "inbox": {
     "title": "Notifications",
