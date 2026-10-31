@@ -231,9 +231,10 @@ export async function updateTask(ctx: ServiceContext, circleId: string, taskId: 
 /** "I'll do it" / "I can't do it after all". */
 export async function claimTask(ctx: ServiceContext, circleId: string, taskId: string, action: "claim" | "release") {
   const access = await authorize(ctx, circleId, "task.complete", { write: true });
+  if (!uuidSchema.safeParse(taskId).success) throw new AppError("not_found", "Task not found.");
   await ctx.db.transaction(async (tx) => {
     const [current] = await tx.select().from(tasks).where(and(eq(tasks.id, taskId), eq(tasks.circleId, circleId))).for("update");
-    if (!current || !uuidSchema.safeParse(taskId).success) throw new AppError("not_found", "Task not found.");
+    if (!current) throw new AppError("not_found", "Task not found.");
     if (current.status !== "open") throw new AppError("conflict", "This task is no longer open.");
     const mine = current.assigneeMemberId === access.membership.id;
     if (action === "claim") {
