@@ -1,6 +1,6 @@
 # CareNest — Product & Engineering Plan
 
-> Status: living document. Last updated 2026-10-31 (M0–M6 complete).
+> Status: living document. Last updated 2026-10-31 (M0–M7 complete).
 > Target: working, demonstrable MVP (Tier 1) on **2026-12-01**.
 > Every section marks what is **implemented**, **in progress**, or **planned** — see the roadmap table at the end.
 
@@ -273,8 +273,8 @@ user is not a member of, to avoid leaking existence.
 | M4 Notifications | Nov 14 – 18 | Worker + job queue, reminders, escalation, quiet hours, email adapter, delivery tracking | ✅ done (tag `m4`) |
 | M5 Appointments & tasks | Nov 18 – 21 | Appointments with transport/companion, tasks (recurring, overdue escalation) | ✅ done (tag `m5`) |
 | M6 Caregiver & timeline | Nov 21 – 24 | Visits check-in/out, observations, handover, care updates, unified timeline with corrections | ✅ done (tag `m6`) |
-| M7 Emergency | Nov 24 – 27 | Contacts, info card, assistance request, alert sequence, acknowledgments, failure visibility | 🚧 next |
-| M8 Dashboards & hardening | Nov 27 – Dec 1 | Elder/family/caregiver dashboards, a11y (axe), Playwright journeys A–F, hi/te/ta strings, deploy config, user docs, labeled demo seed | planned |
+| M7 Emergency | Nov 24 – 27 | Contacts, info card, assistance request, alert sequence, acknowledgments, failure visibility | ✅ done (tag `m7`) |
+| M8 Dashboards & hardening | Nov 27 – Dec 1 | Elder/family/caregiver dashboards, a11y (axe), Playwright journeys A–F, hi/te/ta strings, deploy config, user docs, labeled demo seed | 🚧 next |
 
 ## 12. Known limitations (MVP)
 
@@ -294,5 +294,9 @@ user is not a member of, to avoid leaking existence.
 - The worker processes every active circle each tick; fine for MVP scale, needs batching for thousands of circles.
 - "I'll drive" records a person's commitment only; CareNest does not book transport.
 - Appointment and task alerts have no per-person opt-out yet (only the global email switch and quiet hours).
+- Emergency alerts reach people only through CareNest (in-app) and email. There is no SMS, push or
+  automatic phone call yet, so contacts without an account must be phoned by hand (the app lists them).
+- Location is shared only for a single alert when the person ticks the box; there is no tracking.
+- Escalation timing depends on the worker running (every ~30 s); if it is down, only the first tier is alerted.
 - No regulatory compliance (HIPAA, GDPR, DPDP Act 2023) is claimed; an assessment is required before
   production use with real patient data.

@@ -39,7 +39,18 @@ export default async function CircleLayout({ children, params }: LayoutProps<"/a
         <Link href="/app" className="self-start py-2 font-medium text-primary underline">
           ← {t("circle.switch")}
         </Link>
-        <h1 className="text-3xl font-bold">{circle.name}</h1>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-3xl font-bold">{circle.name}</h1>
+          {/* Always one tap away on every circle page. */}
+          {circle.myCapabilities.includes("emergency.view") && (
+            <Link
+              href={`/app/circles/${circleId}/emergency`}
+              className="inline-flex min-h-14 items-center rounded-xl bg-danger px-6 text-xl font-bold text-primary-foreground"
+            >
+              {t("circle.help")}
+            </Link>
+          )}
+        </div>
         <p className="text-lg text-muted">
           {name} · {t("home.localTime", { time: formatLocalTime(ctx.now, locale, circle.profile.timeZone) })}
         </p>
