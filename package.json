@@ -15,7 +15,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
     "check": "npm run lint && npm run typecheck && npm test",
-    "worker": "tsx scripts/worker.ts"
+    "worker": "tsx scripts/worker.ts",
+    "test:coverage": "vitest run --coverage",
+    "test:blackbox": "vitest run --project blackbox"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.14",
@@ -36,6 +38,7 @@
     "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^5.0.5",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
