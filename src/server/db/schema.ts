@@ -382,3 +382,41 @@ export const appointments = pgTable(
   },
   (t) => [index("appointments_circle_starts_idx").on(t.circleId, t.startsAt)],
 );
+
+// ── Family tasks (M5) ────────────────────────────────────────────────────────────────────────
+
+export const TASK_CATEGORIES = ["medication", "appointment", "transport", "shopping", "bills", "home", "paperwork", "other"] as const;
+
+export const tasks = pgTable(
+  "tasks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    notes: text("notes"),
+    category: text("category", { enum: TASK_CATEGORIES }).notNull().default("other"),
+    /** Null = nobody has taken it yet, which is shown prominently so it isn't silently forgotten. */
+    assigneeMemberId: uuid("assignee_member_id").references(() => memberships.id, { onDelete: "set null" }),
+    dueAt: timestamp("due_at", { withTimezone: true }),
+    priority: text("priority", { enum: ["low", "normal", "high"] }).notNull().default("normal"),
+    status: text("status", { enum: ["open", "done", "cancelled"] }).notNull().default("open"),
+    recurrence: text("recurrence", { enum: ["none", "daily", "weekly", "monthly"] }).notNull().default("none"),
+    /** Set on a completed recurring task once its next occurrence exists (makes completion idempotent). */
+    nextTaskId: uuid("next_task_id"),
+    appointmentId: uuid("appointment_id").references(() => appointments.id, { onDelete: "set null" }),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    completedBy: uuid("completed_by").references(() => users.id, { onDelete: "set null" }),
+    completionNote: text("completion_note"),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    dueReminderSentAt: timestamp("due_reminder_sent_at", { withTimezone: true }),
+    overdueAlertedAt: timestamp("overdue_alerted_at", { withTimezone: true }),
+    unassignedAlertedAt: timestamp("unassigned_alerted_at", { withTimezone: true }),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("tasks_circle_status_due_idx").on(t.circleId, t.status, t.dueAt)],
+);
