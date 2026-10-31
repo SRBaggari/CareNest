@@ -29,8 +29,8 @@ export default async function ActivityPage({ params }: PageProps<"/app/circles/[
       ) : (
         <ol className="mt-4 flex flex-col gap-2">
           {events.map((e) => {
-            const meta = e.metadata as { email?: string; role?: string };
-            const vars = { email: meta.email ?? "", role: meta.role ? t(`roles.${meta.role}`) : "" };
+            const meta = e.metadata as { email?: string; role?: string; name?: string };
+            const vars = { email: meta.email ?? "", role: meta.role ? t(`roles.${meta.role}`) : "", name: meta.name ?? "" };
             return (
               <li key={e.id} className="rounded-lg border border-border bg-surface p-4">
                 <p>
