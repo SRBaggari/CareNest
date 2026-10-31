@@ -8,6 +8,20 @@ import { DateTime } from "luxon";
 
 export const LOCAL_TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
 export const LOCAL_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+export const MIN_LOCAL_DATE = "1900-01-01";
+export const MAX_LOCAL_DATE = "2200-12-31";
+/** Never expand more than this many days in one call (defence in depth against runaway loops). */
+export const MAX_EXPANSION_DAYS = 400;
+
+/**
+ * A real calendar date ("2026-02-30" is not) within the range CareNest supports. Dates outside
+ * it are rejected before they reach scheduling code or the database.
+ */
+export function isValidLocalDate(value: string): boolean {
+  if (!LOCAL_DATE_PATTERN.test(value)) return false;
+  if (!DateTime.fromISO(value, { zone: "UTC" }).isValid) return false;
+  return value >= MIN_LOCAL_DATE && value <= MAX_LOCAL_DATE;
+}
 
 export type ScheduleSpec = {
   /** Wall-clock times "HH:MM" in the recipient's zone. Empty for as-needed medicines. */
@@ -67,11 +81,21 @@ export function expandSchedule(spec: ScheduleSpec, timeZone: string, fromDate: s
   const last = spec.endDate && spec.endDate < toDate ? spec.endDate : toDate;
   if (first > last) return [];
 
+  // Iterate by day count, not by comparing date strings: years past 9999 format as "+010000-…",
+  // which sorts before "9999-…" and once turned this loop into an infinite one.
+  const start = DateTime.fromISO(first, { zone: "UTC" });
+  const end = DateTime.fromISO(last, { zone: "UTC" });
+  if (!start.isValid || !end.isValid) return [];
+  const span = Math.floor(end.diff(start, "days").days);
+  if (span > MAX_EXPANSION_DAYS) throw new RangeError(`Refusing to expand a schedule over ${span + 1} days`);
+
   const times = [...new Set(spec.times)].sort();
   const days = spec.daysOfWeek ? new Set(spec.daysOfWeek) : null;
   const out: Occurrence[] = [];
-  for (let date = first; date <= last; date = addDays(date, 1)) {
-    const weekday = DateTime.fromISO(date, { zone: "UTC" }).weekday;
+  for (let i = 0; i <= span; i++) {
+    const day = start.plus({ days: i });
+    const date = day.toISODate()!;
+    const weekday = day.weekday;
     if (days && !days.has(weekday)) continue;
     for (const time of times) {
       const { instant, shifted } = localToInstant(date, time, timeZone);

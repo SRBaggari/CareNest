@@ -1,10 +1,10 @@
 import { and, asc, eq, gt, inArray, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { needsRefill } from "@/server/domain/doses";
-import { LOCAL_DATE_PATTERN, LOCAL_TIME_PATTERN, localDateIn } from "@/server/domain/schedule";
+import { LOCAL_TIME_PATTERN, localDateIn } from "@/server/domain/schedule";
 import { doseEvents, medications } from "@/server/db/schema";
 import { AppError } from "@/server/http";
-import { uuidSchema } from "@/server/validation";
+import { localDateSchema, uuidSchema } from "@/server/validation";
 import { authorize, type CircleAccess, type DbOrTx, type ServiceContext } from "./access";
 import { recordAudit } from "./audit";
 
@@ -17,7 +17,7 @@ const optionalText = (max: number) =>
     .nullable()
     .optional();
 
-const localDate = z.string().regex(LOCAL_DATE_PATTERN, "Enter a valid date.");
+const localDate = localDateSchema;
 
 const medicationFields = {
   name: z.string().trim().min(1, "Enter the medicine's name.").max(120),

@@ -6,7 +6,7 @@ import { getRequestTranslator } from "@/i18n/server";
 import { displayStatus, formatClock, STATUS_SYMBOL, STATUS_TONE } from "@/lib/dose-display";
 import { formatDate } from "@/lib/format";
 import { daysOfSupply } from "@/server/domain/doses";
-import { addDays, LOCAL_DATE_PATTERN } from "@/server/domain/schedule";
+import { addDays, isValidLocalDate } from "@/server/domain/schedule";
 import { orForbidden, orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { listDoses } from "@/server/services/doses";
@@ -26,7 +26,7 @@ const toneClass = {
 export default async function MedicinesPage({ params, searchParams }: PageProps<"/app/circles/[circleId]/medicines">) {
   const { circleId } = await params;
   const dateParam = (await searchParams).date;
-  const date = typeof dateParam === "string" && LOCAL_DATE_PATTERN.test(dateParam) ? dateParam : undefined;
+  const date = typeof dateParam === "string" && isValidLocalDate(dateParam) ? dateParam : undefined;
   const { session, ctx } = await pageContext(`/app/circles/${circleId}/medicines`);
   const circle = await orNotFound(getCircle(ctx, circleId));
   const { locale, t } = await getRequestTranslator();
