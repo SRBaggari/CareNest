@@ -36,7 +36,8 @@
     "tasks": "काम",
     "visits": "मुलाक़ातें",
     "updates": "अपडेट",
-    "timeline": "समय-रेखा"
+    "timeline": "समय-रेखा",
+    "help": "मदद"
   },
   "meds": {
     "iTookIt": "मैंने ले ली",
@@ -49,5 +50,10 @@
   "tasks": {
     "illDoIt": "मैं कर दूँगा/दूँगी",
     "markDone": "हो गया"
+  },
+  "emergency": {
+    "needHelp": "मुझे मदद चाहिए",
+    "call": "{number} पर कॉल करें",
+    "yesAlert": "हाँ, मेरे परिवार को सूचित करें"
   }
 }
