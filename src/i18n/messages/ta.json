@@ -4,7 +4,10 @@
   },
   "common": {
     "skipToContent": "முதன்மை உள்ளடக்கத்திற்குச் செல்லவும்",
-    "language": "மொழி"
+    "language": "மொழி",
+    "signOut": "வெளியேறு",
+    "home": "முகப்பு",
+    "account": "கணக்கு"
   },
   "landing": {
     "getStarted": "தொடங்குங்கள்",
@@ -12,5 +15,10 @@
   },
   "safety": {
     "notEmergencyService": "CareNest அவசர சேவை அல்ல. அவசர நிலையில் உங்கள் உள்ளூர் அவசர எண்ணை அழைக்கவும்."
+  },
+  "auth": {
+    "email": "மின்னஞ்சல் முகவரி",
+    "password": "கடவுச்சொல்",
+    "loginSubmit": "உள்நுழையவும்"
   }
 }

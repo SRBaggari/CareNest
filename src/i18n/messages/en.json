@@ -5,7 +5,17 @@
   },
   "common": {
     "skipToContent": "Skip to main content",
-    "language": "Language"
+    "language": "Language",
+    "loading": "Loading…",
+    "save": "Save changes",
+    "saved": "Saved.",
+    "signOut": "Sign out",
+    "home": "Home",
+    "account": "Account",
+    "mainNav": "Main",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorNetwork": "We couldn't reach CareNest. Check your internet connection and try again.",
+    "fixErrors": "Please correct the highlighted fields."
   },
   "landing": {
     "getStarted": "Get started",
@@ -20,5 +30,43 @@
   },
   "safety": {
     "notEmergencyService": "CareNest is not an emergency service. In an emergency, call your local emergency number."
+  },
+  "auth": {
+    "loginTitle": "Sign in to CareNest",
+    "loginSubmit": "Sign in",
+    "loginNoAccount": "New to CareNest?",
+    "loginCreateAccount": "Create an account",
+    "registerTitle": "Create your CareNest account",
+    "registerSubmit": "Create account",
+    "registerHaveAccount": "Already have an account?",
+    "email": "Email address",
+    "password": "Password",
+    "passwordHint": "At least 10 characters. A short sentence is easy to remember and hard to guess.",
+    "name": "Your name",
+    "timeZone": "Your time zone",
+    "timeZoneHint": "Times are shown in this zone. You can change it later.",
+    "language": "Language",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+  "home": {
+    "welcome": "Welcome, {name}",
+    "intro": "Care circles, medicines and schedules will appear here as they are set up."
+  },
+  "account": {
+    "title": "Your account",
+    "profile": "Profile",
+    "security": "Password",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "passwordChanged": "Password changed. Other devices have been signed out.",
+    "devices": "Signed-in devices",
+    "devicesIntro": "If you don't recognise a device, or a shared tablet should no longer be signed in, sign it out here.",
+    "thisDevice": "This device",
+    "lastActive": "Last active {time}",
+    "unknownDevice": "Unknown device",
+    "signOutDevice": "Sign out this device",
+    "noOtherDevices": "No other devices are signed in."
   }
 }

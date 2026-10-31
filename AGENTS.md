@@ -15,7 +15,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Every circle-scoped query filters by `circle_id`. A user who is not a member gets **404**, not 403.
 - Inject `now` through the service context; never call `new Date()` inside business logic.
 - Every feature ships with unit tests (pure logic, `src/**/*.test.ts`) and integration tests
-  (`tests/integration`, using `useTestDb()`), including an unauthenticated case and a cross-circle access case.
+  (`tests/integration`, using `setupTestDb()`), including an unauthenticated case and a cross-circle access case.
 - UI strings go in `src/i18n/messages/en.json`; never hard-code user-facing text.
 - Schema change → `npm run db:generate` and commit the SQL in `drizzle/`.
 - Never claim an integration works (email, emergency, transport) unless it is actually wired and tested.

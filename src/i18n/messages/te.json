@@ -4,7 +4,10 @@
   },
   "common": {
     "skipToContent": "ప్రధాన కంటెంట్‌కు వెళ్ళండి",
-    "language": "భాష"
+    "language": "భాష",
+    "signOut": "సైన్ అవుట్ చేయండి",
+    "home": "హోమ్",
+    "account": "ఖాతా"
   },
   "landing": {
     "getStarted": "ప్రారంభించండి",
@@ -12,5 +15,10 @@
   },
   "safety": {
     "notEmergencyService": "CareNest అత్యవసర సేవ కాదు. అత్యవసర పరిస్థితిలో మీ స్థానిక అత్యవసర నంబర్‌కు కాల్ చేయండి."
+  },
+  "auth": {
+    "email": "ఇమెయిల్ చిరునామా",
+    "password": "పాస్‌వర్డ్",
+    "loginSubmit": "సైన్ ఇన్ చేయండి"
   }
 }
