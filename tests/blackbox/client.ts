@@ -5,7 +5,10 @@ import { randomInt, randomUUID } from "node:crypto";
 
 export const BASE = process.env.BLACKBOX_URL?.replace(/\/$/, "") ?? "";
 
-export type Res = { status: number; headers: Headers; json: any; text: string };
+// Black-box tests inspect arbitrary response JSON, so it is deliberately untyped.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Json = any;
+export type Res = { status: number; headers: Headers; json: Json; text: string };
 
 export class Actor {
   cookie = "";
@@ -31,7 +34,7 @@ export class Actor {
       this.cookie = pair.endsWith("=") ? "" : pair;
     }
     const text = await res.text();
-    let json: any = null;
+    let json: Json = null;
     try {
       json = text ? JSON.parse(text) : null;
     } catch {

@@ -2,7 +2,7 @@
 // running deployment over HTTP. Run: BLACKBOX_URL=http://localhost:3000 npm run test:blackbox
 
 import { describe, expect, it } from "vitest";
-import { Actor, BASE, circleWith } from "./client";
+import { Actor, BASE, circleWith, type Json } from "./client";
 
 describe.skipIf(!BASE)("CareNest black-box", () => {
   describe("platform", () => {
@@ -166,7 +166,7 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
       expect(req.status).toBe(201);
       const again = await elder.post(`/api/v1/circles/${circleId}/emergency/requests`, { message: "I fell" });
       expect(again.json.request).toMatchObject({ id: req.json.request.id, alreadyOpen: true });
-      const alert = (await family.get("/api/v1/notifications")).json.notifications.find((n: any) => n.kind === "assistance_alert");
+      const alert = (await family.get("/api/v1/notifications")).json.notifications.find((n: Json) => n.kind === "assistance_alert");
       expect(alert.priority).toBe("critical");
       expect(alert.body).toContain("has NOT contacted emergency services");
       const ack = await family.post(`/api/v1/circles/${circleId}/emergency/requests/${req.json.request.id}/acknowledge`);
