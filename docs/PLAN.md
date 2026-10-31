@@ -116,12 +116,12 @@ Capabilities (✅ allowed, ◐ allowed unless the care recipient restricts it vi
 | circle.view | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (limited) |
 | circle.manage (settings, archive) | ✅ if self-managing | ✅ | — | — | — | — |
 | members.invite / manage | ✅ if self-managing | ✅ | — | — | — | — |
-| consent.manage | ✅ if self-managing | ✅ only if **not** self-managing | — | — | — | — |
+| consent.manage | ✅ if self-managing | ✅ only if **not** self-managing | legal representative only, if **not** self-managing | — | — | — |
 | medication.view | ✅ | ◐ | ◐ | ✅ | ✅ | — |
-| medication.manage | ✅ | ✅ | — | — | ✅ | — |
-| dose.record | ✅ | ✅ | ✅ | ✅ | — | — |
+| medication.manage | ✅ | ◐ | — | — | ✅ | — |
+| dose.record | ✅ | ◐ | ◐ | ✅ | — | — |
 | appointment.view | ✅ | ◐ | ◐ | ✅ | ✅ | — |
-| appointment.manage | ✅ | ✅ | ✅ | — | ✅ | — |
+| appointment.manage | ✅ | ◐ | ◐ | — | ✅ | — |
 | task.view / task.complete | ✅ | ✅ | ✅ | ✅ (assigned+circle) | — | — |
 | task.manage | ✅ | ✅ | ✅ | — | — | — |
 | visit.record (check-in/out) | — | ✅ | ✅ | ✅ | — | — |
@@ -131,7 +131,7 @@ Capabilities (✅ allowed, ◐ allowed unless the care recipient restricts it vi
 | emergency.raise / acknowledge | ✅ | ✅ | ✅ | ✅ | — | ✅ |
 | audit.view | ✅ | ✅ | — | — | — | — |
 
-Rules: admin powers never override a self-managing recipient's consent; temporary memberships have
+Rules: whoever cannot *see* a category cannot *manage* it either; admin powers never override a self-managing recipient's consent; temporary memberships have
 `expires_at`; revocation is immediate (checked on every request, no cached grants).
 The matrix lives in code as a pure function (`src/server/auth/permissions.ts`) and is exhaustively unit-tested.
 
