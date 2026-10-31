@@ -420,3 +420,38 @@ export const tasks = pgTable(
   },
   (t) => [index("tasks_circle_status_due_idx").on(t.circleId, t.status, t.dueAt)],
 );
+
+// ── Caregiver visits (M6) ────────────────────────────────────────────────────────────────────
+
+/**
+ * A planned or ad-hoc visit by a caregiver or relative. Check-in/out times are self-reported:
+ * they record what the visitor says, not verified presence.
+ */
+export const visits = pgTable(
+  "visits",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    visitorMemberId: uuid("visitor_member_id").references(() => memberships.id, { onDelete: "set null" }),
+    plannedStart: timestamp("planned_start", { withTimezone: true }).notNull(),
+    plannedEnd: timestamp("planned_end", { withTimezone: true }),
+    status: text("status", { enum: ["planned", "in_progress", "completed", "cancelled"] }).notNull().default("planned"),
+    purpose: text("purpose"),
+    checkedInAt: timestamp("checked_in_at", { withTimezone: true }),
+    checkedOutAt: timestamp("checked_out_at", { withTimezone: true }),
+    /** How the person seemed and what was done: health-related, so shown only with health.view. */
+    observations: text("observations"),
+    handoverNote: text("handover_note"),
+    unresolvedIssues: text("unresolved_issues"),
+    cancelReason: text("cancel_reason"),
+    cancelledBy: uuid("cancelled_by").references(() => users.id, { onDelete: "set null" }),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    notCheckedInAlertedAt: timestamp("not_checked_in_alerted_at", { withTimezone: true }),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("visits_circle_start_idx").on(t.circleId, t.plannedStart)],
+);
