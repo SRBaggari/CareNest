@@ -31,7 +31,9 @@
     "emergency_contact": "அவசர தொடர்பு"
   },
   "circle": {
-    "medicines": "மருந்துகள்"
+    "medicines": "மருந்துகள்",
+    "appointments": "சந்திப்புகள்",
+    "tasks": "பணிகள்"
   },
   "meds": {
     "iTookIt": "நான் எடுத்துக்கொண்டேன்",
@@ -40,5 +42,9 @@
   },
   "inbox": {
     "checking": "நான் பார்த்துக்கொள்கிறேன்"
+  },
+  "tasks": {
+    "illDoIt": "நான் செய்கிறேன்",
+    "markDone": "முடிந்தது"
   }
 }

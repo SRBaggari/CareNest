@@ -31,7 +31,9 @@
     "emergency_contact": "అత్యవసర సంప్రదింపు"
   },
   "circle": {
-    "medicines": "మందులు"
+    "medicines": "మందులు",
+    "appointments": "అపాయింట్‌మెంట్లు",
+    "tasks": "పనులు"
   },
   "meds": {
     "iTookIt": "నేను వేసుకున్నాను",
@@ -40,5 +42,9 @@
   },
   "inbox": {
     "checking": "నేను చూస్తున్నాను"
+  },
+  "tasks": {
+    "illDoIt": "నేను చేస్తాను",
+    "markDone": "పూర్తయింది"
   }
 }

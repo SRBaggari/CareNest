@@ -1,6 +1,6 @@
 # CareNest — Product & Engineering Plan
 
-> Status: living document. Last updated 2026-10-31 (M0–M4 complete).
+> Status: living document. Last updated 2026-10-31 (M0–M5 complete).
 > Target: working, demonstrable MVP (Tier 1) on **2026-12-01**.
 > Every section marks what is **implemented**, **in progress**, or **planned** — see the roadmap table at the end.
 
@@ -271,8 +271,8 @@ user is not a member of, to avoid leaking existence.
 | M2 Care circles | Nov 1 – 9 | Circles, care profile, memberships, invitations, permission engine, consent, audit log, circle switcher | ✅ done (tag `m2`) |
 | M3 Medications | Nov 9 – 14 | Medications, schedules (tz/DST), dose generation, confirm/skip/refuse/proxy, unconfirmed, refill counts | ✅ done (tag `m3`) |
 | M4 Notifications | Nov 14 – 18 | Worker + job queue, reminders, escalation, quiet hours, email adapter, delivery tracking | ✅ done (tag `m4`) |
-| M5 Appointments & tasks | Nov 18 – 21 | Appointments with transport/companion, tasks (recurring, overdue escalation) | 🚧 next |
-| M6 Caregiver & timeline | Nov 21 – 24 | Visits check-in/out, observations, handover, care updates, unified timeline with corrections | planned |
+| M5 Appointments & tasks | Nov 18 – 21 | Appointments with transport/companion, tasks (recurring, overdue escalation) | ✅ done (tag `m5`) |
+| M6 Caregiver & timeline | Nov 21 – 24 | Visits check-in/out, observations, handover, care updates, unified timeline with corrections | 🚧 next |
 | M7 Emergency | Nov 24 – 27 | Contacts, info card, assistance request, alert sequence, acknowledgments, failure visibility | planned |
 | M8 Dashboards & hardening | Nov 27 – Dec 1 | Elder/family/caregiver dashboards, a11y (axe), Playwright journeys A–F, hi/te/ta strings, deploy config, user docs, labeled demo seed | planned |
 
@@ -292,5 +292,7 @@ user is not a member of, to avoid leaking existence.
 - Notifications are in-app and email only: no push or SMS yet (Tier 2), so a phone that is not checking
   email or the app will not ring.
 - The worker processes every active circle each tick; fine for MVP scale, needs batching for thousands of circles.
+- "I'll drive" records a person's commitment only; CareNest does not book transport.
+- Appointment and task alerts have no per-person opt-out yet (only the global email switch and quiet hours).
 - No regulatory compliance (HIPAA, GDPR, DPDP Act 2023) is claimed; an assessment is required before
   production use with real patient data.
