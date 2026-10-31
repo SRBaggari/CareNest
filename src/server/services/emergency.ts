@@ -45,8 +45,13 @@ export const contactSchema = z.object({
   phone,
   relationship: optionalText(100),
   notes: optionalText(500),
-  tier: z.int().min(1).max(3).default(1),
-  memberId: z.string().nullable().optional(),
+  /** Forms send "1"; the API also accepts numbers. */
+  tier: z.coerce.number().int().min(1).max(3).default(1),
+  memberId: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((v) => (v === "" ? null : v)),
 });
 
 export const updateContactSchema = contactSchema.partial();

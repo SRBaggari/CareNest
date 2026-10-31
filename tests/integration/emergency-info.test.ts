@@ -64,6 +64,20 @@ describe("emergency contacts", () => {
     ]);
   });
 
+  it("accepts exactly what the web form sends (tier as text, empty member)", async () => {
+    const { admin, circle } = await createTeam(db());
+    const { POST } = await import("@/app/api/v1/circles/[circleId]/emergency/contacts/route");
+    const res = await POST(
+      apiRequest("POST", `/api/v1/circles/${circle.id}/emergency/contacts`, {
+        cookie: admin.cookie,
+        body: { name: "Mrs Reddy", phone: "+91 90000 00009", relationship: "", tier: "2", memberId: "" },
+      }),
+      params({ circleId: circle.id }),
+    );
+    expect(res.status).toBe(201);
+    expect((await res.json()).contacts[0]).toMatchObject({ tier: 2, memberId: null, relationship: null, receivesAlerts: false });
+  });
+
   it("a linked member who leaves the circle stops receiving alerts", async () => {
     const { admin, family, circle, as } = await createTeam(db());
     await createEmergencyContact(as(admin, T0), circle.id, { name: "Ravi", phone: "+91 90000 00002", memberId: family.memberId });

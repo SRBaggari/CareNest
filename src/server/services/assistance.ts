@@ -360,6 +360,7 @@ export async function getAssistance(ctx: ServiceContext, circleId: string, reque
     message: r.message,
     location: r.location,
     raisedBy: row.raisedByName,
+    raisedById: r.raisedBy,
     raisedAt: r.createdAt,
     acknowledgedBy: row.acknowledgedByName,
     acknowledgedAt: r.acknowledgedAt,
