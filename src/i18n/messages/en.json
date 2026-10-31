@@ -224,7 +224,16 @@
     "appointment_transport_changed": "changed who is driving to {name}",
     "appointment_companion_changed": "changed who is going along to {name}",
     "appointment_completed": "recorded the outcome of {name}",
-    "appointment_outcome_corrected": "corrected the outcome of {name}"
+    "appointment_outcome_corrected": "corrected the outcome of {name}",
+    "task_created": "added the task {name}",
+    "task_updated": "changed the task {name}",
+    "task_reassigned": "reassigned the task {name}",
+    "task_claimed": "took on the task {name}",
+    "task_released": "handed back the task {name}",
+    "task_completed": "completed the task {name}",
+    "task_recurred": "scheduled the next {name}",
+    "task_reopened": "reopened the task {name}",
+    "task_cancelled": "cancelled the task {name}"
   },
   "meds": {
     "dayTitle": "Doses for {date}",
