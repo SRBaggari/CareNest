@@ -479,3 +479,80 @@ export const careUpdates = pgTable(
   },
   (t) => [index("care_updates_circle_created_idx").on(t.circleId, t.createdAt)],
 );
+
+// ── Emergency assistance (M7) ────────────────────────────────────────────────────────────────
+
+/** The emergency information card: what a responder or hospital needs to know at a glance. */
+export type EmergencyInfo = {
+  conditions?: string | null;
+  allergies?: string | null;
+  medicationsNote?: string | null;
+  bloodGroup?: string | null;
+  doctorName?: string | null;
+  doctorPhone?: string | null;
+  preferredHospital?: string | null;
+  insuranceNote?: string | null;
+  advanceDirectiveNote?: string | null;
+  communicationNote?: string | null;
+  mobilityNote?: string | null;
+  homeAccessNote?: string | null;
+};
+
+export const emergencyInfoCards = pgTable("emergency_info_cards", {
+  circleId: uuid("circle_id")
+    .primaryKey()
+    .references(() => careCircles.id, { onDelete: "cascade" }),
+  info: jsonb("info").$type<EmergencyInfo>().notNull().default({}),
+  updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "set null" }),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * People to call in an emergency. A contact linked to a circle member receives in-app/email
+ * alerts in their tier's turn; contacts without an account are listed for one-tap calling only.
+ */
+export const emergencyContacts = pgTable(
+  "emergency_contacts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    phone: text("phone").notNull(),
+    relationship: text("relationship"),
+    notes: text("notes"),
+    /** Alert order: tier 1 is alerted first, then tier 2 if nobody responds, and so on. */
+    tier: integer("tier").notNull().default(1),
+    memberId: uuid("member_id").references(() => memberships.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("emergency_contacts_circle_idx").on(t.circleId)],
+);
+
+export const assistanceRequests = pgTable(
+  "assistance_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    raisedBy: uuid("raised_by").references(() => users.id, { onDelete: "set null" }),
+    message: text("message"),
+    status: text("status", { enum: ["open", "acknowledged", "resolved", "cancelled"] }).notNull().default("open"),
+    /** Practice drills are labelled everywhere and never escalate beyond the first tier. */
+    isPractice: boolean("is_practice").notNull().default(false),
+    /** Only present when the person chose to share their location for this one alert. */
+    location: jsonb("location").$type<{ latitude: number; longitude: number; accuracyMeters: number | null }>(),
+    escalationStep: integer("escalation_step").notNull().default(0),
+    nextEscalationAt: timestamp("next_escalation_at", { withTimezone: true }),
+    acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
+    acknowledgedBy: uuid("acknowledged_by").references(() => users.id, { onDelete: "set null" }),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+    resolvedBy: uuid("resolved_by").references(() => users.id, { onDelete: "set null" }),
+    resolutionNote: text("resolution_note"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("assistance_requests_circle_idx").on(t.circleId, t.createdAt)],
+);
