@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getRequestTranslator } from "@/i18n/server";
 import { requireSession } from "@/server/auth/current-user";
+import { getDb } from "@/server/db";
+import { unreadCount } from "@/server/services/notifications";
 import { SignOutButton } from "./sign-out-button";
 
 export default function AppLayout({ children }: LayoutProps<"/app">) {
@@ -18,8 +20,9 @@ export default function AppLayout({ children }: LayoutProps<"/app">) {
 }
 
 async function AppHeader() {
-  await requireSession("/app");
+  const session = await requireSession("/app");
   const { locale, t } = await getRequestTranslator();
+  const unread = await unreadCount(await getDb(), session.user.id);
   return (
     <header lang={locale} className="border-b border-border bg-surface">
       <a
@@ -35,6 +38,18 @@ async function AppHeader() {
         <nav aria-label={t("common.mainNav")} className="flex flex-wrap items-center gap-2">
           <Link href="/app" className="rounded-lg px-3 py-3 font-medium hover:underline">
             {t("common.home")}
+          </Link>
+          <Link
+            href="/app/notifications"
+            aria-label={unread > 0 ? t("common.notificationsUnread", { count: unread }) : t("common.notifications")}
+            className="inline-flex items-center gap-2 rounded-lg px-3 py-3 font-medium hover:underline"
+          >
+            {t("common.notifications")}
+            {unread > 0 && (
+              <span aria-hidden="true" className="rounded-full bg-danger px-2 text-base font-bold text-primary-foreground">
+                {unread > 99 ? "99+" : unread}
+              </span>
+            )}
           </Link>
           <Link href="/app/account" className="rounded-lg px-3 py-3 font-medium hover:underline">
             {t("common.account")}

@@ -11,6 +11,7 @@ import { orForbidden, orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { listDoses } from "@/server/services/doses";
 import { listMedications } from "@/server/services/medications";
+import { acknowledgementsFor } from "@/server/services/notifications";
 import { AsNeededForm, DoseActions, MedicationForm, RestockForm } from "./medicine-forms";
 
 export const metadata: Metadata = { title: "Medicines" };
@@ -34,6 +35,10 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
   const day = await orForbidden(listDoses(ctx, circleId, { date, days: 1 }));
   if (!day) return <Alert>{t("meds.notShared", { name })}</Alert>;
   const meds = await listMedications(ctx, circleId, { includeStopped: true });
+  const checking = await acknowledgementsFor(
+    ctx.db,
+    day.doses.filter((d) => d.status === "unconfirmed").map((d) => `dose:${d.id}`),
+  );
 
   const caps = new Set(circle.myCapabilities);
   const active = circle.status === "active";
@@ -127,6 +132,11 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
                   </div>
 
                   {shown === "unconfirmed" && <p className="text-warning">{t("meds.unconfirmedHelp", { name })}</p>}
+                  {shown === "unconfirmed" && (checking.get(`dose:${dose.id}`)?.length ?? 0) > 0 && (
+                    <p className="font-medium">
+                      {t("meds.checking", { names: checking.get(`dose:${dose.id}`)!.map((a) => a.name).join(", ") })}
+                    </p>
+                  )}
                   {recorded && dose.source && (
                     <p className="text-muted">
                       {t(`meds.source_${dose.source}`, { name: recorder })}

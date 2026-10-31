@@ -14,13 +14,14 @@ export function InviteForm(props: {
   url: string;
   roleOptions: Option[];
   roleHints: Record<string, string>;
-  labels: Messages & Record<"email" | "role" | "temporary" | "temporaryHint" | "submit" | "created" | "copy" | "copied", string>;
+  labels: Messages & Record<"email" | "role" | "temporary" | "temporaryHint" | "submit" | "created" | "emailed" | "copy" | "copied", string>;
 }) {
   const { labels } = props;
   const router = useRouter();
   const { pending, error, fieldErrors, submit } = useApiSubmit(labels);
   const [role, setRole] = useState(props.roleOptions.find((o) => o.value === "family")?.value ?? props.roleOptions[0].value);
   const [link, setLink] = useState<string | null>(null);
+  const [emailed, setEmailed] = useState(false);
   const [copied, setCopied] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -30,7 +31,7 @@ export function InviteForm(props: {
     const formEl = event.currentTarget;
     const f = new FormData(formEl);
     const until = String(f.get("accessExpiresAt") ?? "");
-    const result = await submit<{ inviteUrl: string }>("POST", props.url, {
+    const result = await submit<{ inviteUrl: string; emailDelivery: "queued" | "not_configured" }>("POST", props.url, {
       email: String(f.get("email") ?? ""),
       role,
       // <input type="datetime-local"> is in the inviter's local time; send it as an absolute instant.
@@ -38,6 +39,7 @@ export function InviteForm(props: {
     });
     if (result) {
       setLink(result.inviteUrl);
+      setEmailed(result.emailDelivery === "queued");
       formEl.reset();
       router.refresh();
     }
@@ -58,7 +60,7 @@ export function InviteForm(props: {
       {error && <Alert tone="error">{error}</Alert>}
       {link && (
         <Alert tone="success">
-          <p>{labels.created}</p>
+          <p>{emailed ? labels.emailed : labels.created}</p>
           <p className="mt-2 break-all rounded bg-background p-2 font-mono text-base">{link}</p>
           <Button type="button" variant="secondary" className="mt-2" onClick={copy}>
             {labels.copy}
