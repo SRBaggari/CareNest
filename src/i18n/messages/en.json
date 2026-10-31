@@ -244,7 +244,11 @@
     "visit_completed": "finished a visit",
     "visit_cancelled": "cancelled a visit",
     "update_posted": "posted an update",
-    "update_corrected": "corrected an update"
+    "update_corrected": "corrected an update",
+    "emergency_info_updated": "updated the emergency information card",
+    "emergency_contact_added": "added the emergency contact {name}",
+    "emergency_contact_updated": "changed the emergency contact {name}",
+    "emergency_contact_removed": "removed the emergency contact {name}"
   },
   "meds": {
     "dayTitle": "Doses for {date}",
