@@ -115,6 +115,10 @@ export const memberships = pgTable(
     createdAt: createdAt(),
     revokedAt: timestamp("revoked_at", { withTimezone: true }),
     revokedBy: uuid("revoked_by").references(() => users.id, { onDelete: "set null" }),
+    /** Per-person alert choices for this circle; null means the default for their role. */
+    notifyDoseReminders: boolean("notify_dose_reminders"),
+    notifyUnconfirmedDoses: boolean("notify_unconfirmed_doses"),
+    notifyRefills: boolean("notify_refills"),
   },
   (t) => [unique("memberships_circle_user_unique").on(t.circleId, t.userId), index("memberships_user_idx").on(t.userId)],
 );
@@ -187,6 +191,8 @@ export const medications = pgTable(
     unitsPerDose: integer("units_per_dose").notNull().default(1),
     supplyCount: integer("supply_count"),
     refillThreshold: integer("refill_threshold"),
+    /** Set when a low-stock alert went out; cleared on restock so the next low point alerts again. */
+    refillAlertedAt: timestamp("refill_alerted_at", { withTimezone: true }),
     status: text("status", { enum: ["active", "stopped"] }).notNull().default("active"),
     stoppedAt: timestamp("stopped_at", { withTimezone: true }),
     stoppedBy: uuid("stopped_by").references(() => users.id, { onDelete: "set null" }),
@@ -228,6 +234,9 @@ export const doseEvents = pgTable(
     note: text("note"),
     sideEffects: text("side_effects"),
     reminderSentAt: timestamp("reminder_sent_at", { withTimezone: true }),
+    /** When the circle was told this dose is unconfirmed, and when that was escalated. */
+    alertedAt: timestamp("alerted_at", { withTimezone: true }),
+    escalatedAt: timestamp("escalated_at", { withTimezone: true }),
     createdAt: createdAt(),
   },
   (t) => [
@@ -260,3 +269,46 @@ export const doseEventHistory = pgTable(
   },
   (t) => [index("dose_event_history_dose_idx").on(t.doseEventId)],
 );
+
+// ── Notifications (M4) ───────────────────────────────────────────────────────────────────────
+
+export const notificationPriority = pgEnum("notification_priority", ["low", "normal", "high", "critical"]);
+
+/**
+ * In-app notification for one user. `dedupe_key` makes creation idempotent (a retried worker
+ * never notifies twice); `group_key` ties together the notifications about one event so that
+ * one person acknowledging ("I'm checking on it") is visible to everyone else.
+ */
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    circleId: uuid("circle_id").references(() => careCircles.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull(),
+    priority: notificationPriority("priority").notNull().default("normal"),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    /** In-app path to open, e.g. /app/circles/<id>/medicines. */
+    link: text("link"),
+    groupKey: text("group_key"),
+    dedupeKey: text("dedupe_key").notNull().unique(),
+    createdAt: createdAt(),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
+  },
+  (t) => [index("notifications_user_created_idx").on(t.userId, t.createdAt), index("notifications_group_idx").on(t.groupKey)],
+);
+
+export const notificationPreferences = pgTable("notification_preferences", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  emailEnabled: boolean("email_enabled").notNull().default(true),
+  /** Quiet hours in the user's own time zone ("HH:MM"); critical alerts ignore them. */
+  quietStart: text("quiet_start"),
+  quietEnd: text("quiet_end"),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
