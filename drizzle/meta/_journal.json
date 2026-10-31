@@ -43,6 +43,13 @@
       "when": 1793458280786,
       "tag": "0005_email_outbox",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793459228747,
+      "tag": "0006_appointments",
+      "breakpoints": true
     }
   ]
 }

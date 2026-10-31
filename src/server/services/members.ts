@@ -4,7 +4,7 @@ import { CIRCLE_ROLES, hasManager, type CircleRole } from "@/server/auth/permiss
 import { careProfiles, memberships, users } from "@/server/db/schema";
 import { AppError } from "@/server/http";
 import { uuidSchema } from "@/server/validation";
-import { authorize, loadCircleAccess, requireWritable, type DbTx, type ServiceContext } from "./access";
+import { authorize, loadCircleAccess, requireWritable, type DbOrTx, type DbTx, type ServiceContext } from "./access";
 import { recordAudit } from "./audit";
 
 export const updateMemberSchema = z
@@ -152,4 +152,24 @@ export async function removeMember(ctx: ServiceContext, circleId: string, member
       now: ctx.now,
     });
   });
+}
+
+/** Roles that can take on practical responsibilities (driving, tasks, visits). */
+export const HELPER_ROLES: CircleRole[] = ["admin", "family", "caregiver"];
+
+/**
+ * Resolves a membership id to an active, unexpired member of this circle, optionally limited to
+ * certain roles. Used whenever someone is assigned a responsibility.
+ */
+export async function resolveActiveMember(db: DbOrTx, circleId: string, memberId: string, now: Date, roles?: CircleRole[]) {
+  const invalid = () =>
+    new AppError("validation_failed", "Some fields are invalid.", { memberId: ["Choose someone who is an active member of this circle."] });
+  if (!uuidSchema.safeParse(memberId).success) throw invalid();
+  const [m] = await db
+    .select({ id: memberships.id, userId: memberships.userId, role: memberships.role, expiresAt: memberships.expiresAt, name: users.name })
+    .from(memberships)
+    .innerJoin(users, eq(users.id, memberships.userId))
+    .where(and(eq(memberships.id, memberId), eq(memberships.circleId, circleId), eq(memberships.status, "active")));
+  if (!m || (m.expiresAt && m.expiresAt.getTime() <= now.getTime()) || (roles && !roles.includes(m.role))) throw invalid();
+  return m;
 }
