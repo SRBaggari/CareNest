@@ -53,3 +53,23 @@ describe("message catalogs", () => {
     }
   });
 });
+
+describe("audit action labels", () => {
+  it("every recorded audit action has an English label", async () => {
+    const { readFileSync, readdirSync } = await import("node:fs");
+    const dir = "src/server/services";
+    const actions = new Set<string>();
+    for (const file of readdirSync(dir).filter((f) => f.endsWith(".ts") && !f.endsWith(".test.ts"))) {
+      for (const match of readFileSync(`${dir}/${file}`, "utf8").matchAll(/action: (?:[^"\n]*\? )?"([a-z_]+\.[a-z_]+)"(?: : "([a-z_]+\.[a-z_]+)")?/g)) {
+        actions.add(match[1]);
+        if (match[2]) actions.add(match[2]);
+      }
+    }
+    expect(actions.size).toBeGreaterThan(5);
+    const t = getTranslator("en");
+    for (const action of actions) {
+      const key = `audit.${action.replaceAll(".", "_")}`;
+      expect(t(key), `missing label for ${action}`).not.toBe(key);
+    }
+  });
+});
