@@ -11,11 +11,11 @@ import { hashSessionToken } from "@/server/auth/session";
 import { consumeRateLimit } from "@/server/auth/rate-limit";
 import { sessions, users } from "@/server/db/schema";
 import { LOGIN_LIMIT_PER_EMAIL } from "@/server/services/accounts";
-import { useTestDb } from "../helpers/db";
+import { setupTestDb } from "../helpers/db";
 import { apiRequest, params, sessionCookieFrom } from "../helpers/http";
 import { signUp, TEST_PASSWORD } from "../helpers/users";
 
-const db = useTestDb();
+const db = setupTestDb();
 
 describe("POST /api/v1/auth/register", () => {
   it("creates an account, signs the user in and never returns the password hash", async () => {

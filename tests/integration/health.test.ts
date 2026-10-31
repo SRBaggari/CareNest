@@ -1,10 +1,10 @@
 import { sql } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { GET } from "@/app/api/health/route";
-import { useTestDb } from "../helpers/db";
+import { setupTestDb } from "../helpers/db";
 
 describe("GET /api/health", () => {
-  const db = useTestDb();
+  const db = setupTestDb();
 
   it("reports ok when the database answers", async () => {
     const res = await GET(new Request("http://localhost/api/health"));

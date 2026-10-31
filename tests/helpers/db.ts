@@ -16,7 +16,7 @@ export async function createTestDb(): Promise<{ db: Db; close: () => Promise<voi
  * Registers suite hooks that give the whole test file its own isolated database and make
  * route handlers use it. Returns an accessor because the db is created in `beforeAll`.
  */
-export function useTestDb(): () => Db {
+export function setupTestDb(): () => Db {
   let current: { db: Db; close: () => Promise<void> } | undefined;
   beforeAll(async () => {
     current = await createTestDb();
