@@ -228,7 +228,12 @@ export async function updateMedication(
     };
     const [updated] = await tx
       .update(medications)
-      .set({ ...changes, version: input.version + 1, updatedAt: ctx.now })
+      .set({
+        ...changes,
+        refillAlertedAt: needsRefill(changes.supplyCount, changes.refillThreshold) ? current.refillAlertedAt : null,
+        version: input.version + 1,
+        updatedAt: ctx.now,
+      })
       .where(and(eq(medications.id, medicationId), eq(medications.version, input.version)))
       .returning();
     if (!updated) throw new AppError("conflict", "Someone else changed this medicine. Reload to see their changes, then try again.");
@@ -308,7 +313,12 @@ export async function restockMedication(
     const current = await loadMedication(tx, circleId, medicationId);
     const [updated] = await tx
       .update(medications)
-      .set({ supplyCount: input.supplyCount, updatedAt: ctx.now })
+      .set({
+        supplyCount: input.supplyCount,
+        // Above the threshold again: the next time it runs low, alert again.
+        refillAlertedAt: needsRefill(input.supplyCount, current.refillThreshold) ? current.refillAlertedAt : null,
+        updatedAt: ctx.now,
+      })
       .where(eq(medications.id, medicationId))
       .returning();
     await recordAudit(tx, {

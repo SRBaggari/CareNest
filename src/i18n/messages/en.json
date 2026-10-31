@@ -298,5 +298,25 @@
     "weekday_6": "Sat",
     "weekday_7": "Sun",
     "notShared": "{name} has chosen not to share medicines with family."
+  },
+  "notif": {
+    "reminderSelfTitle": "Time for your {medicine}",
+    "reminderSelfBody": "{dosage}. When you've taken it, tap “I took it”.",
+    "reminderOtherTitle": "{name}'s {time} medicine is due",
+    "reminderOtherBody": "{medicine} — {dosage}, due at {time} their time.",
+    "reminderEmailSubject": "Medicine reminder",
+    "reminderEmailBody": "A medicine is due now. Open CareNest to see it and confirm it: {link}",
+    "unconfirmedTitle": "{name}'s {time} medicine hasn't been confirmed",
+    "unconfirmedBody": "{medicine} ({dosage}) was due at {time} their time. Nobody has confirmed it yet — that doesn't mean it was missed. Check in with {name}, then record what happened. Tap “I'm checking on it” so others know.",
+    "unconfirmedEmailSubject": "A medicine for {name} hasn't been confirmed",
+    "unconfirmedEmailBody": "A medicine that was due for {name} hasn't been confirmed yet. Open CareNest to see details and let others know you're checking: {link}",
+    "escalatedTitle": "Still unconfirmed: {name}'s {time} medicine",
+    "escalatedBody": "{medicine} was due at {time} their time and is still unconfirmed, and nobody has said they are checking. Please check on {name}.",
+    "escalatedEmailSubject": "Still unconfirmed: a medicine for {name}",
+    "escalatedEmailBody": "A medicine for {name} is still unconfirmed and nobody has said they are checking. Open CareNest: {link}",
+    "refillTitle": "{medicine} is running low",
+    "refillBody": "{count} left for {name}. Time to arrange a refill.",
+    "refillEmailSubject": "A medicine for {name} is running low",
+    "refillEmailBody": "One of {name}'s medicines is running low. Open CareNest to see which: {link}"
   }
 }
