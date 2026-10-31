@@ -207,6 +207,10 @@
     "invitation_created": "invited {email} as {role}",
     "invitation_revoked": "cancelled the invitation for {email}",
     "invitation_accepted": "joined the circle",
-    "someone": "Someone"
+    "someone": "Someone",
+    "medication_created": "added the medicine {name}",
+    "medication_updated": "changed the medicine {name}",
+    "medication_stopped": "stopped the medicine {name}",
+    "medication_restocked": "updated the stock of {name}"
   }
 }
