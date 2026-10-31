@@ -7,7 +7,7 @@ describe("GET /api/health", () => {
   const db = useTestDb();
 
   it("reports ok when the database answers", async () => {
-    const res = await GET();
+    const res = await GET(new Request("http://localhost/api/health"));
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ status: "ok", database: "ok" });
   });
