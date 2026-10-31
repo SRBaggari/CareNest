@@ -23,6 +23,18 @@ git config user.email   # check before committing
 If commits don't appear on your GitHub profile, check that this email is listed and verified under
 GitHub → Settings → Emails.
 
+### Credit both developers on every commit
+
+Shared work is credited to both accounts. End every commit message with a co-author trailer for the
+other developer (GitHub counts co-authored commits on both profiles):
+
+```
+Co-authored-by: SAHASRA REDDY BAGGARI <baggarisahasra07@gmail.com>
+Co-authored-by: MANISH REDDY <manishreddy1767@gmail.com>
+```
+
+Leave out the line for whoever is the commit's author.
+
 ## 2. Remotes with the right login
 
 Put each owner's username in the remote URL, so Git Credential Manager uses the matching stored login:
