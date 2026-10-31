@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/* Calm, high-contrast palette. All text/background pairs meet WCAG 2.1 AA (most AAA). */
+:root {
+  --background: #fbfaf7;
+  --surface: #ffffff;
+  --foreground: #1c1f23;
+  --muted: #4a5159;
+  --border: #d6d3cc;
+  --primary: #1f5f8b;
+  --primary-foreground: #ffffff;
+  --success: #1e6b3a;
+  --warning: #8a5a00;
+  --danger: #a3261b;
+  --focus: #c25e00;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #111417;
+    --surface: #1a1e22;
+    --foreground: #eef0f2;
+    --muted: #b6bdc4;
+    --border: #3a4148;
+    --primary: #7cc0ee;
+    --primary-foreground: #0b1a24;
+    --success: #7fd69c;
+    --warning: #f0c069;
+    --danger: #ff9b8f;
+    --focus: #ffb86b;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --font-sans: system-ui, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", "Noto Sans Telugu",
+    "Noto Sans Tamil", sans-serif;
+}
+
+/* 18px base text: comfortable for older eyes; users can still scale with browser zoom. */
+html {
+  font-size: 112.5%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+/* Always-visible, thick focus ring for keyboard users. */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
