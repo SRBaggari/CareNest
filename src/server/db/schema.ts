@@ -2,7 +2,9 @@
 // generated SQL migration in `drizzle/` (npm run db:generate).
 
 import { boolean, date, index, integer, jsonb, pgEnum, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { CIRCLE_ROLES, type Consent } from "@/server/auth/permissions";
+import { DOSE_STATUSES } from "@/server/domain/doses";
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 
@@ -86,6 +88,8 @@ export const careProfiles = pgTable("care_profiles", {
   /** The recipient's own account, when they have one. */
   linkedUserId: uuid("linked_user_id").references(() => users.id, { onDelete: "set null" }),
   emergencyNumber: text("emergency_number").notNull(),
+  /** Minutes after a scheduled dose before an unanswered one is shown as unconfirmed. */
+  doseGraceMinutes: integer("dose_grace_minutes").notNull().default(60),
   consent: jsonb("consent").$type<Consent>().notNull(),
   /** Optimistic concurrency: incremented on every update. */
   version: integer("version").notNull().default(1),
@@ -151,4 +155,108 @@ export const auditEvents = pgTable(
     createdAt: createdAt(),
   },
   (t) => [index("audit_events_circle_created_idx").on(t.circleId, t.createdAt)],
+);
+
+// ── Medicines (M3) ───────────────────────────────────────────────────────────────────────────
+
+export const doseStatus = pgEnum("dose_status", DOSE_STATUSES);
+
+/**
+ * A medicine as prescribed. Never deleted: stopping it keeps the full history. The schedule is
+ * stored in the recipient's wall-clock time (see src/server/domain/schedule.ts).
+ */
+export const medications = pgTable(
+  "medications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    /** As written by the prescriber, e.g. "1 tablet (500 mg)". */
+    dosage: text("dosage").notNull(),
+    instructions: text("instructions"),
+    prescriber: text("prescriber"),
+    startDate: date("start_date").notNull(),
+    endDate: date("end_date"),
+    asNeeded: boolean("as_needed").notNull().default(false),
+    scheduleTimes: text("schedule_times").array().notNull().default(sql`'{}'::text[]`),
+    /** ISO weekdays 1–7; null means every day. */
+    scheduleDays: integer("schedule_days").array(),
+    /** Units of stock used per dose (for supply tracking). */
+    unitsPerDose: integer("units_per_dose").notNull().default(1),
+    supplyCount: integer("supply_count"),
+    refillThreshold: integer("refill_threshold"),
+    status: text("status", { enum: ["active", "stopped"] }).notNull().default("active"),
+    stoppedAt: timestamp("stopped_at", { withTimezone: true }),
+    stoppedBy: uuid("stopped_by").references(() => users.id, { onDelete: "set null" }),
+    stopReason: text("stop_reason"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("medications_circle_idx").on(t.circleId)],
+);
+
+/**
+ * One dose: a scheduled occurrence (scheduled_for set) or an as-needed dose (scheduled_for null).
+ * The current status lives here; every recording is also appended to dose_event_history.
+ */
+export const doseEvents = pgTable(
+  "dose_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    medicationId: uuid("medication_id")
+      .notNull()
+      .references(() => medications.id, { onDelete: "cascade" }),
+    scheduledFor: timestamp("scheduled_for", { withTimezone: true }),
+    /** Recipient's local date/time as scheduled, kept for display and DST transparency. */
+    localDate: date("local_date"),
+    localTime: text("local_time"),
+    shifted: boolean("shifted").notNull().default(false),
+    status: doseStatus("status").notNull().default("scheduled"),
+    /** When it actually happened (may be earlier than recorded_at for late entries). */
+    occurredAt: timestamp("occurred_at", { withTimezone: true }),
+    recordedAt: timestamp("recorded_at", { withTimezone: true }),
+    recordedBy: uuid("recorded_by").references(() => users.id, { onDelete: "set null" }),
+    source: text("source", { enum: ["self", "proxy", "caregiver"] }),
+    reason: text("reason"),
+    note: text("note"),
+    sideEffects: text("side_effects"),
+    reminderSentAt: timestamp("reminder_sent_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    unique("dose_events_medication_time_unique").on(t.medicationId, t.scheduledFor),
+    index("dose_events_circle_time_idx").on(t.circleId, t.scheduledFor),
+  ],
+);
+
+/** Append-only log of every dose recording, including corrections. */
+export const doseEventHistory = pgTable(
+  "dose_event_history",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    doseEventId: uuid("dose_event_id")
+      .notNull()
+      .references(() => doseEvents.id, { onDelete: "cascade" }),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    status: doseStatus("status").notNull(),
+    previousStatus: doseStatus("previous_status").notNull(),
+    occurredAt: timestamp("occurred_at", { withTimezone: true }),
+    recordedAt: timestamp("recorded_at", { withTimezone: true }).notNull(),
+    recordedBy: uuid("recorded_by").references(() => users.id, { onDelete: "set null" }),
+    source: text("source", { enum: ["self", "proxy", "caregiver"] }).notNull(),
+    reason: text("reason"),
+    note: text("note"),
+    sideEffects: text("side_effects"),
+    isCorrection: boolean("is_correction").notNull().default(false),
+  },
+  (t) => [index("dose_event_history_dose_idx").on(t.doseEventId)],
 );
