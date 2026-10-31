@@ -1,6 +1,6 @@
 # CareNest — Product & Engineering Plan
 
-> Status: living document. Last updated 2026-10-31.
+> Status: living document. Last updated 2026-10-31 (M0 + M1 complete).
 > Target: working, demonstrable MVP (Tier 1) on **2026-12-01**.
 > Every section marks what is **implemented**, **in progress**, or **planned** — see the roadmap table at the end.
 
@@ -266,9 +266,9 @@ user is not a member of, to avoid leaking existence.
 
 | Milestone | Dates (2026) | Scope | Status |
 |---|---|---|---|
-| M0 Foundation | Oct 31 – Nov 2 | Next.js scaffold, Drizzle + PGlite/Postgres, migrations, Vitest unit+integration harness, i18n, CI, health endpoint | 🚧 in progress |
-| M1 Auth | Nov 2 – 5 | Register, login, logout, sessions, rate limiting, Origin checks, account page | planned |
-| M2 Care circles | Nov 5 – 9 | Circles, care profile, memberships, invitations, permission engine, consent, audit log, circle switcher | planned |
+| M0 Foundation | Oct 31 – Nov 2 | Next.js scaffold, Drizzle + PGlite/Postgres, migrations, Vitest unit+integration harness, i18n, CI, health endpoint | ✅ done (tag `m0`) |
+| M1 Auth | Nov 2 – 5 | Register, login, logout, sessions, rate limiting, Origin checks, account page | ✅ done (tag `m1`) |
+| M2 Care circles | Nov 1 – 9 | Circles, care profile, memberships, invitations, permission engine, consent, audit log, circle switcher | 🚧 next |
 | M3 Medications | Nov 9 – 14 | Medications, schedules (tz/DST), dose generation, confirm/skip/refuse/proxy, unconfirmed, refill counts | planned |
 | M4 Notifications | Nov 14 – 18 | Worker + job queue, reminders, escalation, quiet hours, email adapter, delivery tracking | planned |
 | M5 Appointments & tasks | Nov 18 – 21 | Appointments with transport/companion, tasks (recurring, overdue escalation) | planned |
