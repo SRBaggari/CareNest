@@ -1,7 +1,9 @@
 import { and, desc, eq, inArray, isNotNull, isNull, lt, sql } from "drizzle-orm";
 import { z } from "zod";
 import { LOCAL_TIME_PATTERN } from "@/server/domain/schedule";
-import { memberships, notificationPreferences, notifications, users } from "@/server/db/schema";
+import { emailOutbox, memberships, notificationPreferences, notifications, users } from "@/server/db/schema";
+import { enqueueEmail } from "@/server/notifications/email";
+import { quietUntil } from "@/server/notifications/quiet-hours";
 import { effectiveAlertSettings, ALERT_KINDS, alertColumn } from "@/server/notifications/alert-settings";
 import { AppError } from "@/server/http";
 import { uuidSchema } from "@/server/validation";
@@ -32,6 +34,56 @@ export async function createNotifications(db: DbOrTx, items: NewNotification[], 
     .returning();
 }
 
+export type EmailContent = { subject: string; text: string };
+
+/**
+ * Creates notifications and queues an email copy for each new one, honouring the person's
+ * email preference and quiet hours (critical alerts are never held back). Emails carry only
+ * minimal, non-medical detail; the full information stays behind sign-in.
+ */
+export async function notifyUsers(db: DbOrTx, now: Date, items: (NewNotification & { email?: EmailContent })[]) {
+  const created = await createNotifications(
+    db,
+    items.map(({ email: _email, ...n }) => n),
+    now,
+  );
+  const emailFor = new Map(items.map((i) => [i.dedupeKey, i.email]));
+  const withEmail = created.filter((n) => emailFor.get(n.dedupeKey));
+  if (withEmail.length === 0) return created;
+
+  const ids = [...new Set(withEmail.map((n) => n.userId))];
+  const people = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      timeZone: users.timeZone,
+      emailEnabled: notificationPreferences.emailEnabled,
+      quietStart: notificationPreferences.quietStart,
+      quietEnd: notificationPreferences.quietEnd,
+    })
+    .from(users)
+    .leftJoin(notificationPreferences, eq(notificationPreferences.userId, users.id))
+    .where(inArray(users.id, ids));
+  const byId = new Map(people.map((p) => [p.id, p]));
+
+  for (const n of withEmail) {
+    const person = byId.get(n.userId);
+    if (!person || person.emailEnabled === false) continue;
+    const notBefore = n.priority === "critical" ? now : (quietUntil(now, person.timeZone, person.quietStart, person.quietEnd) ?? now);
+    const content = emailFor.get(n.dedupeKey)!;
+    await enqueueEmail(db, {
+      to: person.email,
+      subject: content.subject,
+      text: content.text,
+      kind: n.kind,
+      notificationId: n.id,
+      dedupeKey: `notification:${n.id}`,
+      notBefore,
+    });
+  }
+  return created;
+}
+
 export const listNotificationsQuerySchema = z.object({
   unread: z.enum(["true", "false"]).optional(),
   before: z.iso.datetime({ offset: true }).optional(),
@@ -58,8 +110,22 @@ export async function acknowledgementsFor(db: DbOrTx, groupKeys: string[]) {
 
 export async function listNotifications(ctx: ServiceContext, query: z.infer<typeof listNotificationsQuerySchema>) {
   const rows = await ctx.db
-    .select()
+    .select({
+      id: notifications.id,
+      circleId: notifications.circleId,
+      kind: notifications.kind,
+      priority: notifications.priority,
+      title: notifications.title,
+      body: notifications.body,
+      link: notifications.link,
+      groupKey: notifications.groupKey,
+      createdAt: notifications.createdAt,
+      readAt: notifications.readAt,
+      acknowledgedAt: notifications.acknowledgedAt,
+      emailStatus: emailOutbox.status,
+    })
     .from(notifications)
+    .leftJoin(emailOutbox, eq(emailOutbox.notificationId, notifications.id))
     .where(
       and(
         eq(notifications.userId, ctx.userId),
@@ -71,10 +137,7 @@ export async function listNotifications(ctx: ServiceContext, query: z.infer<type
     .limit(query.limit);
   const acks = await acknowledgementsFor(ctx.db, [...new Set(rows.map((r) => r.groupKey).filter((g): g is string => !!g))]);
   return {
-    notifications: rows.map(({ dedupeKey: _dedupe, userId: _user, ...n }) => ({
-      ...n,
-      acknowledgedBy: n.groupKey ? (acks.get(n.groupKey) ?? []) : [],
-    })),
+    notifications: rows.map((n) => ({ ...n, acknowledgedBy: n.groupKey ? (acks.get(n.groupKey) ?? []) : [] })),
     unreadCount: await unreadCount(ctx.db, ctx.userId),
   };
 }
