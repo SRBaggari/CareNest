@@ -59,13 +59,21 @@ export async function handle(fn: () => Promise<Response>): Promise<Response> {
     unstable_rethrow(err);
     if (err instanceof AppError) return errorResponse(err);
     if (err instanceof z.ZodError) {
-      return errorResponse(
-        new AppError("validation_failed", "Some fields are invalid.", z.flattenError(err).fieldErrors),
-      );
+      return errorResponse(new AppError("validation_failed", "Some fields are invalid.", fieldErrors(err)));
     }
     console.error("Unhandled API error", err);
     return errorResponse(new AppError("internal", "Something went wrong. Please try again."));
   }
+}
+
+/** Groups Zod issues by dotted field path (e.g. "recipient.timeZone") so forms can place each message. */
+export function fieldErrors(err: z.ZodError): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  for (const issue of err.issues) {
+    const key = issue.path.map(String).join(".") || "_";
+    (out[key] ??= []).push(issue.message);
+  }
+  return out;
 }
 
 /** Parses a JSON request body against a schema; malformed JSON is a 400, invalid fields a 422. */

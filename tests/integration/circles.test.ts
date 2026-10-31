@@ -69,8 +69,13 @@ describe("creating circles", () => {
     );
     expect(res.status).toBe(422);
     const { error } = await res.json();
-    expect(error.details).toHaveProperty("name");
-    expect(error.details).toHaveProperty("recipient");
+    expect(Object.keys(error.details).sort()).toEqual([
+      "name",
+      "recipient.country",
+      "recipient.dateOfBirth",
+      "recipient.emergencyNumber",
+      "recipient.timeZone",
+    ]);
   });
 
   it("requires sign-in", async () => {
