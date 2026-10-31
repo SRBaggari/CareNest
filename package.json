@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
-    "check": "npm run lint && npm run typecheck && npm test"
+    "check": "npm run lint && npm run typecheck && npm test",
+    "worker": "tsx scripts/worker.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.14",
