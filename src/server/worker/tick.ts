@@ -1,14 +1,15 @@
 // One pass of background work. Safe to run repeatedly and concurrently: every step claims its
 // rows with a conditional UPDATE … RETURNING, and notifications have unique dedupe keys.
 
-import { and, eq, gt, isNotNull, isNull, lte, or, sql } from "drizzle-orm";
-import { getTranslator, isLocale } from "@/i18n";
-import { can, type CircleRole } from "@/server/auth/permissions";
+import { and, eq, gt, isNotNull, isNull, lte, sql } from "drizzle-orm";
+import type { CircleRole } from "@/server/auth/permissions";
 import type { Db } from "@/server/db";
-import { careCircles, careProfiles, doseEvents, medications, memberships, users } from "@/server/db/schema";
+import { careCircles, careProfiles, doseEvents, medications } from "@/server/db/schema";
 import { addDays, localDateIn } from "@/server/domain/schedule";
 import { wantsAlert, type AlertKind } from "@/server/notifications/alert-settings";
+import { appUrl, circleAudience, translatorFor } from "@/server/notifications/audience";
 import { deliverPendingEmails } from "@/server/notifications/email";
+import { runCoordinationSteps } from "./coordination";
 import { ensureDoses, markUnconfirmed } from "@/server/services/doses";
 import { acknowledgementsFor, notifyUsers, type NewNotification } from "@/server/services/notifications";
 
@@ -32,34 +33,15 @@ async function circleInfo(db: Db, circleId: string): Promise<CircleInfo> {
 }
 
 /** Active members allowed to see medicines (respecting the recipient's sharing choices). */
-async function medicationAudience(db: Db, circleId: string, now: Date): Promise<(Recipient & { overrides: typeof memberships.$inferSelect })[]> {
-  const [profile] = await db
-    .select({ selfManaging: careProfiles.selfManaging, consent: careProfiles.consent })
-    .from(careProfiles)
-    .where(eq(careProfiles.circleId, circleId));
-  const rows = await db
-    .select({ m: memberships, locale: users.locale })
-    .from(memberships)
-    .innerJoin(users, eq(users.id, memberships.userId))
-    .where(
-      and(
-        eq(memberships.circleId, circleId),
-        eq(memberships.status, "active"),
-        isNull(users.disabledAt),
-        or(isNull(memberships.expiresAt), gt(memberships.expiresAt, now)),
-      ),
-    );
-  return rows
-    .filter((r) => can({ role: r.m.role, isLegalRepresentative: r.m.isLegalRepresentative }, profile, "medication.view"))
-    .map((r) => ({ userId: r.m.userId, role: r.m.role, locale: r.locale, isLegalRepresentative: r.m.isLegalRepresentative, overrides: r.m }));
+async function medicationAudience(db: Db, circleId: string, now: Date) {
+  return (await circleAudience(db, circleId, now)).filter((a) => a.can("medication.view"));
 }
 
 function subscribers(audience: Awaited<ReturnType<typeof medicationAudience>>, kind: AlertKind) {
   return audience.filter((a) => wantsAlert(a.role, a.overrides, kind));
 }
 
-const tFor = (locale: string) => getTranslator(isLocale(locale) ? locale : "en");
-const appUrl = (path: string) => `${process.env.APP_URL ?? "http://localhost:3000"}${path}`;
+const tFor = translatorFor;
 
 /** 1. Keep two days of doses materialised and mark overdue ones unconfirmed, for every active circle. */
 export async function prepareDoses(db: Db, now: Date) {
@@ -268,6 +250,7 @@ export type TickSummary = {
   unconfirmedAlerts: number;
   escalations: number;
   refillAlerts: number;
+  coordination: Awaited<ReturnType<typeof runCoordinationSteps>>;
   emails: { sent: number; failed: number; retried: number };
 };
 
@@ -277,6 +260,7 @@ export async function runTick(db: Db, now: Date): Promise<TickSummary> {
   const unconfirmedAlerts = await sendUnconfirmedAlerts(db, now);
   const escalations = await escalateUnconfirmed(db, now);
   const refillAlerts = await sendRefillAlerts(db, now);
+  const coordination = await runCoordinationSteps(db, now);
   const emails = await deliverPendingEmails(db, now);
-  return { circles, reminders, unconfirmedAlerts, escalations, refillAlerts, emails };
+  return { circles, reminders, unconfirmedAlerts, escalations, refillAlerts, coordination, emails };
 }

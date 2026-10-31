@@ -13,7 +13,9 @@ async function loop() {
     const started = Date.now();
     try {
       const summary = await runTick(db, new Date());
-      const busy = summary.reminders + summary.unconfirmedAlerts + summary.escalations + summary.refillAlerts + summary.emails.sent + summary.emails.failed;
+      const busy =
+        summary.reminders + summary.unconfirmedAlerts + summary.escalations + summary.refillAlerts +
+        Object.values(summary.coordination).reduce((a, b) => a + b, 0) + summary.emails.sent + summary.emails.failed;
       if (busy > 0) console.info(new Date().toISOString(), JSON.stringify(summary));
     } catch (err) {
       // Keep running: a transient database error must not stop reminders for good.
