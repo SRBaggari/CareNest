@@ -28,5 +28,13 @@
     "caregiver": "देखभालकर्ता",
     "clinician": "स्वास्थ्य पेशेवर",
     "emergency_contact": "आपातकालीन संपर्क"
+  },
+  "circle": {
+    "medicines": "दवाइयाँ"
+  },
+  "meds": {
+    "iTookIt": "मैंने ले ली",
+    "status_taken": "ले ली गई",
+    "status_unconfirmed": "पुष्टि नहीं हुई"
   }
 }

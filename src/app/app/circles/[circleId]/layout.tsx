@@ -14,6 +14,9 @@ export default async function CircleLayout({ children, params }: LayoutProps<"/a
 
   const tabs = [
     { href: `/app/circles/${circleId}`, label: t("circle.overview") },
+    ...(circle.myCapabilities.includes("medication.view")
+      ? [{ href: `/app/circles/${circleId}/medicines`, label: t("circle.medicines") }]
+      : []),
     ...(circle.myCapabilities.includes("members.view") ? [{ href: `/app/circles/${circleId}/members`, label: t("circle.members") }] : []),
     { href: `/app/circles/${circleId}/settings`, label: t("circle.settings") },
     ...(circle.myCapabilities.includes("audit.view") ? [{ href: `/app/circles/${circleId}/activity`, label: t("circle.activity") }] : []),

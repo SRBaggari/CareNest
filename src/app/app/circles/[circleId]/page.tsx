@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getRequestTranslator } from "@/i18n/server";
 import { formatDate } from "@/lib/format";
 import { orNotFound, pageContext } from "@/server/page";
@@ -51,9 +52,14 @@ export default async function CircleOverview({ params }: PageProps<"/app/circles
         <p className="mt-2 text-muted">{t(`roleHints.${role}`)}</p>
       </section>
 
-      <section className="rounded-xl border border-dashed border-border bg-surface p-6">
-        <p className="text-muted">{t("circle.comingSoon")}</p>
-      </section>
+      {circle.myCapabilities.includes("medication.view") && (
+        <section className="rounded-xl border border-border bg-surface p-6">
+          <h2 className="text-xl font-semibold">{t("circle.medicines")}</h2>
+          <Link href={`/app/circles/${circleId}/medicines`} className="mt-3 inline-flex min-h-12 items-center rounded-lg bg-primary px-5 font-semibold text-primary-foreground">
+            {t("meds.dayTitle", { date: t("meds.today") })}
+          </Link>
+        </section>
+      )}
     </div>
   );
 }

@@ -28,5 +28,13 @@
     "caregiver": "பராமரிப்பாளர்",
     "clinician": "சுகாதார நிபுணர்",
     "emergency_contact": "அவசர தொடர்பு"
+  },
+  "circle": {
+    "medicines": "மருந்துகள்"
+  },
+  "meds": {
+    "iTookIt": "நான் எடுத்துக்கொண்டேன்",
+    "status_taken": "எடுத்துக்கொள்ளப்பட்டது",
+    "status_unconfirmed": "உறுதிப்படுத்தப்படவில்லை"
   }
 }

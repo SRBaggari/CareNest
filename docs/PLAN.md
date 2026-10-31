@@ -1,6 +1,6 @@
 # CareNest — Product & Engineering Plan
 
-> Status: living document. Last updated 2026-10-31 (M0–M2 complete).
+> Status: living document. Last updated 2026-10-31 (M0–M3 complete).
 > Target: working, demonstrable MVP (Tier 1) on **2026-12-01**.
 > Every section marks what is **implemented**, **in progress**, or **planned** — see the roadmap table at the end.
 
@@ -269,8 +269,8 @@ user is not a member of, to avoid leaking existence.
 | M0 Foundation | Oct 31 – Nov 2 | Next.js scaffold, Drizzle + PGlite/Postgres, migrations, Vitest unit+integration harness, i18n, CI, health endpoint | ✅ done (tag `m0`) |
 | M1 Auth | Nov 2 – 5 | Register, login, logout, sessions, rate limiting, Origin checks, account page | ✅ done (tag `m1`) |
 | M2 Care circles | Nov 1 – 9 | Circles, care profile, memberships, invitations, permission engine, consent, audit log, circle switcher | ✅ done (tag `m2`) |
-| M3 Medications | Nov 9 – 14 | Medications, schedules (tz/DST), dose generation, confirm/skip/refuse/proxy, unconfirmed, refill counts | 🚧 next |
-| M4 Notifications | Nov 14 – 18 | Worker + job queue, reminders, escalation, quiet hours, email adapter, delivery tracking | planned |
+| M3 Medications | Nov 9 – 14 | Medications, schedules (tz/DST), dose generation, confirm/skip/refuse/proxy, unconfirmed, refill counts | ✅ done (tag `m3`) |
+| M4 Notifications | Nov 14 – 18 | Worker + job queue, reminders, escalation, quiet hours, email adapter, delivery tracking | 🚧 next |
 | M5 Appointments & tasks | Nov 18 – 21 | Appointments with transport/companion, tasks (recurring, overdue escalation) | planned |
 | M6 Caregiver & timeline | Nov 21 – 24 | Visits check-in/out, observations, handover, care updates, unified timeline with corrections | planned |
 | M7 Emergency | Nov 24 – 27 | Contacts, info card, assistance request, alert sequence, acknowledgments, failure visibility | planned |
@@ -288,5 +288,7 @@ user is not a member of, to avoid leaking existence.
 - A signed-in non-member opening a circle URL sees the not-found page, but with HTTP 200 (the page
   streams); the JSON API returns a real 404.
 - Hindi, Telugu and Tamil strings are partial and need review by native speakers.
+- Dose reminders and unconfirmed-dose alerts are not sent yet (M4); until then, statuses are visible in the app only.
+- Doses are generated when someone opens the medicines view; the M4 worker will generate them ahead of time.
 - No regulatory compliance (HIPAA, GDPR, DPDP Act 2023) is claimed; an assessment is required before
   production use with real patient data.

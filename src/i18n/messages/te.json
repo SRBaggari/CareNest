@@ -28,5 +28,13 @@
     "caregiver": "సంరక్షకులు",
     "clinician": "ఆరోగ్య నిపుణులు",
     "emergency_contact": "అత్యవసర సంప్రదింపు"
+  },
+  "circle": {
+    "medicines": "మందులు"
+  },
+  "meds": {
+    "iTookIt": "నేను వేసుకున్నాను",
+    "status_taken": "వేసుకున్నారు",
+    "status_unconfirmed": "నిర్ధారించబడలేదు"
   }
 }
