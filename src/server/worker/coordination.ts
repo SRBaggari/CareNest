@@ -4,7 +4,7 @@
 
 import { and, eq, gt, inArray, isNotNull, isNull, lte, sql } from "drizzle-orm";
 import type { Db } from "@/server/db";
-import { appointments, careProfiles, memberships, tasks, users } from "@/server/db/schema";
+import { appointments, careProfiles, memberships, tasks, users, visits } from "@/server/db/schema";
 import { appUrl, circleAudience, translatorFor, type AudienceMember } from "@/server/notifications/audience";
 import { notifyUsers, type NewNotification } from "@/server/services/notifications";
 
@@ -267,6 +267,59 @@ export async function sendOverdueTaskAlerts(db: Db, now: Date) {
   return claimed.length;
 }
 
+export const VISIT_CHECK_IN_GRACE_MINUTES = 30;
+
+/**
+ * A planned visit 30 minutes past its start with no check-in: remind the visitor, and let admins
+ * and family know — carefully worded, because check-ins are self-reported.
+ */
+export async function sendVisitNotCheckedInAlerts(db: Db, now: Date) {
+  const claimed = await db
+    .update(visits)
+    .set({ notCheckedInAlertedAt: now })
+    .where(
+      and(
+        eq(visits.status, "planned"),
+        isNull(visits.notCheckedInAlertedAt),
+        lte(visits.plannedStart, new Date(now.getTime() - VISIT_CHECK_IN_GRACE_MINUTES * 60_000)),
+        gt(visits.plannedStart, new Date(now.getTime() - 12 * H)),
+        sql`${visits.circleId} in (select id from care_circles where status = 'active')`,
+      ),
+    )
+    .returning();
+  for (const v of claimed) {
+    const [profile, audience, names] = await Promise.all([profileOf(db, v.circleId), circleAudience(db, v.circleId, now), memberNames(db, [v.visitorMemberId])]);
+    const visitorName = (v.visitorMemberId && names.get(v.visitorMemberId)) || "";
+    const link = `/app/circles/${v.circleId}/visits`;
+    const items: Item[] = [];
+    for (const r of audience) {
+      const isVisitor = r.memberId === v.visitorMemberId;
+      if (!isVisitor && !(r.role === "admin" || r.role === "family")) continue;
+      const t = translatorFor(r.locale);
+      const vars = {
+        visitor: visitorName,
+        name: profile.name,
+        time: new Intl.DateTimeFormat(r.locale, { hour: "2-digit", minute: "2-digit", timeZone: profile.timeZone }).format(v.plannedStart),
+        link: appUrl(link),
+      };
+      items.push(
+        item(
+          r,
+          { circleId: v.circleId, kind: "visit_not_checked_in", priority: isVisitor ? "normal" : "high", link, groupKey: `visit:${v.id}`, dedupe: `visit_not_checked_in:${v.id}` },
+          {
+            title: t(isVisitor ? "notif.visitCheckInReminderTitle" : "notif.visitNotCheckedInTitle", vars),
+            body: t(isVisitor ? "notif.visitCheckInReminderBody" : "notif.visitNotCheckedInBody", vars),
+            subject: t("notif.visitEmailSubject", vars),
+            email: t("notif.visitEmailBody", vars),
+          },
+        ),
+      );
+    }
+    await notifyUsers(db, now, items);
+  }
+  return claimed.length;
+}
+
 export async function runCoordinationSteps(db: Db, now: Date) {
   return {
     appointmentReminders: await sendAppointmentReminders(db, now),
@@ -274,5 +327,6 @@ export async function runCoordinationSteps(db: Db, now: Date) {
     taskDue: await sendTaskDueReminders(db, now),
     taskUnassigned: await sendUnassignedTaskAlerts(db, now),
     taskOverdue: await sendOverdueTaskAlerts(db, now),
+    visitNotCheckedIn: await sendVisitNotCheckedInAlerts(db, now),
   };
 }
