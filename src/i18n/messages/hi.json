@@ -33,7 +33,10 @@
   "circle": {
     "medicines": "दवाइयाँ",
     "appointments": "अपॉइंटमेंट",
-    "tasks": "काम"
+    "tasks": "काम",
+    "visits": "मुलाक़ातें",
+    "updates": "अपडेट",
+    "timeline": "समय-रेखा"
   },
   "meds": {
     "iTookIt": "मैंने ले ली",

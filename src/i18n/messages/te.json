@@ -33,7 +33,10 @@
   "circle": {
     "medicines": "మందులు",
     "appointments": "అపాయింట్‌మెంట్లు",
-    "tasks": "పనులు"
+    "tasks": "పనులు",
+    "visits": "సందర్శనలు",
+    "updates": "అప్‌డేట్‌లు",
+    "timeline": "కాలక్రమం"
   },
   "meds": {
     "iTookIt": "నేను వేసుకున్నాను",
