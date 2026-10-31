@@ -20,5 +20,13 @@
     "email": "ईमेल पता",
     "password": "पासवर्ड",
     "loginSubmit": "साइन इन करें"
+  },
+  "roles": {
+    "care_recipient": "देखभाल पाने वाले व्यक्ति",
+    "admin": "परिवार व्यवस्थापक",
+    "family": "परिवार के सदस्य",
+    "caregiver": "देखभालकर्ता",
+    "clinician": "स्वास्थ्य पेशेवर",
+    "emergency_contact": "आपातकालीन संपर्क"
   }
 }

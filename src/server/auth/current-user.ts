@@ -8,10 +8,10 @@ import { validateSessionToken, type ValidatedSession } from "./session";
 
 /** Session for the current page request, or null when signed out. Must render inside <Suspense>. */
 export async function getCurrentSession(): Promise<ValidatedSession | null> {
+  // Signed-in state depends on the request and the current time, so it is never prerendered.
+  await connection();
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
-  // Session validity depends on the current time, so it can never be part of a prerender.
-  await connection();
   return validateSessionToken(await getDb(), token, new Date());
 }
 
