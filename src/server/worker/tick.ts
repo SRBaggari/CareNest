@@ -9,6 +9,7 @@ import { addDays, localDateIn } from "@/server/domain/schedule";
 import { wantsAlert, type AlertKind } from "@/server/notifications/alert-settings";
 import { appUrl, circleAudience, translatorFor } from "@/server/notifications/audience";
 import { deliverPendingEmails } from "@/server/notifications/email";
+import { escalateAssistance } from "@/server/services/assistance";
 import { runCoordinationSteps } from "./coordination";
 import { ensureDoses, markUnconfirmed } from "@/server/services/doses";
 import { acknowledgementsFor, notifyUsers, type NewNotification } from "@/server/services/notifications";
@@ -246,6 +247,7 @@ export async function sendRefillAlerts(db: Db, now: Date) {
 
 export type TickSummary = {
   circles: number;
+  assistanceEscalations: number;
   reminders: number;
   unconfirmedAlerts: number;
   escalations: number;
@@ -255,6 +257,8 @@ export type TickSummary = {
 };
 
 export async function runTick(db: Db, now: Date): Promise<TickSummary> {
+  // Requests for help go first: they are the most time-critical work in a tick.
+  const assistanceEscalations = await escalateAssistance(db, now);
   const circles = await prepareDoses(db, now);
   const reminders = await sendDoseReminders(db, now);
   const unconfirmedAlerts = await sendUnconfirmedAlerts(db, now);
@@ -262,5 +266,5 @@ export async function runTick(db: Db, now: Date): Promise<TickSummary> {
   const refillAlerts = await sendRefillAlerts(db, now);
   const coordination = await runCoordinationSteps(db, now);
   const emails = await deliverPendingEmails(db, now);
-  return { circles, reminders, unconfirmedAlerts, escalations, refillAlerts, coordination, emails };
+  return { circles, assistanceEscalations, reminders, unconfirmedAlerts, escalations, refillAlerts, coordination, emails };
 }
