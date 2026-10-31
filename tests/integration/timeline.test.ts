@@ -88,6 +88,13 @@ describe("unified care timeline", () => {
     expect(page2.items.map((i) => i.kind)).toEqual(["appointment", "visit", "dose"]);
   });
 
+  it("searches visit notes, but only for people who may see them", async () => {
+    const { admin, elder, family, circle, as } = await busyDay();
+    expect((await getTimeline(as(admin, ist("18:00")), circle.id, { q: "tired" })).items.map((i) => i.kind)).toEqual(["visit"]);
+    await putConsentFor(elder, circle.id, { shareMedications: true, shareAppointments: true, shareHealth: false });
+    expect((await getTimeline(as(family, ist("18:00")), circle.id, { q: "tired" })).items).toHaveLength(0);
+  });
+
   it("search input with SQL wildcards is treated literally", async () => {
     const { admin, circle, as } = await busyDay();
     expect((await getTimeline(as(admin, ist("18:00")), circle.id, { q: "%" })).items).toHaveLength(0);

@@ -157,7 +157,7 @@ export async function getTimeline(ctx: ServiceContext, circleId: string, raw: z.
           eq(visits.circleId, circleId),
           inArray(visits.status, ["in_progress", "completed"]),
           lt(at, before),
-          like ? (showDetails ? search(visits.observations, visits.handoverNote, actor.name) : search(actor.name)) : undefined,
+          like ? (showDetails ? search(visits.observations, visits.handoverNote, visits.unresolvedIssues, actor.name) : search(actor.name)) : undefined,
         ),
       )
       .orderBy(desc(at))
