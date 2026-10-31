@@ -1,0 +1,24 @@
+{
+  "app": {
+    "name": "CareNest",
+    "tagline": "Coordinate care for the people you love — together, from anywhere."
+  },
+  "common": {
+    "skipToContent": "Skip to main content",
+    "language": "Language"
+  },
+  "landing": {
+    "getStarted": "Get started",
+    "signIn": "Sign in",
+    "intro": "One shared place for medicines, appointments, caregiver visits and family tasks — so everyone knows what has been done and what still needs someone.",
+    "featureMedsTitle": "Medicines, clearly tracked",
+    "featureMedsBody": "Reminders and confirmations. An unanswered reminder is shown as unconfirmed — never assumed taken or missed.",
+    "featureFamilyTitle": "Family, coordinated",
+    "featureFamilyBody": "Every task, appointment and ride has a named person, or is clearly marked as still needing one.",
+    "featureDignityTitle": "Built around your parent",
+    "featureDignityBody": "A simple, large-text view for parents, with privacy choices that stay in their hands."
+  },
+  "safety": {
+    "notEmergencyService": "CareNest is not an emergency service. In an emergency, call your local emergency number."
+  }
+}
