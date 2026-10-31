@@ -21,6 +21,13 @@ export default async function CircleLayout({ children, params }: LayoutProps<"/a
       ? [{ href: `/app/circles/${circleId}/appointments`, label: t("circle.appointments") }]
       : []),
     ...(circle.myCapabilities.includes("task.view") ? [{ href: `/app/circles/${circleId}/tasks`, label: t("circle.tasks") }] : []),
+    ...(circle.myCapabilities.includes("update.view")
+      ? [
+          { href: `/app/circles/${circleId}/visits`, label: t("circle.visits") },
+          { href: `/app/circles/${circleId}/updates`, label: t("circle.updates") },
+          { href: `/app/circles/${circleId}/timeline`, label: t("circle.timeline") },
+        ]
+      : []),
     ...(circle.myCapabilities.includes("members.view") ? [{ href: `/app/circles/${circleId}/members`, label: t("circle.members") }] : []),
     { href: `/app/circles/${circleId}/settings`, label: t("circle.settings") },
     ...(circle.myCapabilities.includes("audit.view") ? [{ href: `/app/circles/${circleId}/activity`, label: t("circle.activity") }] : []),

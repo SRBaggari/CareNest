@@ -1,6 +1,6 @@
 # CareNest — Product & Engineering Plan
 
-> Status: living document. Last updated 2026-10-31 (M0–M5 complete).
+> Status: living document. Last updated 2026-10-31 (M0–M6 complete).
 > Target: working, demonstrable MVP (Tier 1) on **2026-12-01**.
 > Every section marks what is **implemented**, **in progress**, or **planned** — see the roadmap table at the end.
 
@@ -272,8 +272,8 @@ user is not a member of, to avoid leaking existence.
 | M3 Medications | Nov 9 – 14 | Medications, schedules (tz/DST), dose generation, confirm/skip/refuse/proxy, unconfirmed, refill counts | ✅ done (tag `m3`) |
 | M4 Notifications | Nov 14 – 18 | Worker + job queue, reminders, escalation, quiet hours, email adapter, delivery tracking | ✅ done (tag `m4`) |
 | M5 Appointments & tasks | Nov 18 – 21 | Appointments with transport/companion, tasks (recurring, overdue escalation) | ✅ done (tag `m5`) |
-| M6 Caregiver & timeline | Nov 21 – 24 | Visits check-in/out, observations, handover, care updates, unified timeline with corrections | 🚧 next |
-| M7 Emergency | Nov 24 – 27 | Contacts, info card, assistance request, alert sequence, acknowledgments, failure visibility | planned |
+| M6 Caregiver & timeline | Nov 21 – 24 | Visits check-in/out, observations, handover, care updates, unified timeline with corrections | ✅ done (tag `m6`) |
+| M7 Emergency | Nov 24 – 27 | Contacts, info card, assistance request, alert sequence, acknowledgments, failure visibility | 🚧 next |
 | M8 Dashboards & hardening | Nov 27 – Dec 1 | Elder/family/caregiver dashboards, a11y (axe), Playwright journeys A–F, hi/te/ta strings, deploy config, user docs, labeled demo seed | planned |
 
 ## 12. Known limitations (MVP)
