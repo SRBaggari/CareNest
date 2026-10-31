@@ -1,7 +1,7 @@
-import { createHash, randomBytes } from "node:crypto";
 import { and, eq, gt, ne } from "drizzle-orm";
 import type { Db } from "@/server/db";
 import { sessions, users } from "@/server/db/schema";
+import { generateToken, hashToken } from "./tokens";
 
 export const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 /** Sessions used within this long of expiry are extended (sliding expiration). */
@@ -9,13 +9,8 @@ export const SESSION_RENEW_WITHIN_MS = 15 * 24 * 60 * 60 * 1000;
 /** Avoid a DB write on every request: last_seen_at granularity. */
 const LAST_SEEN_GRANULARITY_MS = 5 * 60 * 1000;
 
-export function generateSessionToken(): string {
-  return randomBytes(32).toString("base64url");
-}
-
-export function hashSessionToken(token: string): string {
-  return createHash("sha256").update(token).digest("hex");
-}
+export const generateSessionToken = generateToken;
+export const hashSessionToken = hashToken;
 
 export type SessionUser = {
   id: string;
