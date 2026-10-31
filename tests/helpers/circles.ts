@@ -75,3 +75,29 @@ export async function membershipStatus(db: Db, circleId: string, userId: string)
     .where(and(eq(memberships.circleId, circleId), eq(memberships.userId, userId)));
   return row?.status;
 }
+
+export type Team = Awaited<ReturnType<typeof createTeam>>;
+
+/**
+ * A circle with one member of every role: admin (owner), elder (care_recipient), family,
+ * caregiver, clinician, neighbour (emergency_contact). Each person has `.memberId`.
+ */
+export async function createTeam(db: Db) {
+  const { signUp } = await import("./users");
+  const admin = await signUp({ name: "Priya" });
+  const circle = await createTestCircle(admin);
+  const make = async (name: string, role: CircleRole) => {
+    const user = await signUp({ name });
+    return { ...user, memberId: await addMember(db, circle.id, user, role) };
+  };
+  return {
+    circle,
+    admin: { ...admin, memberId: circle.myMembership.id },
+    elder: await make("Amma", "care_recipient"),
+    family: await make("Ravi", "family"),
+    caregiver: await make("Meena", "caregiver"),
+    clinician: await make("Dr Iyer", "clinician"),
+    neighbour: await make("Neighbour", "emergency_contact"),
+    as: (user: { id: string }, now: Date) => ({ db, now, userId: user.id }),
+  };
+}
