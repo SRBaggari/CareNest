@@ -43,8 +43,13 @@ export function clearSessionCookie(): string {
   return parts.join("; ");
 }
 
-/** Best-effort client IP for rate limiting. Assumes a trusted reverse proxy sets X-Forwarded-For. */
+/**
+ * Client address for rate limiting. X-Forwarded-For is client-controlled, so it is only trusted
+ * when TRUST_PROXY=true (i.e. a reverse proxy we run overwrites it). Otherwise all direct
+ * clients share one bucket — per-account limits (login) still apply individually.
+ */
 export function getClientIp(request: Request): string {
+  if (process.env.TRUST_PROXY !== "true") return "unknown";
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0].trim() || "unknown";
   return request.headers.get("x-real-ip")?.trim() || "unknown";
