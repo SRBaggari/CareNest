@@ -239,7 +239,9 @@
     "visit_planned": "planned a visit",
     "visit_started": "checked in for a visit",
     "visit_completed": "finished a visit",
-    "visit_cancelled": "cancelled a visit"
+    "visit_cancelled": "cancelled a visit",
+    "update_posted": "posted an update",
+    "update_corrected": "corrected an update"
   },
   "meds": {
     "dayTitle": "Doses for {date}",
@@ -378,7 +380,11 @@
     "visitNotCheckedInTitle": "{visitor} hasn't checked in for the {time} visit",
     "visitNotCheckedInBody": "The visit with {name} was planned for {time}. This doesn't mean they didn't come — check-ins are self-reported. Check with {visitor} or {name}.",
     "visitCheckInReminderTitle": "Please check in for your {time} visit",
-    "visitCheckInReminderBody": "Your visit with {name} was planned for {time}. Tap “I've arrived” when you're there, or let the family know if you can't come."
+    "visitCheckInReminderBody": "Your visit with {name} was planned for {time}. Tap “I've arrived” when you're there, or let the family know if you can't come.",
+    "updateImportantTitle": "Important update from {author}",
+    "updateImportantBody": "{body}",
+    "updateEmailSubject": "Important update about {name}",
+    "updateEmailBody": "{author} posted an important update in {name}'s care circle. Open CareNest: {link}"
   },
   "inbox": {
     "title": "Notifications",

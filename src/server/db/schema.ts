@@ -1,7 +1,7 @@
 // Database schema. Tables are added milestone by milestone; each change ships with a
 // generated SQL migration in `drizzle/` (npm run db:generate).
 
-import { boolean, date, index, integer, jsonb, pgEnum, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { boolean, date, index, integer, jsonb, pgEnum, pgTable, text, timestamp, unique, uuid, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { CIRCLE_ROLES, type Consent } from "@/server/auth/permissions";
 import { DOSE_STATUSES } from "@/server/domain/doses";
@@ -454,4 +454,28 @@ export const visits = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("visits_circle_start_idx").on(t.circleId, t.plannedStart)],
+);
+
+// ── Care updates (M6) ────────────────────────────────────────────────────────────────────────
+
+/**
+ * A short note shared with the circle. Never edited: a correction is a new update pointing at
+ * the original, so the record shows what was said and when.
+ */
+export const careUpdates = pgTable(
+  "care_updates",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    authorUserId: uuid("author_user_id").references(() => users.id, { onDelete: "set null" }),
+    body: text("body").notNull(),
+    /** health/mood notes follow the recipient's health-sharing choice. */
+    category: text("category", { enum: ["general", "health", "mood"] }).notNull().default("general"),
+    important: boolean("important").notNull().default(false),
+    correctsUpdateId: uuid("corrects_update_id").references((): AnyPgColumn => careUpdates.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("care_updates_circle_created_idx").on(t.circleId, t.createdAt)],
 );
