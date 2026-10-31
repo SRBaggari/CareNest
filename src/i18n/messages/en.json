@@ -24,7 +24,9 @@
     "optional": "optional",
     "copy": "Copy link",
     "copied": "Link copied.",
-    "notAllowed": "You don't have permission to see this."
+    "notAllowed": "You don't have permission to see this.",
+    "notifications": "Notifications",
+    "notificationsUnread": "Notifications ({count} unread)"
   },
   "landing": {
     "getStarted": "Get started",
@@ -181,7 +183,8 @@
     "activityTitle": "Activity log",
     "activityIntro": "A record of important changes, so {name} and the admins can see who did what.",
     "noActivity": "No activity yet.",
-    "medicines": "Medicines"
+    "medicines": "Medicines",
+    "inviteEmailed": "We've emailed them an invitation. You can also share this link yourself. It works once and expires in 7 days:"
   },
   "invite": {
     "title": "You're invited",
@@ -297,7 +300,8 @@
     "weekday_5": "Fri",
     "weekday_6": "Sat",
     "weekday_7": "Sun",
-    "notShared": "{name} has chosen not to share medicines with family."
+    "notShared": "{name} has chosen not to share medicines with family.",
+    "checking": "{names} is checking on this."
   },
   "notif": {
     "reminderSelfTitle": "Time for your {medicine}",
@@ -318,5 +322,44 @@
     "refillBody": "{count} left for {name}. Time to arrange a refill.",
     "refillEmailSubject": "A medicine for {name} is running low",
     "refillEmailBody": "One of {name}'s medicines is running low. Open CareNest to see which: {link}"
+  },
+  "inbox": {
+    "title": "Notifications",
+    "empty": "You have no notifications.",
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark as read",
+    "open": "Open",
+    "checking": "I'm checking on it",
+    "youAreChecking": "You said you're checking on this.",
+    "othersChecking": "{names} is checking on this.",
+    "priority_critical": "Urgent",
+    "priority_high": "Important",
+    "priority_normal": "",
+    "priority_low": "",
+    "email_pending": "Email: waiting to be sent (for example until your quiet hours end)",
+    "email_sending": "Email: sending",
+    "email_sent": "Email: sent",
+    "email_logged": "Email: not sent — this server has no email provider set up",
+    "email_failed": "Email: could not be delivered",
+    "unread": "Unread"
+  },
+  "prefs": {
+    "title": "Notifications",
+    "intro": "Notifications always appear in CareNest. You can also get a copy by email.",
+    "email": "Also send me notifications by email",
+    "quietTitle": "Quiet hours (optional)",
+    "quietIntro": "During quiet hours, emails wait until the quiet hours end. Urgent alerts are always sent straight away.",
+    "quietStart": "From",
+    "quietEnd": "Until",
+    "noEmailProvider": "Note: this CareNest server has no email provider set up, so emails are not actually sent yet."
+  },
+  "alerts": {
+    "title": "My alerts for this circle",
+    "intro": "Choose which medicine alerts you get for {name}. These choices only affect you.",
+    "doseReminders": "Reminders when a medicine is due",
+    "unconfirmedDoses": "Alerts when a dose hasn't been confirmed",
+    "refills": "Alerts when a medicine is running low",
+    "notShared": "You won't get medicine alerts because {name} has chosen not to share medicines with family.",
+    "escalationNote": "Admins always receive urgent follow-ups if a dose stays unconfirmed and nobody is checking."
   }
 }

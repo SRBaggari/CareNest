@@ -92,17 +92,17 @@ export const listNotificationsQuerySchema = z.object({
 
 /** Who has said "I'm checking on it" for each group, so nobody assumes someone else is handling it. */
 export async function acknowledgementsFor(db: DbOrTx, groupKeys: string[]) {
-  if (groupKeys.length === 0) return new Map<string, { name: string; at: Date }[]>();
+  if (groupKeys.length === 0) return new Map<string, { userId: string; name: string; at: Date }[]>();
   const rows = await db
-    .select({ groupKey: notifications.groupKey, name: users.name, at: notifications.acknowledgedAt })
+    .select({ groupKey: notifications.groupKey, userId: users.id, name: users.name, at: notifications.acknowledgedAt })
     .from(notifications)
     .innerJoin(users, eq(users.id, notifications.userId))
     .where(and(inArray(notifications.groupKey, groupKeys), isNotNull(notifications.acknowledgedAt)))
     .orderBy(notifications.acknowledgedAt);
-  const map = new Map<string, { name: string; at: Date }[]>();
+  const map = new Map<string, { userId: string; name: string; at: Date }[]>();
   for (const r of rows) {
     const list = map.get(r.groupKey!) ?? [];
-    list.push({ name: r.name, at: r.at! });
+    list.push({ userId: r.userId, name: r.name, at: r.at! });
     map.set(r.groupKey!, list);
   }
   return map;

@@ -7,7 +7,8 @@
     "language": "భాష",
     "signOut": "సైన్ అవుట్ చేయండి",
     "home": "హోమ్",
-    "account": "ఖాతా"
+    "account": "ఖాతా",
+    "notifications": "నోటిఫికేషన్లు"
   },
   "landing": {
     "getStarted": "ప్రారంభించండి",
@@ -36,5 +37,8 @@
     "iTookIt": "నేను వేసుకున్నాను",
     "status_taken": "వేసుకున్నారు",
     "status_unconfirmed": "నిర్ధారించబడలేదు"
+  },
+  "inbox": {
+    "checking": "నేను చూస్తున్నాను"
   }
 }
