@@ -874,5 +874,27 @@
     "deviceSince": "Since {date}",
     "remove": "Remove",
     "quietNote": "Quiet hours apply to phone alerts too, except urgent ones such as a request for help. Everyday news isn't sent to your phone; it comes in the evening summary."
+  },
+  "calendar": {
+    "name": "CareNest – {circle}",
+    "apptSummary": "{title} · {name}",
+    "visitSummary": "{visitor} visits {name}",
+    "taskSummary": "Task: {title}",
+    "openInCareNest": "Open in CareNest: {link}",
+    "title": "Add to your calendar",
+    "intro": "See {name}'s appointments and visits, and your own tasks, in Google Calendar, Apple Calendar or Outlook. The link is private to you: anyone who has it can see these events, so don't share it.",
+    "privacy": "Calendars get only titles, times, places and who is driving: never reasons for a visit, questions for the doctor or health notes.",
+    "create": "Create my calendar link",
+    "linkReady": "Your calendar link. For your safety it is shown only now, so copy it or open it in your calendar app:",
+    "openApp": "Open in my calendar app",
+    "copy": "Copy link",
+    "copied": "Copied.",
+    "howTo": "Google Calendar: Other calendars → + → From URL, and paste the link. iPhone: Settings → Calendar → Accounts → Add Account → Other → Add Subscribed Calendar. Outlook: Add calendar → Subscribe from web.",
+    "active": "You have a calendar link, made on {date}.",
+    "lastFetched": "Your calendar app last updated it: {date}",
+    "neverFetched": "No calendar app has used it yet.",
+    "reset": "Make a new link (the old one stops working)",
+    "turnOff": "Stop the calendar link",
+    "turnOffConfirm": "Your calendar app will stop showing these events. Continue?"
   }
 }

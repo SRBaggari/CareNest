@@ -8,6 +8,9 @@ import { orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { getMyAlertSettings } from "@/server/services/notifications";
 import { AlertSettingsForm } from "./alert-settings-form";
+import { CalendarFeedControls } from "./calendar-feed-controls";
+import { getCalendarFeed } from "@/server/services/calendar";
+import { formatDateTime } from "@/lib/format";
 import { PrivacyForm, ProfileEditForm } from "./settings-forms";
 
 export const metadata: Metadata = { title: "Settings & privacy" };
@@ -16,7 +19,7 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
   const { circleId } = await params;
   const { ctx } = await pageContext(`/app/circles/${circleId}/settings`);
   const circle = await orNotFound(getCircle(ctx, circleId));
-  const alerts = await getMyAlertSettings(ctx, circleId);
+  const [alerts, calendar] = await Promise.all([getMyAlertSettings(ctx, circleId), getCalendarFeed(ctx, circleId)]);
   const { locale, t } = await getRequestTranslator();
   const p = circle.profile;
   const name = p.preferredName ?? p.displayName;
@@ -90,6 +93,31 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
         )}
         {/* Family and admins lose medicine alerts when the parent keeps medicines private; say why. */}
         {!alerts.canReceiveMedicationAlerts && (role === "admin" || role === "family") && <p className="mt-2">{t("alerts.notShared", { name })}</p>}
+      </section>
+
+      <section aria-labelledby="calendar-heading" className="card">
+        <h2 id="calendar-heading" className="text-2xl font-semibold">
+          {t("calendar.title")}
+        </h2>
+        <p className="mt-2 text-muted">{t("calendar.intro", { name })}</p>
+        <p className="mt-2 text-muted">{t("calendar.privacy")}</p>
+        {calendar.active && (
+          <p className="mt-2 font-medium">
+            {t("calendar.active", { date: formatDateTime(calendar.createdAt, locale, p.timeZone) })}{" "}
+            {calendar.lastFetchedAt ? t("calendar.lastFetched", { date: formatDateTime(calendar.lastFetchedAt, locale, p.timeZone) }) : t("calendar.neverFetched")}
+          </p>
+        )}
+        <CalendarFeedControls
+          url={`/api/v1/circles/${circleId}/calendar-feed`}
+          active={calendar.active}
+          labels={{
+            network: t("common.errorNetwork"),
+            generic: t("common.errorGeneric"),
+            ...(Object.fromEntries(
+              (["create", "linkReady", "openApp", "copy", "copied", "howTo", "active", "lastFetched", "reset", "turnOff", "turnOffConfirm"] as const).map((k) => [k, t(`calendar.${k}`)]),
+            ) as Record<string, string>),
+          } as Parameters<typeof CalendarFeedControls>[0]["labels"]}
+        />
       </section>
 
       <section aria-labelledby="privacy-heading" className="card">
