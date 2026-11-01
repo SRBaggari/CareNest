@@ -75,7 +75,8 @@ export type MedicineSummary = {
   doses: DoseTally;
 };
 
-async function medicinesIn(ctx: ServiceContext, circleId: string, period: ReportPeriod, start: Date, end: Date): Promise<MedicineSummary[]> {
+/** Callers check `medication.view` first (the report and the assistant do). */
+export async function medicinesIn(ctx: ServiceContext, circleId: string, period: ReportPeriod, start: Date, end: Date): Promise<MedicineSummary[]> {
   const [meds, doses] = await Promise.all([
     ctx.db
       .select()

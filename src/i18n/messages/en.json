@@ -28,7 +28,8 @@
     "notifications": "Notifications",
     "notificationsUnread": "Notifications ({count} unread)",
     "notificationsShort": "Alerts",
-    "done": "Done."
+    "done": "Done.",
+    "unreadCount": "({count} unread)"
   },
   "landing": {
     "getStarted": "Get started",
@@ -219,7 +220,8 @@
     "documents": "Documents",
     "messages": "Messages",
     "reports": "Reports",
-    "expenses": "Expenses"
+    "expenses": "Expenses",
+    "assistant": "Ask"
   },
   "invite": {
     "title": "You're invited",
@@ -294,7 +296,8 @@
     "expense_added": "added an expense",
     "expense_removed": "removed an expense",
     "expense_settlement_recorded": "recorded a payment between family members",
-    "expense_settlement_removed": "removed a recorded payment"
+    "expense_settlement_removed": "removed a recorded payment",
+    "assistant_asked": "asked the AI assistant a question"
   },
   "meds": {
     "dayTitle": "Doses for {date}",
@@ -1180,5 +1183,20 @@
     "remove": "Stop text messages",
     "removeConfirm": "Stop text messages and forget this number?",
     "change": "Use a different number"
+  },
+  "assistant": {
+    "title": "Ask CareNest",
+    "intro": "Ask a question about {name}'s care. Answers come only from what's recorded here, with links to the records. Not medical advice.",
+    "question": "Your question",
+    "questionHint": "For example “When did she last see the doctor?” or “Who visited this week?”",
+    "ask": "Ask",
+    "from": "From these records:",
+    "medical": "CareNest can't answer medical questions. Please ask a doctor or pharmacist. In an emergency, call {number}.",
+    "declined": "Sorry, CareNest can't answer that question.",
+    "disclaimer": "AI answers can be wrong. Check the linked records before acting on them.",
+    "notSetUp": "Ask CareNest isn't set up on this server.",
+    "notOn": "Ask CareNest is off for this circle. It can be turned on under Settings & privacy, by whoever manages {name}'s sharing choices.",
+    "privacyNote": "When you ask, the records you can see here are sent to Anthropic's Claude AI to work out the answer. CareNest doesn't keep your question or the answer; it only notes that a question was asked.",
+    "consentLabel": "Let the AI assistant answer the family's questions from these records (each person's visible records are sent to Anthropic's Claude to answer)"
   }
 }

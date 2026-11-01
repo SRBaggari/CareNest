@@ -37,9 +37,14 @@ export type Consent = {
   shareMedications: boolean;
   shareAppointments: boolean;
   shareHealth: boolean;
+  /**
+   * Whether the AI assistant may answer questions from this circle's records (which means sending
+   * the records the asker may see to the AI provider). Off unless chosen; missing means off.
+   */
+  allowAssistant?: boolean;
 };
 
-export const DEFAULT_CONSENT: Consent = { shareMedications: true, shareAppointments: true, shareHealth: true };
+export const DEFAULT_CONSENT: Consent = { shareMedications: true, shareAppointments: true, shareHealth: true, allowAssistant: false };
 
 export type MemberContext = { role: CircleRole; isLegalRepresentative: boolean };
 export type ProfileContext = { selfManaging: boolean; consent: Consent };
@@ -48,7 +53,7 @@ type Rule = boolean | ((m: MemberContext, p: ProfileContext) => boolean);
 
 const familyOrAdmin = (m: MemberContext) => m.role === "family" || m.role === "admin";
 /** ◐ in the matrix: family and admins see this category only while the recipient shares it. */
-const shared = (key: keyof Consent) => (m: MemberContext, p: ProfileContext) => !familyOrAdmin(m) || p.consent[key];
+const shared = (key: "shareMedications" | "shareAppointments" | "shareHealth") => (m: MemberContext, p: ProfileContext) => !familyOrAdmin(m) || p.consent[key];
 const recipientIfSelfManaging = (m: MemberContext, p: ProfileContext) => m.role === "care_recipient" && p.selfManaging;
 
 type Matrix = Record<Capability, Partial<Record<CircleRole, Rule>>>;

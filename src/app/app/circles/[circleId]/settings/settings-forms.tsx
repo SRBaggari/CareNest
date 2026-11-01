@@ -73,11 +73,11 @@ export function ProfileEditForm(props: {
   );
 }
 
-const CONSENT_KEYS = ["shareMedications", "shareAppointments", "shareHealth"] as const;
+const CONSENT_KEYS = ["shareMedications", "shareAppointments", "shareHealth", "allowAssistant"] as const;
 
 export function PrivacyForm(props: {
   url: string;
-  consent: Record<(typeof CONSENT_KEYS)[number], boolean>;
+  consent: Partial<Record<(typeof CONSENT_KEYS)[number], boolean>>;
   editable: boolean;
   labels: Messages & Record<string, string>;
 }) {
