@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNotNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, isNotNull, lt, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { z } from "zod";
 import { careProfiles, memberships, users, visits } from "@/server/db/schema";
@@ -102,9 +102,11 @@ export async function listVisits(ctx: ServiceContext, circleId: string, range: "
     .where(
       and(
         eq(visits.circleId, circleId),
+        // Built with or()/and() so each alternative is bracketed: a raw `x or y` here would be read as
+        // `(circle and x) or y` and return other families' visits.
         range === "upcoming"
-          ? sql`(${visits.status} in ('planned', 'in_progress') and ${visits.plannedStart} >= ${pivot.toISOString()}::timestamptz) or ${visits.status} = 'in_progress'`
-          : sql`${visits.status} in ('completed', 'cancelled') or (${visits.status} = 'planned' and ${visits.plannedStart} < ${pivot.toISOString()}::timestamptz)`,
+          ? or(and(inArray(visits.status, ["planned", "in_progress"]), gte(visits.plannedStart, pivot)), eq(visits.status, "in_progress"))
+          : or(inArray(visits.status, ["completed", "cancelled"]), and(eq(visits.status, "planned"), lt(visits.plannedStart, pivot))),
       ),
     )
     .orderBy(range === "upcoming" ? asc(visits.plannedStart) : desc(visits.plannedStart))

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { POST as checkInRoute } from "@/app/api/v1/circles/[circleId]/visits/[visitId]/check-in/route";
 import { GET as listRoute } from "@/app/api/v1/circles/[circleId]/visits/route";
 import { notifications } from "@/server/db/schema";
+import { getCircleToday } from "@/server/services/today";
 import { cancelVisit, checkIn, checkOut, createVisit, latestHandover, listVisits } from "@/server/services/visits";
 import { createTeam, createTestCircle } from "../helpers/circles";
 import { putConsentFor } from "../helpers/consent";
@@ -149,3 +150,31 @@ describe("worker: visits nobody checked in for", () => {
     expect(await inbox(family, "visit_not_checked_in")).toHaveLength(0);
   });
 });
+
+describe("visits stay within their own circle", () => {
+  it("another family's visits, in progress or finished, never appear in a circle's lists or dashboard", async () => {
+    const mine = await createTeam(db());
+    const theirs = await createTeam(db());
+    // In the other family: one visit in progress, one finished with private notes, one cancelled.
+    const live = await createVisit(theirs.as(theirs.caregiver, at(-1)), theirs.circle.id, { plannedStart: T0.toISOString(), purpose: "Their morning care" });
+    await checkIn(theirs.as(theirs.caregiver, at(0)), theirs.circle.id, live.id);
+    const done = await createVisit(theirs.as(theirs.caregiver, at(-3)), theirs.circle.id, { plannedStart: at(-2).toISOString(), purpose: "Their early visit" });
+    await checkIn(theirs.as(theirs.caregiver, at(-2)), theirs.circle.id, done.id);
+    await checkOut(theirs.as(theirs.caregiver, at(-1)), theirs.circle.id, done.id, { observations: "Their private observations", handoverNote: "Their handover" });
+    const dropped = await createVisit(theirs.as(theirs.family, at(-3)), theirs.circle.id, { visitorMemberId: theirs.caregiver.memberId, plannedStart: at(5).toISOString() });
+    await cancelVisit(theirs.as(theirs.family, at(-2)), theirs.circle.id, dropped.id, { reason: "Their reason" });
+
+    const viewer = mine.as(mine.admin, at(0.5));
+    expect(await listVisits(viewer, mine.circle.id, "upcoming")).toEqual([]);
+    expect(await listVisits(viewer, mine.circle.id, "recent")).toEqual([]);
+    expect(await latestHandover(viewer, mine.circle.id)).toBeNull();
+    expect((await getCircleToday(viewer, mine.circle.id)).visits?.today).toEqual([]);
+    const res = await listRoute(apiRequest("GET", `/api/v1/circles/${mine.circle.id}/visits?range=recent`, { cookie: mine.admin.cookie }), params({ circleId: mine.circle.id }));
+    expect(JSON.stringify(await res.json())).not.toMatch(/Their/);
+
+    // And the other family still sees its own.
+    expect(await listVisits(theirs.as(theirs.admin, at(0.5)), theirs.circle.id, "upcoming")).toHaveLength(1);
+    expect(await listVisits(theirs.as(theirs.admin, at(0.5)), theirs.circle.id, "recent")).toHaveLength(2);
+  });
+});
+
