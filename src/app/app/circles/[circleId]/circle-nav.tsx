@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, ClipboardList, DoorOpen, History, LayoutDashboard, ListChecks, MessageSquareText, Pill, Settings, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, DoorOpen, HeartPulse, History, LayoutDashboard, ListChecks, MessageSquareText, Pill, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -9,6 +9,7 @@ import { useEffect, useRef } from "react";
 const icons = {
   overview: LayoutDashboard,
   medicines: Pill,
+  health: HeartPulse,
   appointments: CalendarDays,
   tasks: ListChecks,
   visits: DoorOpen,

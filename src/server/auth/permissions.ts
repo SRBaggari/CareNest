@@ -22,6 +22,7 @@ export const CAPABILITIES = [
   "update.view",
   "update.post",
   "health.view",
+  "measurement.record",
   "emergency.view",
   "emergency.raise",
   "audit.view",
@@ -91,6 +92,14 @@ const MATRIX: Matrix = {
   "update.view": { care_recipient: true, admin: true, family: true, caregiver: true, clinician: true },
   "update.post": { care_recipient: true, admin: true, family: true, caregiver: true, clinician: true },
   "health.view": {
+    care_recipient: true,
+    admin: shared("shareHealth"),
+    family: shared("shareHealth"),
+    caregiver: true,
+    clinician: true,
+  },
+  /** Readings such as blood pressure are health details: family and admins record them only while shared. */
+  "measurement.record": {
     care_recipient: true,
     admin: shared("shareHealth"),
     family: shared("shareHealth"),

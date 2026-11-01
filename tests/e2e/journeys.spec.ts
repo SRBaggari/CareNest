@@ -84,6 +84,28 @@ test("Scenario C: a caregiver checks in and out on their phone; the family sees 
   await expect(family.getByText("Meena finished a visit with Amma")).toBeVisible();
 });
 
+test("a caregiver records blood pressure; the family sees the latest reading and a chart @phone", async ({ browser }) => {
+  const owner = await new Actor("Priya").register();
+  const caregiver = await new Actor("Meena").register("Asia/Kolkata");
+  const circleId = await circleWith(owner, [[caregiver, "caregiver"]]);
+  await caregiver.post(`/api/v1/circles/${circleId}/measurements`, { kind: "blood_pressure", unit: "mmHg", value: 140, value2: 90, measuredAt: new Date(Date.now() - 2 * 86_400_000).toISOString() });
+
+  const phone = await pageAs(browser, caregiver);
+  await phone.goto(`/app/circles/${circleId}/health`);
+  await phone.getByLabel("Upper number (systolic)").fill("128");
+  await phone.getByLabel("Lower number (diastolic)").fill("82");
+  await phone.getByRole("button", { name: "Save reading" }).click();
+  await expect(phone.getByText("Reading saved.")).toBeVisible();
+
+  const family = await pageAs(browser, owner);
+  await family.goto(`/app/circles/${circleId}/health`);
+  const card = family.getByRole("region", { name: "Blood pressure" });
+  await expect(card.getByText("128/82 mmHg").first()).toBeVisible();
+  await expect(card.getByRole("img", { name: "Blood pressure over the last 90 days" })).toBeVisible();
+  // CareNest never labels a reading; it says to contact a doctor if worried.
+  await expect(family.getByText(/doesn't judge readings/)).toBeVisible();
+});
+
 test("Scenario D: a missing driver shows on the dashboard until someone offers", async ({ browser }) => {
   const owner = await new Actor("Priya").register();
   const circleId = await circleWith(owner);

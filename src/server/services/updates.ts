@@ -15,6 +15,8 @@ export const postUpdateSchema = z.object({
   important: z.boolean().default(false),
   /** Set when this update corrects one of the author's earlier updates. */
   correctsUpdateId: z.string().nullable().optional(),
+  /** The parent's answer to "How are you today?" (only they can give one). */
+  checkin: z.enum(["fine", "unwell", "need"]).nullable().optional(),
 });
 
 export const listUpdatesQuerySchema = z.object({
@@ -62,6 +64,9 @@ export async function postUpdate(ctx: ServiceContext, circleId: string, raw: z.i
   if (input.category !== "general" && !access.can("health.view")) {
     throw new AppError("forbidden", "Health and mood notes are only shared with people who can see health details.");
   }
+  if (input.checkin && access.membership.role !== "care_recipient") {
+    throw new AppError("forbidden", "Only the person receiving care answers \"How are you today?\".");
+  }
 
   const update = await ctx.db.transaction(async (tx) => {
     if (input.correctsUpdateId) {
@@ -82,6 +87,7 @@ export async function postUpdate(ctx: ServiceContext, circleId: string, raw: z.i
         category: input.category,
         important: input.important,
         correctsUpdateId: input.correctsUpdateId ?? null,
+        checkin: input.checkin ?? null,
         createdAt: ctx.now,
       })
       .returning();

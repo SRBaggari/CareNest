@@ -125,6 +125,7 @@ export function CheckIn(props: {
       body: more.trim() ? `${text} ${more.trim()}` : text,
       category: f === "unwell" ? "health" : "general",
       important: f !== "fine",
+      checkin: f,
     });
     if (ok) {
       setSent(f === "fine" ? l.sentOk : l.sentUnwell.replace("{number}", props.emergencyNumber));
