@@ -10,6 +10,11 @@ describe("proxy", () => {
     expect(res.headers.get("location")).toBe("http://localhost/login?next=%2Fapp%2Faccount%3Ftab%3Ddevices");
   });
 
+  it("also protects the parent's Simple view", () => {
+    const res = proxy(new NextRequest("http://localhost/simple/abc"));
+    expect(res.headers.get("location")).toBe("http://localhost/login?next=%2Fsimple%2Fabc");
+  });
+
   it("lets requests with a session cookie through to full validation", () => {
     const req = new NextRequest("http://localhost/app", { headers: { cookie: `${SESSION_COOKIE}=abc` } });
     expect(proxy(req).headers.get("x-middleware-next")).toBe("1");

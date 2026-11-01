@@ -54,6 +54,15 @@ export default async function CircleLayout({ children, params }: LayoutProps<"/a
         <p className="text-lg text-muted">
           {name} · {t("home.localTime", { time: formatLocalTime(ctx.now, locale, circle.profile.timeZone) })}
         </p>
+        {/* The person receiving care can go back to their Simple view at any time. */}
+        {circle.myMembership.role === "care_recipient" && (
+          <Link
+            href={`/view?mode=simple&next=${encodeURIComponent(`/simple/${circleId}`)}`}
+            className="inline-flex min-h-12 items-center self-start rounded-lg border-2 border-primary px-4 text-lg font-semibold text-primary"
+          >
+            {t("simple.simpleView")}
+          </Link>
+        )}
         {circle.status === "archived" && <p className="font-semibold text-warning">{t("circle.isArchived")}</p>}
       </div>
       <CircleNav tabs={tabs} label={circle.name} />

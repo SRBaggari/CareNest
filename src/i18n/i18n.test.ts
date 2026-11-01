@@ -73,3 +73,25 @@ describe("audit action labels", () => {
     }
   });
 });
+
+describe("Simple view translations", () => {
+  it("are complete in every language, because the parent's own screen must not fall back to English", () => {
+    const english = flattenKeys(catalogs.en).filter((k) => k.startsWith("simple."));
+    expect(english.length).toBeGreaterThan(30);
+    for (const locale of LOCALES) {
+      const have = new Set(flattenKeys(catalogs[locale]));
+      expect([locale, english.filter((k) => !have.has(k))]).toEqual([locale, []]);
+    }
+  });
+
+  it("keep every {placeholder} so names and times are filled in", () => {
+    const en = getTranslator("en");
+    for (const locale of LOCALES) {
+      const t = getTranslator(locale);
+      for (const key of flattenKeys(catalogs.en).filter((k) => k.startsWith("simple."))) {
+        const wanted = (en(key).match(/\{\w+\}/g) ?? []).sort();
+        expect([locale, key, (t(key).match(/\{\w+\}/g) ?? []).sort()]).toEqual([locale, key, wanted]);
+      }
+    }
+  });
+});

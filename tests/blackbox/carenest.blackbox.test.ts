@@ -203,6 +203,28 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
       expect(ack.json.request).toMatchObject({ status: "acknowledged", acknowledgedBy: "Ravi" });
     });
 
+    it("the parent lands on their Simple view; family stay in the full app; the switch is remembered", async () => {
+      const owner = await new Actor("Priya").register();
+      const elder = await new Actor("Amma").register("Asia/Kolkata");
+      const circleId = await circleWith(owner, [[elder, "care_recipient"]]);
+      // Next streams in-page redirects as "NEXT_REDIRECT;<type>;<path>;<status>".
+      const redirectIn = (html: string) => html.match(/NEXT_REDIRECT;[a-z]+;(\/[\w\-/]+)/)?.[1];
+
+      expect(redirectIn((await elder.get("/app")).text)).toBe(`/simple/${circleId}`);
+      const simple = await elder.get(`/simple/${circleId}`);
+      expect(simple.status).toBe(200);
+      expect(simple.text).toContain(`tel:112`);
+      expect(simple.text).not.toContain("Activity log");
+
+      expect(redirectIn((await owner.get("/app")).text)).toBeUndefined();
+      expect(redirectIn((await owner.get(`/simple/${circleId}`)).text)).toBe(`/app/circles/${circleId}`);
+
+      const toFull = await elder.get(`/view?mode=full&next=${encodeURIComponent(`/app/circles/${circleId}`)}`);
+      expect(toFull.status).toBe(303);
+      elder.cookie = `${elder.cookie}; cn_view=full`;
+      expect(redirectIn((await elder.get("/app")).text)).toBeUndefined();
+    });
+
     it("injection-shaped input is stored and returned as plain text", async () => {
       const owner = await new Actor().register();
       const circleId = await circleWith(owner);
