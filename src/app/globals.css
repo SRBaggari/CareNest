@@ -83,6 +83,14 @@ body {
   overflow-wrap: break-word;
 }
 
+/* Controls lay their text out as one flexible item that can't shrink below its longest word; let a
+   word too long for a phone (Tamil "எச்சரிக்கைகள்") break rather than widen the page. */
+label,
+button,
+legend {
+  overflow-wrap: anywhere;
+}
+
 h1,
 h2,
 h3 {

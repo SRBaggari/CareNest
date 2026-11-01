@@ -133,6 +133,25 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
       expect((await stranger.post(`/api/v1/circles/${own}/tasks/${task.id}/claim`, { action: "claim" })).status).toBe(404);
     });
 
+    it("a stranger opening another family's circle page sees exactly what a missing circle shows", async () => {
+      const owner = await new Actor("Priya").register();
+      const circleId = await circleWith(owner);
+      const stranger = await new Actor("Eve").register();
+      // Pages stream, so the status is 200 (the JSON API above returns a real 404); what matters is
+      // that nothing leaks, search engines are told not to index it, and it can't reveal that the
+      // circle exists.
+      for (const path of ["", "/medicines", "/settings"]) {
+        const page = await stranger.get(`/app/circles/${circleId}${path}`);
+        expect(page.text).toMatch(/<meta name="robots" content="noindex"/);
+        expect(page.text).not.toContain("Lakshmi");
+        expect(page.text).not.toContain("Amma's care");
+      }
+      const missing = await stranger.get("/app/circles/00000000-0000-4000-8000-000000000000");
+      const real = await stranger.get(`/app/circles/${circleId}`);
+      expect(real.status).toBe(missing.status);
+      expect(missing.text).toMatch(/<meta name="robots" content="noindex"/);
+    });
+
     it("a user with two parents sees each circle separately (Scenario F)", async () => {
       const child = await new Actor().register();
       const mum = await circleWith(child);

@@ -17,7 +17,8 @@ export type ButtonVariant = keyof typeof variants;
 
 /** Shared by <Button> and links styled as buttons, so both look and size the same. */
 export function buttonClass(variant: ButtonVariant = "primary", size: keyof typeof sizes = "md") {
-  return `inline-flex items-center justify-center font-semibold transition disabled:opacity-60 ${sizes[size]} ${variants[variant]}`;
+  // max-w-full + overflow-wrap: a single long word (Tamil "எடுத்துக்கொள்ளப்பட்டது") wraps instead of overflowing a phone.
+  return `inline-flex max-w-full items-center justify-center text-center font-semibold transition [overflow-wrap:anywhere] disabled:opacity-60 ${sizes[size]} ${variants[variant]}`;
 }
 
 /** 48px minimum touch target; shows a busy state without changing the label's meaning. */

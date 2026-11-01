@@ -284,8 +284,10 @@ user is not a member of, to avoid leaking existence.
 - No push/SMS channels until Tier 2, so time-critical alerts rely on in-app + email.
 - Check-in records are self-reported; they do not verify physical presence.
 - Clinician role is an access level only; professional credentials are **not** verified.
-- A signed-in non-member opening a circle URL sees the not-found page, but with HTTP 200 (the page
-  streams); the JSON API returns a real 404.
+- A signed-in non-member opening a circle page sees the not-found page with HTTP 200, by design: pages
+  stream so that taps show something at once, and a status can't change once streaming starts. Nothing
+  leaks, the page is marked `noindex`, and it is identical to a circle that doesn't exist (black-box
+  tested). The JSON API returns a real 404.
 - Hindi, Telugu and Tamil are complete but were machine-assisted; they need review by native speakers before
   launch, especially the emergency, medicine and "not an emergency service" wording.
 - Email delivery uses SMTP (`SMTP_URL`). It is tested against a fake transport only; it has **not** been

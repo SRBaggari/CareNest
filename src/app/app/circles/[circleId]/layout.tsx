@@ -1,14 +1,55 @@
 import { ChevronLeft, Clock, LifeBuoy, Smartphone } from "lucide-react";
 import Link from "next/link";
+import { Suspense, type ReactNode } from "react";
 import { buttonClass } from "@/components/ui/button";
 import { Avatar, Badge } from "@/components/ui/section";
+import { Bar, PageSkeleton } from "@/components/ui/skeleton";
 import { getRequestTranslator } from "@/i18n/server";
 import { formatLocalTime } from "@/lib/format";
 import { orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { CircleNav, type CircleTab } from "./circle-nav";
 
-export default async function CircleLayout({ children, params }: LayoutProps<"/app/circles/[circleId]">) {
+/**
+ * The frame renders at once; the header (which needs the circle) and the page each stream in
+ * behind their own placeholder, so tapping a circle or a tab shows something immediately.
+ */
+export default function CircleLayout({ children, params }: LayoutProps<"/app/circles/[circleId]">) {
+  return (
+    <div className="flex flex-col gap-5">
+      <Suspense fallback={<HeaderSkeleton />}>
+        <CircleHeader params={params} />
+      </Suspense>
+      <Suspense fallback={<PageSkeleton />}>
+        <InLanguage>{children}</InLanguage>
+      </Suspense>
+    </div>
+  );
+}
+
+/** Marks the page content with the reader's language, for screen readers and correct fonts. */
+async function InLanguage({ children }: { children: ReactNode }) {
+  const { locale } = await getRequestTranslator();
+  return <div lang={locale}>{children}</div>;
+}
+
+function HeaderSkeleton() {
+  return (
+    <div aria-busy="true" className="flex flex-col gap-3">
+      <Bar className="my-4 h-4 w-28" />
+      <div className="flex items-center gap-4">
+        <span aria-hidden="true" className="size-12 animate-pulse rounded-full bg-sunken sm:size-16" />
+        <div className="flex flex-col gap-2">
+          <Bar className="h-7 w-52" />
+          <Bar className="h-4 w-64" />
+        </div>
+      </div>
+      <Bar className="mt-2 h-12 w-full rounded-full" />
+    </div>
+  );
+}
+
+async function CircleHeader({ params }: { params: LayoutProps<"/app/circles/[circleId]">["params"] }) {
   const { circleId } = await params;
   const { ctx } = await pageContext(`/app/circles/${circleId}`);
   const circle = await orNotFound(getCircle(ctx, circleId));
@@ -78,7 +119,6 @@ export default async function CircleLayout({ children, params }: LayoutProps<"/a
         )}
       </div>
       <CircleNav tabs={tabs} label={circle.name} />
-      <div>{children}</div>
     </div>
   );
 }
