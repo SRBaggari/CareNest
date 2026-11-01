@@ -145,7 +145,7 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
       const day = soon.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
       expect((await zed.post(z("/medications"), { name: "Zebramycin", dosage: "1 tablet", times: [slot], startDate: day })).status).toBe(201);
       expect((await zed.post(z("/appointments"), { title: "Zebra clinic", startsAt: new Date(Date.now() + 26 * 3_600_000).toISOString() })).status).toBe(201);
-      const task = (await zed.post(z("/tasks"), { title: "Zebra task", dueAt: new Date(Date.now() + 30 * 3_600_000).toISOString() })).json.task;
+      await zed.post(z("/tasks"), { title: "Zebra task", dueAt: new Date(Date.now() + 30 * 3_600_000).toISOString() });
       const doneTask = (await zed.post(z("/tasks"), { title: "Zebra finished task" })).json.task;
       await zed.post(z(`/tasks/${doneTask.id}/complete`), { note: "Zebra done note" });
       await zelda.post(z("/updates"), { body: "Zebra everyday update" });
