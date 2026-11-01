@@ -30,7 +30,7 @@ export function ProfileEditForm(props: {
 }) {
   const { labels: l, circle: c } = props;
   const router = useRouter();
-  const { pending, error, fieldErrors, submit } = useApiSubmit(l);
+  const { pending, error, fieldErrors, submit } = useApiSubmit(l, { confirm: false });
   const [saved, setSaved] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -83,7 +83,7 @@ export function PrivacyForm(props: {
 }) {
   const { labels: l } = props;
   const router = useRouter();
-  const { pending, error, submit } = useApiSubmit(l);
+  const { pending, error, submit } = useApiSubmit(l, { confirm: false });
   const [saved, setSaved] = useState(false);
 
   if (!props.editable) {

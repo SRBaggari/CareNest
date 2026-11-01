@@ -1,3 +1,4 @@
+import { MessageSquareText } from "lucide-react";
 import type { Metadata } from "next";
 import { SimpleForm } from "@/components/simple-form";
 import { Alert } from "@/components/ui/alert";
@@ -7,6 +8,7 @@ import { orForbidden, orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { listUpdates } from "@/server/services/updates";
 import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = { title: "Updates" };
 
@@ -46,7 +48,7 @@ export default async function UpdatesPage({ params }: PageProps<"/app/circles/[c
         </section>
       )}
 
-      {updates.length === 0 && <p className="text-muted">{t("updates.none")}</p>}
+      {updates.length === 0 && <EmptyState icon={MessageSquareText}>{t("updates.none")}</EmptyState>}
       <ol className="flex flex-col gap-3">
         {updates.map((u) => (
           <li key={u.id} className={`flex flex-col gap-2 rounded-xl bg-surface p-5 ${u.important ? "border-l-8 border-warning" : "border border-border"}`}>

@@ -3,6 +3,7 @@ import { Bell, House, UserRound } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Logo } from "@/components/ui/logo";
+import { Toaster } from "@/components/ui/toaster";
 import { getRequestTranslator } from "@/i18n/server";
 import { requireSession } from "@/server/auth/current-user";
 import { getDb } from "@/server/db";
@@ -24,8 +25,16 @@ export default function AppLayout({ children }: LayoutProps<"/app">) {
       <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:py-8">
         <Suspense fallback={<p aria-busy="true">…</p>}>{children}</Suspense>
       </main>
+      <Suspense>
+        <DoneToaster />
+      </Suspense>
     </div>
   );
+}
+
+async function DoneToaster() {
+  const { t } = await getRequestTranslator();
+  return <Toaster label={t("common.done")} />;
 }
 
 async function AppHeader() {

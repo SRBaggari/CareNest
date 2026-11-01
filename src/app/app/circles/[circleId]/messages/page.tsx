@@ -9,6 +9,8 @@ import { orForbidden, orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { listThreads, messageRecipients } from "@/server/services/messages";
 import { StartThreadForm } from "./message-forms";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Messages" };
 
@@ -27,16 +29,10 @@ export default async function MessagesPage({ params }: PageProps<"/app/circles/[
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-2xl font-bold">{t("messages.title")}</h2>
-        <p className="text-muted">{t("messages.intro", { name })}</p>
-      </div>
+      <PageHeader title={t("messages.title")} description={t("messages.intro", { name })} />
 
       {threads.length === 0 ? (
-        <div className="card flex items-center gap-3">
-          <IconTile icon={MessagesSquare} tone="neutral" />
-          <p className="text-muted">{t("messages.none")}</p>
-        </div>
+        <EmptyState icon={MessagesSquare}>{t("messages.none")}</EmptyState>
       ) : (
         <ul className="flex flex-col gap-3">
           {threads.map((th) => {

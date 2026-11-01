@@ -1,4 +1,4 @@
-import { Phone } from "lucide-react";
+import { LifeBuoy, Phone } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionButton } from "@/components/action-button";
@@ -11,6 +11,7 @@ import { getCircle } from "@/server/services/circles";
 import { getEmergencyInfo, INFO_FIELDS, listEmergencyContacts } from "@/server/services/emergency";
 import { listMembers } from "@/server/services/members";
 import { HelpButton } from "./help-button";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = { title: "Emergency" };
 
@@ -180,7 +181,7 @@ export default async function EmergencyPage({ params }: PageProps<"/app/circles/
         <h2 id="recent-heading" className="text-2xl font-semibold">
           {t("emergency.recentTitle")}
         </h2>
-        {requests.length === 0 && <p className="text-muted">{t("emergency.noRequests")}</p>}
+        {requests.length === 0 && <EmptyState icon={LifeBuoy}>{t("emergency.noRequests")}</EmptyState>}
         <ul className="flex flex-col gap-2">
           {requests.map((r) => (
             <li key={r.id}>

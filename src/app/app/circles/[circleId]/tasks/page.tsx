@@ -1,3 +1,4 @@
+import { ListChecks } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionButton } from "@/components/action-button";
@@ -12,6 +13,7 @@ import { listMembers } from "@/server/services/members";
 import { listTasks } from "@/server/services/tasks";
 import { CompleteTaskForm, TaskForm } from "./task-forms";
 import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = { title: "Tasks" };
 
@@ -82,7 +84,7 @@ export default async function TasksPage({ params, searchParams }: PageProps<"/ap
 
       {canManage && view !== "done" && <TaskForm method="POST" url={base} timeZone={zone} openLabel={t("tasks.add")} labels={formLabels} options={options} />}
 
-      {list.length === 0 && <p className="text-muted">{t("tasks.none")}</p>}
+      {list.length === 0 && <EmptyState icon={ListChecks}>{t("tasks.none")}</EmptyState>}
       <ol className="flex flex-col gap-3">
         {list.map((task) => {
           const overdue = task.status === "open" && task.dueAt && task.dueAt.getTime() < ctx.now.getTime();

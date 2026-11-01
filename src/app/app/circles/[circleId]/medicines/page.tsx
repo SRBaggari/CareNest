@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pill } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionButton } from "@/components/action-button";
@@ -15,6 +15,7 @@ import { listMedications } from "@/server/services/medications";
 import { acknowledgementsFor } from "@/server/services/notifications";
 import { AsNeededForm, DoseActions, MedicationForm, RestockForm } from "./medicine-forms";
 import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = { title: "Medicines" };
 
@@ -103,7 +104,7 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
         </div>
 
         {day.doses.length === 0 ? (
-          <p className="text-muted">{t("meds.noDoses")}</p>
+          <EmptyState icon={Pill}>{t("meds.noDoses")}</EmptyState>
         ) : (
           <ol className="flex flex-col gap-3">
             {day.doses.map((dose) => {
@@ -195,7 +196,7 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
         <h2 id="list-heading" className="text-2xl font-semibold">
           {t("meds.listTitle")}
         </h2>
-        {activeMeds.length === 0 && <p className="text-muted">{t("meds.noMedicines")}</p>}
+        {activeMeds.length === 0 && <EmptyState icon={Pill}>{t("meds.noMedicines")}</EmptyState>}
         <ul className="flex flex-col gap-3">
           {activeMeds.map((m) => {
             const left = daysOfSupply(m.supplyCount, (m.daysOfWeek ? m.daysOfWeek.length / 7 : 1) * m.times.length, m.unitsPerDose);

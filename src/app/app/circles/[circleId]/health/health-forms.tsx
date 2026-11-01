@@ -29,7 +29,7 @@ export function RecordReadingForm(props: {
 }) {
   const { labels: l } = props;
   const router = useRouter();
-  const { pending, error, fieldErrors, submit } = useApiSubmit(l);
+  const { pending, error, fieldErrors, submit } = useApiSubmit(l, { confirm: false });
   const [kind, setKind] = useState<Kind>("blood_pressure");
   const [saved, setSaved] = useState(false);
   const [formKey, setFormKey] = useState(0);

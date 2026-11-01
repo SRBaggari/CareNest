@@ -1,4 +1,4 @@
-import { CalendarDays, CircleCheck, DoorOpen, ListChecks, type LucideIcon, MessageSquareText, Pill, Search } from "lucide-react";
+import { CalendarDays, CircleCheck, DoorOpen, History, ListChecks, type LucideIcon, MessageSquareText, Pill, Search } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Alert } from "@/components/ui/alert";
@@ -11,6 +11,7 @@ import { localDateIn } from "@/server/domain/schedule";
 import { orForbidden, orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { getTimeline, TIMELINE_KINDS, type TimelineItem } from "@/server/services/timeline";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = { title: "Timeline" };
 
@@ -131,7 +132,7 @@ export default async function TimelinePage({ params, searchParams }: PageProps<"
         </ul>
       </nav>
 
-      {result.items.length === 0 && <p className="text-muted">{t("timeline.none")}</p>}
+      {result.items.length === 0 && <EmptyState icon={History}>{t("timeline.none")}</EmptyState>}
       {[...days].map(([date, items]) => (
         <section key={date} aria-labelledby={`tl-${date}`}>
           <h3 id={`tl-${date}`} className="mb-3 text-base font-bold tracking-wide text-muted uppercase">

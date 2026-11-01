@@ -131,6 +131,17 @@ h3 {
   outline-offset: 3px;
 }
 
+/* A gentle rise for things that appear (confirmations, new cards); off for reduced motion below. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+@utility animate-rise {
+  animation: rise 220ms ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

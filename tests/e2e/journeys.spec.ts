@@ -166,7 +166,10 @@ test("Scenario D: a missing driver shows on the dashboard until someone offers",
   await page.getByRole("link", { name: /No driver yet for Cardiology check-up/ }).click();
   await expect(page).toHaveURL(/\/appointments$/);
   await page.getByRole("button", { name: "I'll drive" }).click();
+  // A short confirmation is shown and announced (role=status), then goes away by itself.
+  await expect(page.getByRole("status").filter({ hasText: "Done." })).toBeVisible();
   await expect(page.getByText("Driving: Priya")).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Done." })).toHaveCount(0, { timeout: 6000 });
 
   await page.getByRole("link", { name: "Today" }).filter({ visible: true }).first().click();
   await expect(page.getByText(/No driver yet/)).toHaveCount(0);
