@@ -91,8 +91,12 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Start the stack (db, migrate, web, worker)
-        # Name both long-running services: "--wait web" alone starts only web and its dependencies.
-        run: docker compose up -d --build --wait web worker
+        # Not "--wait": it reports the one-shot migrate container's normal exit (code 0) as a failure.
+        # Instead check migrate succeeded and wait for web's healthcheck ourselves.
+        run: |
+          docker compose up -d --build web worker
+          test "$(docker inspect --format '{{.State.ExitCode}}' "$(docker compose ps -aq migrate)")" = "0"
+          timeout 120 sh -c 'until [ "$(docker inspect --format "{{.State.Health.Status}}" "$(docker compose ps -q web)")" = healthy ]; do sleep 2; done'
       - name: Black-box suite against the running stack
         run: BLACKBOX_URL=http://localhost:3000 npm run test:blackbox
       - name: Worker is running and ticking
