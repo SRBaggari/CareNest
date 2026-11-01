@@ -400,6 +400,30 @@ export const pushOutbox = pgTable(
   (t) => [index("push_outbox_due_idx").on(t.status, t.nextAttemptAt)],
 );
 
+// ── Calendar subscriptions (Tier 2) ──────────────────────────────────────────────────────────
+
+/**
+ * A private calendar link for one person and one circle. The link itself is the key, so only its
+ * hash is stored; making a new link revokes the old one.
+ */
+export const calendarFeeds = pgTable(
+  "calendar_feeds",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull().unique(),
+    createdAt: createdAt(),
+    lastFetchedAt: timestamp("last_fetched_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  },
+  (t) => [index("calendar_feeds_user_circle_idx").on(t.userId, t.circleId)],
+);
+
 // ── Appointments (M5) ────────────────────────────────────────────────────────────────────────
 
 export const appointments = pgTable(
