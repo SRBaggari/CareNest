@@ -59,7 +59,15 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run test:postgres
+      - name: Run the integration suite on PostgreSQL
+        run: |
+          set -o pipefail
+          npm run test:postgres 2>&1 | tee pg.log
+      - name: Report failure output as an annotation
+        if: failure()
+        run: |
+          # Annotations are readable without signing in, unlike raw logs.
+          echo "::error title=test:postgres output::$(grep -vE '^\s*$' pg.log | tail -60 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')"
 
   deploy-smoke:
     name: Docker image + compose stack, black-box tested
@@ -94,7 +102,12 @@ jobs:
           test "$(docker inspect --format '{{.RestartCount}}' "$(docker compose ps -q worker)")" = "0"
       - name: Logs on failure
         if: failure()
-        run: docker compose logs --no-color --tail 200
+        run: |
+          docker compose ps -a
+          docker compose logs --no-color --tail 200
+          for svc in worker migrate web; do
+            echo "::error title=${svc} logs::$( (docker compose ps -a "$svc"; docker compose logs --no-color --tail 40 "$svc") 2>&1 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')"
+          done
       - name: Stop
         if: always()
         run: docker compose down -v
