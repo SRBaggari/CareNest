@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { Alert } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonVariant } from "@/components/ui/button";
 import { useApiSubmit } from "@/lib/api-client";
 
 /**
@@ -16,7 +16,8 @@ export function ActionButton(props: {
   body?: unknown;
   confirm?: string;
   redirectTo?: string;
-  variant?: "primary" | "secondary" | "danger";
+  variant?: ButtonVariant;
+  className?: string;
   messages: { network: string; generic: string; fixErrors: string };
   children: ReactNode;
 }) {
@@ -36,7 +37,7 @@ export function ActionButton(props: {
 
   return (
     <div className="flex flex-col items-start gap-2">
-      <Button type="button" variant={props.variant ?? "secondary"} busy={pending} onClick={run}>
+      <Button type="button" variant={props.variant ?? "secondary"} busy={pending} onClick={run} className={props.className}>
         {props.children}
       </Button>
       {error && <Alert tone="error">{error}</Alert>}

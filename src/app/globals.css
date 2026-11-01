@@ -23,6 +23,9 @@
   --danger-soft: #fbe9e6;
   --focus: #c25e00;
   --shadow-card: 0 1px 2px rgb(27 36 32 / 0.05), 0 6px 20px -8px rgb(27 36 32 / 0.12);
+  /* Chart series: validated for lightness, chroma, colour-blind separation and 3:1 contrast on the card surface. */
+  --series-1: #0f9a84;
+  --series-2: #d9622b;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,6 +47,8 @@
     --danger-soft: #3d1915;
     --focus: #ffb86b;
     --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+    --series-1: #2aa893;
+    --series-2: #d95926;
   }
 }
 
@@ -64,6 +69,8 @@
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --shadow-card: var(--shadow-card);
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
   /* Atkinson Hyperlegible was designed for readers with low vision; Indian scripts fall back to Noto. */
   --font-sans: "Atkinson Hyperlegible Next Variable", system-ui, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari",
     "Noto Sans Telugu", "Noto Sans Tamil", sans-serif;

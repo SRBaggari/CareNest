@@ -6,6 +6,8 @@ const variants = {
   danger: "border-2 border-danger bg-surface text-danger hover:bg-danger-soft",
   dangerSolid: "bg-danger text-primary-foreground shadow-sm hover:brightness-110",
   ghost: "text-foreground hover:bg-sunken",
+  /** A rare, destructive action that shouldn't dominate the page (it still asks to confirm). */
+  quietDanger: "text-danger underline hover:bg-danger-soft",
 };
 
 const sizes = {

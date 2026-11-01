@@ -195,7 +195,8 @@
     "visits": "Visits",
     "updates": "Updates",
     "timeline": "Timeline",
-    "help": "Help"
+    "help": "Help",
+    "health": "Health"
   },
   "invite": {
     "title": "You're invited",
@@ -260,7 +261,8 @@
     "assistance_resolved": "resolved a request for help",
     "assistance_cancelled": "cancelled a request for help",
     "circle_exported": "downloaded a full copy of the circle's records",
-    "member_account_deleted": "{name} deleted their CareNest account"
+    "member_account_deleted": "{name} deleted their CareNest account",
+    "measurement_removed": "removed a health reading"
   },
   "meds": {
     "dayTitle": "Doses for {date}",
@@ -896,5 +898,51 @@
     "reset": "Make a new link (the old one stops working)",
     "turnOff": "Stop the calendar link",
     "turnOffConfirm": "Your calendar app will stop showing these events. Continue?"
+  },
+  "health": {
+    "title": "Health readings",
+    "intro": "Readings such as blood pressure and sugar, recorded by {name} or the people caring for them.",
+    "notMedical": "CareNest doesn't judge readings or give medical advice. If a reading worries you, contact a doctor. In an emergency, call {number}.",
+    "notShared": "{name} has chosen not to share health details with family, so readings aren't shown here.",
+    "checkinsTitle": "How {name} has been",
+    "checkinHint": "From {name}'s answers to \"How are you today?\" on their Simple view, over the last two weeks.",
+    "checkinsNone": "{name} hasn't answered \"How are you today?\" in the last two weeks.",
+    "feel_fine": "Fine",
+    "feel_unwell": "Not well",
+    "feel_need": "Needed something",
+    "feel_none": "No answer",
+    "record": "Record a reading",
+    "kind": "What did you measure?",
+    "kind_blood_pressure": "Blood pressure",
+    "kind_blood_sugar": "Blood sugar",
+    "kind_weight": "Weight",
+    "kind_temperature": "Temperature",
+    "kind_pulse": "Pulse",
+    "kind_oxygen": "Oxygen level (SpO₂)",
+    "value": "Reading",
+    "valueBp": "Upper number (systolic)",
+    "value2Bp": "Lower number (diastolic)",
+    "upper": "Upper",
+    "lower": "Lower",
+    "unit": "Unit",
+    "context": "When was it taken?",
+    "ctx_fasting": "Fasting (before breakfast)",
+    "ctx_before_meal": "Before a meal",
+    "ctx_after_meal": "After a meal",
+    "ctx_bedtime": "At bedtime",
+    "ctx_random": "Any other time",
+    "measuredAt": "Taken at ({name}'s time, {zone}). Leave empty for now.",
+    "note": "Note (optional)",
+    "save": "Save reading",
+    "saved": "Reading saved.",
+    "latest": "Latest",
+    "recordedBy": "Recorded by {name}",
+    "none": "No readings in the last 90 days.",
+    "chartTitle": "{kind} over the last 90 days",
+    "showTable": "Show as a table",
+    "date": "Date",
+    "recent": "Recent readings",
+    "remove": "Remove (entered by mistake)",
+    "removeConfirm": "Remove this reading? It disappears from the charts; the activity log keeps a note that it was removed."
   }
 }

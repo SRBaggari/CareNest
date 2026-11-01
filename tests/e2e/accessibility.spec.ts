@@ -17,6 +17,9 @@ test.beforeAll(async () => {
   await owner.post(`/api/v1/circles/${circleId}/appointments`, { title: "Eye clinic", startsAt: new Date(Date.now() + 26 * 3_600_000).toISOString() });
   await owner.post(`/api/v1/circles/${circleId}/tasks`, { title: "Buy groceries" });
   await owner.post(`/api/v1/circles/${circleId}/updates`, { body: "Amma had a good walk this morning." });
+  // Two readings, so the Health page shows a chart.
+  await caregiver.post(`/api/v1/circles/${circleId}/measurements`, { kind: "blood_pressure", unit: "mmHg", value: 132, value2: 84, measuredAt: new Date(Date.now() - 86_400_000).toISOString() });
+  await caregiver.post(`/api/v1/circles/${circleId}/measurements`, { kind: "blood_pressure", unit: "mmHg", value: 128, value2: 80 });
 });
 
 test("signed-out pages", async ({ browser }) => {
@@ -27,7 +30,7 @@ test("signed-out pages", async ({ browser }) => {
   }
 });
 
-const circlePages = ["", "/medicines", "/appointments", "/tasks", "/visits", "/updates", "/timeline", "/members", "/settings", "/emergency", "/activity"];
+const circlePages = ["", "/medicines", "/health", "/appointments", "/tasks", "/visits", "/updates", "/timeline", "/members", "/settings", "/emergency", "/activity"];
 
 test("the full app, as a family admin", async ({ browser }) => {
   const page = await pageAs(browser, owner);

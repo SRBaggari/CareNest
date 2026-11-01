@@ -5,7 +5,7 @@
 // keeps the medicine records, visits and notes they wrote for the family. Retention purges data
 // that has no lasting value (expired sessions, old read notifications, delivered email records).
 
-import { and, eq, inArray, isNotNull, lt, or } from "drizzle-orm";
+import { and, eq, inArray, isNotNull, isNull, lt, or } from "drizzle-orm";
 import { z } from "zod";
 import {
   appointments,
@@ -17,6 +17,7 @@ import {
   doseEventHistory,
   doseEvents,
   emailOutbox,
+  measurements,
   pushOutbox,
   pushSubscriptions,
   emergencyContacts,
@@ -94,19 +95,26 @@ export async function exportMyData(ctx: ServiceContext) {
 export async function exportCircle(ctx: ServiceContext, circleId: string) {
   const access = await authorize(ctx, circleId, "circle.manage");
   const where = <T extends { circleId: unknown }>(t: T) => eq(t.circleId as never, circleId);
-  const [members, meds, doseRows, history, appts, taskRows, visitRows, updates, card, contacts, requests, audit] = await Promise.all([
+  // The export follows the same sharing choices as the screens: an admin can't download what the
+  // person receiving care has chosen not to share with them.
+  const meds = access.can("medication.view");
+  const appts = access.can("appointment.view");
+  const health = access.can("health.view");
+  const none = Promise.resolve([] as never[]);
+  const [members, medRows, doseRows, history, apptRows, taskRows, visitRows, updates, readings, card, contacts, requests, audit] = await Promise.all([
     ctx.db
       .select({ name: users.name, email: users.email, role: memberships.role, status: memberships.status, joinedAt: memberships.createdAt })
       .from(memberships)
       .innerJoin(users, eq(users.id, memberships.userId))
       .where(eq(memberships.circleId, circleId)),
-    ctx.db.select().from(medications).where(where(medications)),
-    ctx.db.select().from(doseEvents).where(where(doseEvents)),
-    ctx.db.select().from(doseEventHistory).where(where(doseEventHistory)),
-    ctx.db.select().from(appointments).where(where(appointments)),
+    meds ? ctx.db.select().from(medications).where(where(medications)) : none,
+    meds ? ctx.db.select().from(doseEvents).where(where(doseEvents)) : none,
+    meds ? ctx.db.select().from(doseEventHistory).where(where(doseEventHistory)) : none,
+    appts ? ctx.db.select().from(appointments).where(where(appointments)) : none,
     ctx.db.select().from(tasks).where(where(tasks)),
     ctx.db.select().from(visits).where(where(visits)),
-    ctx.db.select().from(careUpdates).where(where(careUpdates)),
+    ctx.db.select().from(careUpdates).where(and(where(careUpdates), inArray(careUpdates.category, health ? ["general", "health", "mood"] : ["general"]))),
+    health ? ctx.db.select().from(measurements).where(and(where(measurements), isNull(measurements.removedAt))) : none,
     ctx.db.select().from(emergencyInfoCards).where(where(emergencyInfoCards)),
     ctx.db.select().from(emergencyContacts).where(where(emergencyContacts)),
     ctx.db.select().from(assistanceRequests).where(where(assistanceRequests)),
@@ -120,13 +128,16 @@ export async function exportCircle(ctx: ServiceContext, circleId: string) {
     circle: { id: access.circle.id, name: access.circle.name, status: access.circle.status, createdAt: access.circle.createdAt },
     profile,
     members,
-    medications: meds,
+    /** Sections left out because the person receiving care doesn't share them with this admin. */
+    withheld: [...(meds ? [] : ["medications", "doses"]), ...(appts ? [] : ["appointments"]), ...(health ? [] : ["health and mood notes", "visit notes", "health readings"])],
+    medications: medRows,
     doses: doseRows,
     doseHistory: history,
-    appointments: appts,
+    appointments: apptRows,
     tasks: taskRows,
-    visits: visitRows,
+    visits: health ? visitRows : visitRows.map((v) => ({ ...v, observations: null, handoverNote: null, unresolvedIssues: null })),
     updates,
+    healthReadings: readings,
     emergencyInfo: card[0]?.info ?? {},
     emergencyContacts: contacts,
     helpRequests: requests,

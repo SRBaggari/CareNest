@@ -134,3 +134,47 @@ describe("retention", () => {
     expect(await db().select().from(careUpdates)).toBeDefined();
   });
 });
+
+describe("circle export respects the parent's sharing choices", () => {
+  it("leaves out medicines, appointments, health notes and visit notes the parent doesn't share, and says so", async () => {
+    const { putConsentFor } = await import("../helpers/consent");
+    const { createAppointment } = await import("@/server/services/appointments");
+    const { checkIn, checkOut, createVisit } = await import("@/server/services/visits");
+    const { recordMeasurement } = await import("@/server/services/measurements");
+    const team = await createTeam(db());
+    const now = new Date();
+    await createMedication(team.as(team.admin, now), team.circle.id, { name: "Metformin", dosage: "500 mg", asNeeded: false, times: ["08:00"], unitsPerDose: 1 });
+    await createAppointment(team.as(team.admin, now), team.circle.id, { title: "Cardiology", kind: "in_person", transportNeeded: true, startsAt: new Date(Date.now() + 86_400_000).toISOString() });
+    await postUpdate(team.as(team.elder, now), team.circle.id, { body: "Dizzy in the mornings", category: "health" });
+    await postUpdate(team.as(team.elder, now), team.circle.id, { body: "Went to the temple" });
+    const visit = await createVisit(team.as(team.caregiver, now), team.circle.id, { startNow: true });
+    await checkIn(team.as(team.caregiver, now), team.circle.id, visit.id).catch(() => undefined);
+    await checkOut(team.as(team.caregiver, new Date(now.getTime() + 60_000)), team.circle.id, visit.id, { observations: "Breathless on stairs" });
+    await recordMeasurement(team.as(team.caregiver, now), team.circle.id, { kind: "pulse", unit: "bpm", value: 72 });
+
+    const exportAs = async () => (await circleExportRoute(apiRequest("GET", `/api/v1/circles/${team.circle.id}/export`, { cookie: team.admin.cookie }), params({ circleId: team.circle.id }))).text();
+    const full = await exportAs();
+    for (const text of ["Metformin", "Cardiology", "Dizzy", "Breathless", "Went to the temple"]) expect([text, full.includes(text)]).toEqual([text, true]);
+    expect(JSON.parse(full).withheld).toEqual([]);
+
+    await putConsentFor(team.elder, team.circle.id, { shareMedications: false, shareAppointments: false, shareHealth: false });
+    const limited = await exportAs();
+    for (const text of ["Metformin", "Cardiology", "Dizzy", "Breathless"]) expect([text, limited.includes(text)]).toEqual([text, false]);
+    expect(limited).toContain("Went to the temple");
+    expect(JSON.parse(limited).withheld).toEqual(["medications", "doses", "appointments", "health and mood notes", "visit notes", "health readings"]);
+  });
+});
+
+describe("activity log respects the parent's sharing choices", () => {
+  it("hides entries about medicines from an admin while the parent keeps medicines private, but not from the parent", async () => {
+    const { putConsentFor } = await import("../helpers/consent");
+    const team = await createTeam(db());
+    await createMedication(team.as(team.admin, new Date()), team.circle.id, { name: "Metformin", dosage: "500 mg", asNeeded: false, times: ["08:00"], unitsPerDose: 1 });
+    const actions = async (user: { id: string }) => (await listAuditEvents(team.as(user, new Date()), team.circle.id)).map((e) => e.action);
+    expect(await actions(team.admin)).toContain("medication.created");
+    await putConsentFor(team.elder, team.circle.id, { shareMedications: false, shareAppointments: true, shareHealth: true });
+    expect(await actions(team.admin)).not.toContain("medication.created");
+    expect(await actions(team.admin)).toContain("consent.updated");
+    expect(await actions(team.elder)).toContain("medication.created");
+  });
+});

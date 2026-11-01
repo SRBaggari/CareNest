@@ -1,7 +1,7 @@
 // Database schema. Tables are added milestone by milestone; each change ships with a
 // generated SQL migration in `drizzle/` (npm run db:generate).
 
-import { boolean, date, index, integer, jsonb, pgEnum, pgTable, text, timestamp, unique, uuid, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { boolean, date, doublePrecision, index, integer, jsonb, pgEnum, pgTable, text, timestamp, unique, uuid, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { CIRCLE_ROLES, type Consent } from "@/server/auth/permissions";
 import { DOSE_STATUSES } from "@/server/domain/doses";
@@ -559,9 +559,44 @@ export const careUpdates = pgTable(
     category: text("category", { enum: ["general", "health", "mood"] }).notNull().default("general"),
     important: boolean("important").notNull().default(false),
     correctsUpdateId: uuid("corrects_update_id").references((): AnyPgColumn => careUpdates.id, { onDelete: "set null" }),
+    /** Set when the update is the parent's daily "How are you today?" answer. */
+    checkin: text("checkin", { enum: ["fine", "unwell", "need"] }),
     createdAt: createdAt(),
   },
   (t) => [index("care_updates_circle_created_idx").on(t.circleId, t.createdAt)],
+);
+
+// ── Health readings (Tier 2) ─────────────────────────────────────────────────────────────────
+
+/**
+ * One reading (blood pressure, sugar, weight, temperature, pulse, oxygen). Values are stored in one
+ * unit per kind (mmHg, mg/dL, kg, °C, bpm, %) and shown in the unit they were entered in. A reading
+ * entered by mistake is removed (hidden, with who and when), never edited.
+ */
+export const measurements = pgTable(
+  "measurements",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    kind: text("kind", { enum: ["blood_pressure", "blood_sugar", "weight", "temperature", "pulse", "oxygen"] }).notNull(),
+    value: doublePrecision("value").notNull(),
+    /** Diastolic, for blood pressure. */
+    value2: doublePrecision("value2"),
+    unit: text("unit").notNull(),
+    /** Blood sugar only: fasting, before_meal, after_meal, bedtime, random. */
+    context: text("context"),
+    measuredAt: timestamp("measured_at", { withTimezone: true }).notNull(),
+    recordedAt: timestamp("recorded_at", { withTimezone: true }).notNull(),
+    recordedBy: uuid("recorded_by").references(() => users.id, { onDelete: "set null" }),
+    /** self = the person receiving care entered it; proxy = someone else did. */
+    source: text("source", { enum: ["self", "proxy"] }).notNull(),
+    note: text("note"),
+    removedAt: timestamp("removed_at", { withTimezone: true }),
+    removedBy: uuid("removed_by").references(() => users.id, { onDelete: "set null" }),
+  },
+  (t) => [index("measurements_circle_kind_measured_idx").on(t.circleId, t.kind, t.measuredAt)],
 );
 
 // ── Emergency assistance (M7) ────────────────────────────────────────────────────────────────

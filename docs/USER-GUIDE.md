@@ -127,6 +127,23 @@ Admins can send a clearly labelled **practice alert** to check the setup; it nev
   who looked after their information.
 - **Signed-in devices** (Account) lets you sign out a lost phone or a shared tablet remotely.
 
+## Health readings
+
+The **Health** tab keeps blood pressure, blood sugar, weight, temperature, pulse and oxygen readings, with
+who recorded them and when, and a chart of the last 90 days (tap **Show as a table** to read the numbers).
+Enter a reading in the unit on your device (for example °F or °C, mg/dL or mmol/L); it is shown the way you
+entered it. You can enter a reading later and say when it was taken.
+
+CareNest doesn't judge readings or give medical advice: it never calls a reading high or low. If a reading
+worries you, contact a doctor; in an emergency, call your local emergency number.
+
+Readings are health details, so they follow the parent's choice to share health details with family, both
+for seeing and for adding them. A reading entered by mistake can be removed by whoever entered it or an
+admin; the activity log notes that it was removed.
+
+At the top, **How … has been** shows the parent's answers to "How are you today?" on their Simple view for
+the last two weeks.
+
 ## Calendar
 
 To see appointments, visits and your own tasks in Google Calendar, Apple Calendar or Outlook, open the
