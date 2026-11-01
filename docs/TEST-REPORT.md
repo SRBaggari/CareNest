@@ -123,7 +123,8 @@ Every defect above has an automated regression test:
 - No load or performance testing beyond the denial-of-service finding.
 - Accessibility was checked by markup only; an automated audit in a real browser (axe) and
   screen-reader testing are planned with the UI work.
-- All testing used the embedded database (PGlite); real PostgreSQL is verified in M8.
+- This round used the embedded database (PGlite). **Update (M8):** the full integration suite (237 tests)
+  now also passes on a real PostgreSQL 18 server (`npm run test:postgres`) and runs in CI on every push.
 
 ## How to re-run
 
