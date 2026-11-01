@@ -468,7 +468,10 @@
     "expenseTitle": "{name} added a cost: {what}",
     "expenseBody": "{amount} in total; your share is {share}. {link}",
     "settlementTitle": "{name} recorded a payment",
-    "settlementBody": "{from} paid {to} {amount}. {link}"
+    "settlementBody": "{from} paid {to} {amount}. {link}",
+    "smsCode": "CareNest code: {code}. It works for {minutes} minutes. Don't share it.",
+    "smsUrgent": "CareNest: {title}. Open {link}",
+    "smsAlert": "CareNest: you have a new alert. Open {link}"
   },
   "inbox": {
     "title": "Notifications",
@@ -1156,5 +1159,26 @@
   },
   "offline": {
     "notice": "You're offline. This is what CareNest showed at {time}; it may have changed since."
+  },
+  "sms": {
+    "title": "Text messages (SMS)",
+    "intro": "Get a text when someone asks for help, even when your phone has no internet. Texts never contain health details.",
+    "unavailable": "Text messages aren't set up on this server yet.",
+    "phone": "Mobile number",
+    "phoneHint": "With the country code, for example +91 90000 00001.",
+    "sendCode": "Send code",
+    "codeSent": "We sent a 6-digit code to {phone}.",
+    "code": "Code",
+    "confirm": "Confirm number",
+    "resend": "Send a new code",
+    "on": "Texts go to {phone}.",
+    "which": "Which alerts are texted?",
+    "urgentOnly": "Only when someone asks for help",
+    "allAlerts": "All important alerts (not everyday news)",
+    "save": "Save",
+    "saved": "Saved.",
+    "remove": "Stop text messages",
+    "removeConfirm": "Stop text messages and forget this number?",
+    "change": "Use a different number"
   }
 }

@@ -13,6 +13,8 @@ import { NotificationPreferencesForm } from "./notification-preferences-form";
 import { SignOutButton } from "../sign-out-button";
 import { listPushDevices, pushConfig } from "@/server/services/push-devices";
 import { PushDeviceControls, RemovePushDevice } from "./push-device-controls";
+import { SmsControls } from "./sms-controls";
+import { getMySms } from "@/server/services/sms";
 
 export const metadata: Metadata = { title: "Account" };
 
@@ -25,6 +27,7 @@ export default async function AccountPage() {
   const preferences = await getPreferences(db, session.user.id);
   const push = pushConfig();
   const pushDevices = await listPushDevices({ db, now, userId: session.user.id });
+  const sms = await getMySms({ db, now, userId: session.user.id });
   const formatter = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
@@ -92,6 +95,24 @@ export default async function AccountPage() {
             </ul>
           </div>
         )}
+      </section>
+
+      <section aria-labelledby="sms-heading" className="card flex flex-col gap-3">
+        <h2 id="sms-heading" className="text-2xl font-semibold">
+          {t("sms.title")}
+        </h2>
+        <p className="text-muted">{t("sms.intro")}</p>
+        <SmsControls
+          initial={sms}
+          labels={{
+            network: t("common.errorNetwork"),
+            generic: t("common.errorGeneric"),
+            fixErrors: t("common.fixErrors"),
+            ...(Object.fromEntries(
+              (["unavailable", "phone", "phoneHint", "sendCode", "codeSent", "code", "confirm", "resend", "on", "which", "urgentOnly", "allAlerts", "save", "remove", "removeConfirm", "change"] as const).map((k) => [k, t(`sms.${k}`)]),
+            ) as Record<string, string>),
+          } as Parameters<typeof SmsControls>[0]["labels"]}
+        />
       </section>
 
       <section aria-labelledby="notif-heading" className="card">

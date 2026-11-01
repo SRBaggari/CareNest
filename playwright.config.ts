@@ -21,10 +21,10 @@ export default defineConfig({
     { name: "phone", use: { ...devices["Pixel 7"] }, grep: /@phone/ },
   ],
   webServer: {
-    command: `node -e "for (const d of ['.data/e2e','.data/e2e-documents']) require('fs').rmSync(d,{recursive:true,force:true})" && next start -p ${PORT}`,
+    command: `node -e "for (const d of ['.data/e2e','.data/e2e-documents','.data/e2e-sms.jsonl']) require('fs').rmSync(d,{recursive:true,force:true})" && next start -p ${PORT}`,
     url: `${URL}/api/health`,
     reuseExistingServer: false,
     timeout: 120_000,
-    env: { PGLITE_DATA_DIR: ".data/e2e", DOCUMENT_STORAGE_DIR: ".data/e2e-documents", INSECURE_COOKIES: "true", TRUST_PROXY: "true" },
+    env: { PGLITE_DATA_DIR: ".data/e2e", DOCUMENT_STORAGE_DIR: ".data/e2e-documents", INSECURE_COOKIES: "true", TRUST_PROXY: "true", SMS_TRANSPORT: "file:.data/e2e-sms.jsonl" },
   },
 });

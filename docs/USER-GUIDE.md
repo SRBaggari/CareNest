@@ -201,6 +201,21 @@ On the parent's Simple view:
   help" opens the same "Alert your family now?" confirmation as the red Help button. "I didn't take my
   medicine" is never recorded as taken.
 
+## Text messages (SMS)
+
+On the **Account** page, under **Text messages (SMS)**, you can add your mobile number (with the country
+code, like +91 90000 00001). CareNest texts you a 6-digit code; type it in to confirm the number. Then:
+
+- By default you get a text **only when someone asks for help**, even if your phone has no internet.
+- You can choose **all important alerts** instead (never everyday news, which waits for the evening
+  summary). Quiet hours apply to those; requests for help are sent at once.
+- A text never contains health details: a request for help says who asked, anything else just says you
+  have a new alert, with a link to open CareNest.
+- **Stop text messages** forgets the number.
+
+Note: text messages need an SMS provider set up on the server. Until one is connected, the Account page
+says text messages aren't set up yet.
+
 ## Without a connection
 
 Two pages can be read without internet, once they have been opened on that phone or computer while

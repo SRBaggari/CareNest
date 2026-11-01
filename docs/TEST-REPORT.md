@@ -311,3 +311,18 @@ Defects these tests found, both fixed in the same change:
 - Browser: the parent opens the Simple view once, goes offline and still reads the medicine due, with the
   offline notice; a page that isn't kept is unavailable offline; a family member reads the emergency page
   offline (the number to call); after signing out, no saved page remains on the device.
+
+## Update, 2026-11-01: T2-10 SMS channel (adapter)
+
+- 3 unit tests: numbers stored in international form however typed, country code required (stricter for
+  Indian mobiles), and shown masked to the last four digits.
+- 8 integration tests (with a fake SMS service): the code is texted and the number used only once confirmed;
+  invalid numbers refused; one code a minute and five a day, five guesses per code, codes expire; off and
+  saying so when no transport is configured; each person sees only their own number, 401 signed out; a
+  request for help texted to everyone with a verified number with only a name (not the parent's message);
+  other alerts only to people who chose all alerts, never with details, never everyday news; unverified
+  numbers unused; removing a number drops queued texts; retries then gives up keeping no message text; the
+  number is in the person's data download.
+- Browser: a family member adds a number, confirms the code (read from the test server's SMS file), and
+  receives a text immediately when the parent asks for help.
+- Not tested: a real SMS provider. None is wired (postponed with the other launch-readiness items).

@@ -22,6 +22,8 @@ import {
   measurements,
   pushOutbox,
   pushSubscriptions,
+  smsOutbox,
+  smsPhones,
   emergencyContacts,
   emergencyInfoCards,
   medications,
@@ -50,6 +52,7 @@ export async function exportMyData(ctx: ServiceContext) {
     .select({ id: users.id, email: users.email, name: users.name, locale: users.locale, timeZone: users.timeZone, createdAt: users.createdAt })
     .from(users)
     .where(eq(users.id, ctx.userId));
+  const [phone] = await ctx.db.select({ phone: smsPhones.phone, verifiedAt: smsPhones.verifiedAt, urgentOnly: smsPhones.urgentOnly }).from(smsPhones).where(eq(smsPhones.userId, ctx.userId));
   const [preferences, devices, alertDevices, circles, myNotifications, myUpdates, myMessages, myDoseRecords, myAudit] = await Promise.all([
     ctx.db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, ctx.userId)),
     ctx.db
@@ -89,6 +92,7 @@ export async function exportMyData(ctx: ServiceContext) {
     notificationPreferences: preferences[0] ?? null,
     signedInDevices: devices,
     phoneAlertDevices: alertDevices,
+    textMessages: phone ?? null,
     circles,
     notifications: myNotifications,
     updatesIWrote: myUpdates,
@@ -244,11 +248,16 @@ export async function purgeExpiredData(db: ServiceContext["db"], now: Date) {
     .delete(pushOutbox)
     .where(and(inArray(pushOutbox.status, ["sent", "failed"]), lt(pushOutbox.createdAt, days(RETENTION.deliveredPushDays))))
     .returning({ id: pushOutbox.id });
+  // Sent texts keep no message (it's cleared on sending); the rows go after the same time as push alerts.
+  const oldTexts = await db
+    .delete(smsOutbox)
+    .where(and(inArray(smsOutbox.status, ["sent", "failed"]), lt(smsOutbox.createdAt, days(RETENTION.deliveredPushDays))))
+    .returning({ id: smsOutbox.id });
   const staleLimits = await db
     .delete(rateLimits)
     .where(lt(rateLimits.windowStart, new Date(now.getTime() - RETENTION.rateLimitHours * 3_600_000)))
     .returning({ key: rateLimits.key });
-  return { sessions: expiredSessions.length, notifications: oldNotifications.length, emails: oldEmails.length, pushAlerts: oldPush.length, rateLimits: staleLimits.length };
+  return { sessions: expiredSessions.length, notifications: oldNotifications.length, emails: oldEmails.length, pushAlerts: oldPush.length, textMessages: oldTexts.length, rateLimits: staleLimits.length };
 }
 
 /** Conversations for the circle export; those about appointments follow the appointment-sharing choice. */

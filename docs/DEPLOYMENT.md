@@ -57,6 +57,7 @@ To create one by hand: `CREATE DATABASE carenest ENCODING 'UTF8' TEMPLATE templa
 | `SMTP_URL` | for email | e.g. `smtps://user:pass@smtp.provider.com:465`. Without it, no email is sent and the app says so. Not yet verified against a real provider. |
 | `EMAIL_FROM` | for email | Sender, e.g. `CareNest <no-reply@care.example.org>` (must be allowed by your provider). |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | for phone alerts | Web push keys. Create once with `npx web-push generate-vapid-keys`; keep the private key secret and never change it (changing it silently stops alerts to every device until people turn them on again). Without them, phone alerts are off and the Account page says so. |
+| `SMS_TRANSPORT` | no | Text messages. **No real SMS provider is wired yet**, so in production leave it unset (texts are off and the Account page says so). `log` prints texts to the server log (development only); `file:<path>` appends them to a file (used by the browser tests). A real provider, including India's DLT sender and template registration, is a later step. |
 | `DOCUMENT_STORAGE_DIR` | no | Folder for uploaded health documents (default `.data/documents`; `/data/documents` in the Docker image, on the `documents` volume). Keep it outside the web root and back it up with the database. |
 | `VAPID_SUBJECT` | for phone alerts | A contact the push services can reach, e.g. `mailto:admin@care.example.org`. |
 | `CRON_SECRET` | if using the tick endpoint | Long random string. The tick endpoint is disabled (404) when unset. |

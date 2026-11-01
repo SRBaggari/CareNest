@@ -10,6 +10,7 @@ import { wantsAlert, type AlertKind } from "@/server/notifications/alert-setting
 import { appUrl, circleAudience, translatorFor } from "@/server/notifications/audience";
 import { deliverPendingEmails } from "@/server/notifications/email";
 import { deliverPendingPush } from "@/server/notifications/push";
+import { deliverPendingSms } from "@/server/notifications/sms";
 import { escalateAssistance } from "@/server/services/assistance";
 import { purgeExpiredData } from "@/server/services/data-rights";
 import { runCoordinationSteps } from "./coordination";
@@ -293,6 +294,7 @@ export type TickSummary = {
   purged: Awaited<ReturnType<typeof purgeExpiredData>>;
   emails: { sent: number; failed: number; retried: number };
   push: Awaited<ReturnType<typeof deliverPendingPush>>;
+  sms: Awaited<ReturnType<typeof deliverPendingSms>>;
 };
 
 export async function runTick(db: Db, now: Date): Promise<TickSummary> {
@@ -307,6 +309,7 @@ export async function runTick(db: Db, now: Date): Promise<TickSummary> {
   const digests = await sendDailyDigests(db, now);
   const emails = await deliverPendingEmails(db, now);
   const push = await deliverPendingPush(db, now);
+  const sms = await deliverPendingSms(db, now);
   const purged = await purgeExpiredData(db, now);
-  return { circles, assistanceEscalations, reminders, unconfirmedAlerts, escalations, refillAlerts, coordination, digests, emails, push, purged };
+  return { circles, assistanceEscalations, reminders, unconfirmedAlerts, escalations, refillAlerts, coordination, digests, emails, push, sms, purged };
 }
