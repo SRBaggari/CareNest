@@ -6,6 +6,7 @@ import { localSlot, pageAs } from "./helpers";
 // page wider than the screen (sideways scrolling is hard for everyone, and worst for older users).
 for (const locale of ["en", "hi", "te", "ta"]) {
   test(`no page scrolls sideways on a phone in ${locale} @phone`, async ({ browser }) => {
+    test.slow(); // walks every page of the app; under a parallel run that can take past 30s
     const owner = await new Actor("Priya").register();
     expect((await owner.patch("/api/v1/me", { locale })).status).toBe(200);
     const elder = await new Actor("Amma").register("Asia/Kolkata");

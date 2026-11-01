@@ -157,7 +157,7 @@ export function RemovePushDevice({ id, label, messages }: { id: string; label: s
   }
   return (
     <>
-      <Button type="button" variant="danger" busy={busy} onClick={remove}>
+      <Button type="button" variant="quietDanger" busy={busy} onClick={remove}>
         {label}
       </Button>
       {error && <Alert tone="error">{error}</Alert>}

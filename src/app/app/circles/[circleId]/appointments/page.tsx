@@ -9,6 +9,7 @@ import { listAppointments } from "@/server/services/appointments";
 import { getCircle } from "@/server/services/circles";
 import { HELPER_ROLES } from "@/server/services/members";
 import { AppointmentForm, OutcomeForm } from "./appointment-forms";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Appointments" };
 
@@ -122,7 +123,8 @@ export default async function AppointmentsPage({ params }: PageProps<"/app/circl
   };
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8">
+      <PageHeader title={t("circle.appointments")} />
       <section aria-labelledby="upcoming-heading" className="flex flex-col gap-4">
         <h2 id="upcoming-heading" className="text-2xl font-semibold">
           {t("appts.upcoming")}
@@ -155,7 +157,7 @@ export default async function AppointmentsPage({ params }: PageProps<"/app/circl
                 {canManage && a.status === "scheduled" && (
                   <>
                     <AppointmentForm method="PATCH" url={`${base}/${a.id}`} timeZone={zone} initial={a} openLabel={t("appts.edit")} labels={formLabels} />
-                    <ActionButton method="POST" url={`${base}/${a.id}/cancel`} body={{}} confirm={t("appts.cancelConfirm")} variant="danger" messages={messages}>
+                    <ActionButton method="POST" url={`${base}/${a.id}/cancel`} body={{}} confirm={t("appts.cancelConfirm")} variant="quietDanger" messages={messages}>
                       {t("appts.cancel")}
                     </ActionButton>
                   </>

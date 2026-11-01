@@ -14,6 +14,7 @@ import { listDoses } from "@/server/services/doses";
 import { listMedications } from "@/server/services/medications";
 import { acknowledgementsFor } from "@/server/services/notifications";
 import { AsNeededForm, DoseActions, MedicationForm, RestockForm } from "./medicine-forms";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Medicines" };
 
@@ -79,7 +80,8 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
   ) as Record<string, string>;
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8">
+      <PageHeader title={t("circle.medicines")} />
       <section aria-labelledby="doses-heading" className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 id="doses-heading" className="text-2xl font-semibold">
@@ -239,7 +241,7 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
                         url={`/api/v1/circles/${circleId}/medications/${m.id}/stop`}
                         body={{}}
                         confirm={t("meds.stopConfirm")}
-                        variant="danger"
+                        variant="quietDanger"
                         messages={messages}
                       >
                         {t("meds.stop")}

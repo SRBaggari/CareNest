@@ -59,7 +59,7 @@ export function SimpleForm(props: {
 
   if (!open) {
     return (
-      <Button type="button" variant={props.variant ?? "secondary"} className="self-start" onClick={() => setOpen(true)}>
+      <Button type="button" variant={props.variant === "danger" ? "quietDanger" : (props.variant ?? "secondary")} className="self-start" onClick={() => setOpen(true)}>
         {props.openLabel}
       </Button>
     );

@@ -12,6 +12,7 @@ import { CalendarFeedControls } from "./calendar-feed-controls";
 import { getCalendarFeed } from "@/server/services/calendar";
 import { formatDateTime } from "@/lib/format";
 import { PrivacyForm, ProfileEditForm } from "./settings-forms";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Settings & privacy" };
 
@@ -35,6 +36,7 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
 
   return (
     <div className="flex flex-col gap-8">
+      <PageHeader title={t("circle.settings")} />
       {caps.has("circle.manage") && active && (
         <section aria-labelledby="profile-heading" className="card">
           <h2 id="profile-heading" className="text-2xl font-semibold">

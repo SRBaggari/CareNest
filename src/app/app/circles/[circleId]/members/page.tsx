@@ -70,7 +70,7 @@ export default async function MembersPage({ params }: PageProps<"/app/circles/[c
                         method="DELETE"
                         url={`/api/v1/circles/${circleId}/members/${m.id}`}
                         confirm={t("circle.removeConfirm", { name: m.name })}
-                        variant="danger"
+                        variant="quietDanger"
                         messages={messages}
                       >
                         {t("circle.removeMember")}

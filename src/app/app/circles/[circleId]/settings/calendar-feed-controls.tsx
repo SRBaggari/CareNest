@@ -75,7 +75,7 @@ export function CalendarFeedControls(props: { url: string; active: boolean; labe
               <RefreshCw aria-hidden="true" className="size-5" />
               {l.reset}
             </Button>
-            <Button type="button" variant="danger" busy={busy} onClick={stop}>
+            <Button type="button" variant="quietDanger" busy={busy} onClick={stop}>
               {l.turnOff}
             </Button>
           </>
