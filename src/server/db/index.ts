@@ -14,11 +14,21 @@ type DbHolder = { db?: Db; ready?: Promise<void> };
 // Survive Next.js dev hot reloads without opening a new pool/PGlite per edit.
 const holder = ((globalThis as unknown as { __carenestDb?: DbHolder }).__carenestDb ??= {});
 
+/**
+ * PostgreSQL connection pool. An idle connection dropping (database restart, network blip) is
+ * reported as an "error" event; unhandled, it would crash the web app and the worker. The pool
+ * discards that connection and opens a new one on the next query, so logging is enough.
+ */
+export function createPgPool(url: string): Pool {
+  const pool = new Pool({ connectionString: url, max: Number(process.env.DATABASE_POOL_MAX ?? 10) });
+  pool.on("error", (err) => console.error("PostgreSQL connection lost; the pool will reconnect.", err.message));
+  return pool;
+}
+
 function createDb(): Db {
   const url = process.env.DATABASE_URL;
   if (url) {
-    const pool = new Pool({ connectionString: url, max: Number(process.env.DATABASE_POOL_MAX ?? 10) });
-    return drizzlePg({ client: pool, schema }) as unknown as Db;
+    return drizzlePg({ client: createPgPool(url), schema }) as unknown as Db;
   }
   // Local development without a Postgres server: embedded Postgres (PGlite) on disk.
   const dataDir = process.env.PGLITE_DATA_DIR ?? ".data/pglite";
