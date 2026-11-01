@@ -25,14 +25,41 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
       expect(home.text).toMatch(/<html[^>]* lang="en"/);
       expect(home.text).toContain('href="#main"');
       const register = await new Actor().get("/register");
-      const inputs = [...register.text.matchAll(/<input[^>]*id="([^"]+)"/g)].map((m) => m[1]);
+      const inputs = [...register.text.matchAll(/<input[^>]*\sid="([^"]+)"/g)].map((m) => m[1]);
       expect(inputs.length).toBeGreaterThan(2);
       for (const id of inputs) expect(register.text).toContain(`for="${id}"`);
       expect(register.text).not.toMatch(/<img(?![^>]*\balt=)[^>]*>/);
     });
 
-    it("unknown API routes are 404 JSON-or-HTML, never 500", async () => {
-      expect((await new Actor().get("/api/v1/does-not-exist")).status).toBe(404);
+    it("unknown API routes are a JSON 404", async () => {
+      const res = await new Actor().get("/api/v1/does-not-exist");
+      expect(res.status).toBe(404);
+      expect(res.json.error.code).toBe("not_found");
+    });
+
+    it("regression F1/F2: far-future and impossible dates are rejected fast, server stays up", async () => {
+      const owner = await new Actor().register();
+      const circleId = await circleWith(owner);
+      for (const name of ["A", "B", "C"]) await owner.post(`/api/v1/circles/${circleId}/medications`, { name, dosage: "1", times: ["08:00"] });
+      for (const date of ["9999-12-31", "0001-01-01", "2026-02-30"]) {
+        const started = Date.now();
+        expect([date, (await owner.get(`/api/v1/circles/${circleId}/doses?date=${date}`)).status]).toEqual([date, 422]);
+        expect(Date.now() - started).toBeLessThan(3000);
+      }
+      expect((await new Actor().get("/api/health")).status).toBe(200);
+    });
+
+    it("regression F6: non-JSON bodies are refused with 415", async () => {
+      const a = await new Actor().register();
+      expect((await a.call("PATCH", "/api/v1/me", "name=x", { "content-type": "text/plain" })).status).toBe(415);
+    });
+
+    it("429 responses include Retry-After", async () => {
+      const victim = await new Actor().register();
+      let last;
+      for (let i = 0; i < 6; i++) last = await new Actor().post("/api/v1/auth/login", { email: victim.email, password: "wrong password!!" });
+      expect(last!.status).toBe(429);
+      expect(Number(last!.headers.get("retry-after"))).toBeGreaterThan(0);
     });
   });
 
@@ -146,11 +173,14 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
     it("Scenario B: today's dose can be confirmed and is attributed to who reported it", async () => {
       const owner = await new Actor("Priya").register();
       const circleId = await circleWith(owner);
-      // A dose an hour ago in Amma's zone, so it is already due.
-      const t = new Date(Date.now() - 60 * 60_000).toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" });
-      const today = new Date(Date.now() - 60 * 60_000).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+      // A dose 30 minutes from now in Amma's zone: inside the early-confirmation window, and after
+      // the medicine was added (doses before that are never created).
+      const due = new Date(Date.now() + 30 * 60_000);
+      const t = due.toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" });
+      const today = due.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
       await owner.post(`/api/v1/circles/${circleId}/medications`, { name: "Metformin", dosage: "500 mg", times: [t], startDate: today });
       const doses = (await owner.get(`/api/v1/circles/${circleId}/doses?date=${today}`)).json.doses;
+      expect(doses).toHaveLength(1);
       expect(doses[0].status).toBe("scheduled");
       const rec = await owner.post(`/api/v1/circles/${circleId}/doses/${doses[0].id}/record`, { status: "taken" });
       expect(rec.json.dose).toMatchObject({ status: "taken", source: "proxy" });

@@ -18,10 +18,11 @@ export class Actor {
 
   async call(method: string, path: string, body?: unknown, extra: Record<string, string> = {}): Promise<Res> {
     const headers: Record<string, string> = { "x-forwarded-for": this.ip, ...extra };
+    if (extra["content-type"]) headers["content-type"] = extra["content-type"];
     if (this.cookie) headers.cookie = this.cookie;
     if (method !== "GET") headers.origin ??= BASE;
     if (extra.origin === "") delete headers.origin;
-    if (body !== undefined) headers["content-type"] = "application/json";
+    if (body !== undefined) headers["content-type"] ??= "application/json";
     const res = await fetch(`${BASE}${path}`, {
       method,
       headers,
