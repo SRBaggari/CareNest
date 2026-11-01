@@ -1153,5 +1153,8 @@
     "helpOpened": "Press the red button to confirm, and your family will be told.",
     "helpAlready": "Your family has already been asked to help.",
     "micBlocked": "CareNest can't use the microphone. You can allow it in your browser settings, or use the buttons."
+  },
+  "offline": {
+    "notice": "You're offline. This is what CareNest showed at {time}; it may have changed since."
   }
 }

@@ -135,6 +135,8 @@ describe("sessions", () => {
     const res = await logout(apiRequest("POST", "/api/v1/auth/logout", { cookie: user.cookie }));
     expect(res.status).toBe(204);
     expect(res.headers.get("set-cookie")).toContain("Max-Age=0");
+    // The browser is asked to drop cached responses too (pages kept offline are wiped by the page itself).
+    expect(res.headers.get("clear-site-data")).toBe('"cache"');
     expect((await me(apiRequest("GET", "/api/v1/me", { cookie: user.cookie }))).status).toBe(401);
   });
 

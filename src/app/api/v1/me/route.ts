@@ -21,6 +21,6 @@ export async function DELETE(request: Request) {
   return authedRoute(request, async ({ db, now, session }) => {
     const input = await parseBody(request, deleteAccountSchema);
     await deleteMyAccount({ db, now, userId: session.user.id }, input);
-    return new Response(null, { status: 204, headers: { "Set-Cookie": clearSessionCookie() } });
+    return new Response(null, { status: 204, headers: { "Set-Cookie": clearSessionCookie(), "Clear-Site-Data": '"cache"' } });
   });
 }

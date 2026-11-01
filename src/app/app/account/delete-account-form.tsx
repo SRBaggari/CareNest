@@ -6,6 +6,7 @@ import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/field";
 import { useApiSubmit } from "@/lib/api-client";
+import { clearOfflineCopies } from "@/lib/offline";
 
 /** Deliberately slow to use: password + typing DELETE, then a final browser confirmation. */
 export function DeleteAccountForm({ labels: l }: { labels: Record<"password" | "confirmLabel" | "deleteButton" | "network" | "generic" | "fixErrors", string> }) {
@@ -20,6 +21,7 @@ export function DeleteAccountForm({ labels: l }: { labels: Record<"password" | "
     const result = await submit("DELETE", "/api/v1/me", { password, confirm: typed });
     // 204: the server has signed us out; leave the app entirely.
     if (result !== null) {
+      await clearOfflineCopies();
       router.replace("/?deleted=1");
       router.refresh();
     }

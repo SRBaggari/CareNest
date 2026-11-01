@@ -2,6 +2,7 @@ import { LifeBuoy, Phone } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionButton } from "@/components/action-button";
+import { OfflineSupport } from "@/components/offline-support";
 import { SimpleForm } from "@/components/simple-form";
 import { getRequestTranslator } from "@/i18n/server";
 import { formatDate, formatDateTime } from "@/lib/format";
@@ -41,6 +42,7 @@ export default async function EmergencyPage({ params }: PageProps<"/app/circles/
 
   return (
     <div className="flex flex-col gap-8">
+      <OfflineSupport renderedAt={ctx.now.toISOString()} locale={locale} label={t("offline.notice")} />
       <section aria-labelledby="call-heading" className="flex flex-col gap-3 rounded-2xl border-4 border-danger bg-surface p-5">
         <h2 id="call-heading" className="sr-only">
           {t("emergency.call", { number })}
