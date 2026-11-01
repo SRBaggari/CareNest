@@ -100,6 +100,9 @@ Admins can send a clearly labelled **practice alert** to check the setup; it nev
 - Notifications appear in CareNest (the number next to **Notifications**). If email is set up, you
   also get an email — without medical details; the details stay behind your sign-in.
 - **Quiet hours** (Account) hold emails overnight. Urgent alerts (emergencies) are always sent.
+- **Daily summary.** Everyday news (a visit that went fine, an ordinary update such as "I'm fine today")
+  doesn't email you one by one. Instead, at 6 pm your time you get one email listing what you haven't
+  already seen in the app — titles only, no details. Turn it off under Account → Notifications.
 - Each circle lets you choose your own alerts: medicine reminders, unconfirmed doses, running low.
   Admins always receive urgent follow-ups if a dose stays unconfirmed and nobody is checking.
 - Tap **I'm checking on it** on an alert so the rest of the family knows someone is on it.

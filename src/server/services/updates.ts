@@ -97,7 +97,9 @@ export async function postUpdate(ctx: ServiceContext, circleId: string, raw: z.i
     return row;
   });
 
-  if (update.important) {
+  // Important updates alert people (and email them) straight away; everyday ones are low-priority
+  // news: shown in the app and gathered into the evening digest email.
+  {
     const [[profile], audience, [me]] = await Promise.all([
       ctx.db
         .select({ name: sql<string>`coalesce(${careProfiles.preferredName}, ${careProfiles.displayName})` })
@@ -115,15 +117,15 @@ export async function postUpdate(ctx: ServiceContext, circleId: string, raw: z.i
         .map((r) => {
           const t = translatorFor(r.locale);
           const vars = { author: me.name, name: profile.name, body: update.body.slice(0, 300), link: appUrl(link) };
+          const base = { userId: r.userId, circleId, body: t("notif.updateImportantBody", vars), link, groupKey: `update:${update.id}` };
+          if (!update.important) {
+            return { ...base, kind: "care_update", priority: "low" as const, title: t("notif.updateTitle", vars), dedupeKey: `care_update:${update.id}:${r.userId}` };
+          }
           return {
-            userId: r.userId,
-            circleId,
+            ...base,
             kind: "important_update",
             priority: "high" as const,
             title: t("notif.updateImportantTitle", vars),
-            body: t("notif.updateImportantBody", vars),
-            link,
-            groupKey: `update:${update.id}`,
             dedupeKey: `important_update:${update.id}:${r.userId}`,
             // The email never contains the note itself.
             email: { subject: t("notif.updateEmailSubject", vars), text: t("notif.updateEmailBody", vars) },

@@ -8,8 +8,8 @@ import { TextField } from "@/components/ui/field";
 import { useApiSubmit } from "@/lib/api-client";
 
 export function NotificationPreferencesForm(props: {
-  preferences: { emailEnabled: boolean; quietStart: string | null; quietEnd: string | null };
-  labels: Record<"network" | "generic" | "fixErrors" | "email" | "quietTitle" | "quietIntro" | "quietStart" | "quietEnd" | "save" | "saved", string>;
+  preferences: { emailEnabled: boolean; quietStart: string | null; quietEnd: string | null; digestEnabled: boolean };
+  labels: Record<"network" | "generic" | "fixErrors" | "email" | "digest" | "digestHint" | "quietTitle" | "quietIntro" | "quietStart" | "quietEnd" | "save" | "saved", string>;
 }) {
   const { labels: l, preferences: p } = props;
   const router = useRouter();
@@ -23,6 +23,7 @@ export function NotificationPreferencesForm(props: {
     const time = (k: string) => String(f.get(k) ?? "") || null;
     const ok = await submit("PUT", "/api/v1/me/notification-preferences", {
       emailEnabled: f.get("emailEnabled") === "on",
+      digestEnabled: f.get("digestEnabled") === "on",
       quietStart: time("quietStart"),
       quietEnd: time("quietEnd"),
     });
@@ -37,6 +38,15 @@ export function NotificationPreferencesForm(props: {
       <label className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4">
         <input type="checkbox" name="emailEnabled" defaultChecked={p.emailEnabled} className="size-6" />
         {l.email}
+      </label>
+      <label className="flex min-h-12 items-start gap-3 rounded-xl border-2 border-border bg-surface px-4 py-3 transition hover:border-primary">
+        <input type="checkbox" name="digestEnabled" defaultChecked={p.digestEnabled} className="mt-1 size-6 shrink-0" />
+        <span>
+          {l.digest}
+          <span className="block text-base text-muted">
+            {l.digestHint}
+          </span>
+        </span>
       </label>
       <fieldset className="flex flex-col gap-3">
         <legend className="font-semibold">{l.quietTitle}</legend>

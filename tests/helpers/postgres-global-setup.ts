@@ -11,7 +11,17 @@ const PORT = Number(process.env.TEST_PG_PORT ?? 54329);
 
 export default async function setup(project: TestProject) {
   const dataDir = mkdtempSync(path.join(tmpdir(), "carenest-pg-"));
-  const pg = new EmbeddedPostgres({ databaseDir: dataDir, user: "carenest", password: "carenest", port: PORT, persistent: false, onLog: () => {} });
+  // UTF8 explicitly: initdb otherwise follows the OS locale, which on Windows is WIN1252 and can't
+  // store Hindi, Telugu or Tamil.
+  const pg = new EmbeddedPostgres({
+    databaseDir: dataDir,
+    user: "carenest",
+    password: "carenest",
+    port: PORT,
+    persistent: false,
+    initdbFlags: ["--encoding=UTF8", "--locale=C"],
+    onLog: () => {},
+  });
   await pg.initialise();
   await pg.start();
   project.provide("testDatabaseUrl", `postgres://carenest:carenest@localhost:${PORT}/postgres`);

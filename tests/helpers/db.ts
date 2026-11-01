@@ -24,7 +24,7 @@ async function createPostgresDb(serverUrl: string): Promise<TestDb> {
   // Dropping a test database "with (force)" terminates any connection still open on it; that
   // surfaces as an "error" event, which must not fail the run.
   admin.on("error", () => {});
-  await admin.query(`create database ${name}`);
+  await admin.query(`create database ${name} encoding 'UTF8' template template0`);
   const url = new URL(serverUrl);
   url.pathname = `/${name}`;
   const pool = createPgPool(url.toString());

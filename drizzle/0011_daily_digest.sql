@@ -1,0 +1,2 @@
+ALTER TABLE "notification_preferences" ADD COLUMN "digest_enabled" boolean DEFAULT true NOT NULL;--> statement-breakpoint
+ALTER TABLE "notification_preferences" ADD COLUMN "last_digest_at" timestamp with time zone;

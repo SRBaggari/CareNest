@@ -66,6 +66,8 @@ export default async function AccountPage() {
           labels={{
             ...common,
             email: t("prefs.email"),
+            digest: t("prefs.digest"),
+            digestHint: t("prefs.digestHint"),
             quietTitle: t("prefs.quietTitle"),
             quietIntro: t("prefs.quietIntro"),
             quietStart: t("prefs.quietStart"),
