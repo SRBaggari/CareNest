@@ -133,6 +133,97 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
       expect((await stranger.post(`/api/v1/circles/${own}/tasks/${task.id}/claim`, { action: "claim" })).status).toBe(404);
     });
 
+    it("with two busy families on one server, no list, summary, export or page shows the other family's data", async () => {
+      // The other family: every kind of record, each marked "Zebra" so a leak is easy to spot.
+      const zed = await new Actor("Zed").register();
+      const zoe = await new Actor("Zoe").register("Asia/Kolkata");
+      const zelda = await new Actor("Zelda").register("Asia/Kolkata");
+      const theirs = await circleWith(zed, [[zoe, "caregiver"], [zelda, "care_recipient"]]);
+      const z = (path: string) => `/api/v1/circles/${theirs}${path}`;
+      const soon = new Date(Date.now() + 20 * 60_000);
+      const slot = soon.toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" });
+      const day = soon.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+      expect((await zed.post(z("/medications"), { name: "Zebramycin", dosage: "1 tablet", times: [slot], startDate: day })).status).toBe(201);
+      expect((await zed.post(z("/appointments"), { title: "Zebra clinic", startsAt: new Date(Date.now() + 26 * 3_600_000).toISOString() })).status).toBe(201);
+      const task = (await zed.post(z("/tasks"), { title: "Zebra task", dueAt: new Date(Date.now() + 30 * 3_600_000).toISOString() })).json.task;
+      const doneTask = (await zed.post(z("/tasks"), { title: "Zebra finished task" })).json.task;
+      await zed.post(z(`/tasks/${doneTask.id}/complete`), { note: "Zebra done note" });
+      await zelda.post(z("/updates"), { body: "Zebra everyday update" });
+      await zelda.post(z("/updates"), { body: "Zebra important update", important: true });
+      const finished = (await zoe.post(z("/visits"), { plannedStart: soon.toISOString(), purpose: "Zebra visit" })).json.visit;
+      await zoe.post(z(`/visits/${finished.id}/check-in`));
+      await zoe.post(z(`/visits/${finished.id}/check-out`), { observations: "Zebra observations", handoverNote: "Zebra handover" });
+      const live = (await zoe.post(z("/visits"), { plannedStart: soon.toISOString(), purpose: "Zebra live visit" })).json.visit;
+      await zoe.post(z(`/visits/${live.id}/check-in`));
+      await zed.post(z("/emergency/contacts"), { name: "Zebra Contact", phone: "+91 90000 00099" });
+      expect((await zelda.post(z("/emergency/requests"), { message: "Zebra help" })).status).toBe(201);
+      await zed.post(z("/invitations"), { email: "zebra@example.test", role: "family" });
+      // Control: the other family does see all of it, so a clean result below means something.
+      for (const [path, marker] of [
+        ["/visits", "Zebra live visit"],
+        ["/visits?range=recent", "Zebra observations"],
+        ["/tasks?status=all", "Zebra finished task"],
+        ["/updates", "Zebra everyday update"],
+        ["/emergency/contacts", "Zebra Contact"],
+        ["/emergency/requests", "Zebra help"],
+        ["/invitations", "zebra@example.test"],
+        ["/timeline", "Zebra"],
+        ["/export", "Zebramycin"],
+      ]) {
+        expect([path, (await zed.get(z(path))).text.includes(marker)]).toEqual([path, true]);
+      }
+
+      // This family, with its own records so every list has something real in it.
+      const priya = await new Actor("Priya").register();
+      const meena = await new Actor("Meena").register("Asia/Kolkata");
+      const amma = await new Actor("Amma").register("Asia/Kolkata");
+      const mine = await circleWith(priya, [[meena, "caregiver"], [amma, "care_recipient"]]);
+      const m = (path: string) => `/api/v1/circles/${mine}${path}`;
+      await priya.post(m("/medications"), { name: "Metformin", dosage: "500 mg", times: [slot], startDate: day });
+      const visit = (await meena.post(m("/visits"), { plannedStart: soon.toISOString(), purpose: "Morning care" })).json.visit;
+      await meena.post(m(`/visits/${visit.id}/check-in`));
+
+      const reads: [Actor, string][] = [
+        ...[
+          "",
+          "/members",
+          "/invitations",
+          "/medications",
+          `/doses?date=${day}`,
+          "/appointments",
+          "/appointments?range=past",
+          "/tasks?status=all",
+          "/updates",
+          "/timeline",
+          "/visits",
+          "/visits?range=recent",
+          "/emergency/info",
+          "/emergency/contacts",
+          "/emergency/requests",
+          "/audit",
+          "/today",
+          "/export",
+        ].map((p) => [priya, m(p)] as [Actor, string]),
+        [priya, "/api/v1/me/today"],
+        [priya, "/api/v1/me/export"],
+        [priya, "/api/v1/notifications"],
+        [priya, "/api/v1/circles"],
+        [priya, "/app"],
+        [priya, `/app/circles/${mine}`],
+        [priya, `/app/circles/${mine}/visits`],
+        [priya, `/app/circles/${mine}/timeline`],
+        [priya, `/app/circles/${mine}/updates`],
+        [priya, `/app/circles/${mine}/emergency`],
+        [meena, `/app/circles/${mine}/visits`],
+        [amma, `/simple/${mine}`],
+      ];
+      for (const [actor, path] of reads) {
+        const res = await actor.get(path);
+        expect([path, res.status < 400]).toEqual([path, true]);
+        expect([path, /zebra/i.test(res.text)]).toEqual([path, false]);
+      }
+    });
+
     it("a stranger opening another family's circle page sees exactly what a missing circle shows", async () => {
       const owner = await new Actor("Priya").register();
       const circleId = await circleWith(owner);
