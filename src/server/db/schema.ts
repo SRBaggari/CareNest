@@ -851,3 +851,51 @@ export const settlements = pgTable(
   },
   (t) => [index("settlements_circle_idx").on(t.circleId)],
 );
+
+/**
+ * A person's number for text messages (one per person). Alerts are texted only once it is verified
+ * with a code. The code itself is never stored, only its hash.
+ */
+export const smsPhones = pgTable("sms_phones", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  /** International (E.164) form, e.g. +919000000001. */
+  phone: text("phone").notNull(),
+  verifiedAt: timestamp("verified_at", { withTimezone: true }),
+  codeHash: text("code_hash"),
+  codeExpiresAt: timestamp("code_expires_at", { withTimezone: true }),
+  codeAttempts: integer("code_attempts").notNull().default(0),
+  /** When codes were last sent, and how many today: texts cost money and can be abused. */
+  codeSentAt: timestamp("code_sent_at", { withTimezone: true }),
+  codesSentToday: integer("codes_sent_today").notNull().default(0),
+  /** True (the default): only requests for help are texted. False: anything above low priority. */
+  urgentOnly: boolean("urgent_only").notNull().default(true),
+  createdAt: createdAt(),
+});
+
+/** Text messages waiting to be sent, with retries; same design as the push and email outboxes. */
+export const smsOutbox = pgTable(
+  "sms_outbox",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    to: text("to").notNull(),
+    /** Cleared once sent or given up on. */
+    body: text("body"),
+    kind: text("kind", { enum: ["alert", "code"] }).notNull(),
+    notificationId: uuid("notification_id").references(() => notifications.id, { onDelete: "set null" }),
+    urgent: boolean("urgent").notNull().default(false),
+    status: text("status", { enum: ["pending", "sending", "sent", "failed"] }).notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    nextAttemptAt: timestamp("next_attempt_at", { withTimezone: true }).notNull(),
+    lockedUntil: timestamp("locked_until", { withTimezone: true }),
+    lastError: text("last_error"),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    dedupeKey: text("dedupe_key").notNull().unique(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("sms_outbox_due_idx").on(t.status, t.nextAttemptAt)],
+);

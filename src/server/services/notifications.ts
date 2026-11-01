@@ -1,11 +1,12 @@
 import { and, desc, eq, inArray, isNotNull, isNull, lt, sql } from "drizzle-orm";
 import { z } from "zod";
 import { LOCAL_TIME_PATTERN } from "@/server/domain/schedule";
-import { emailOutbox, memberships, notificationPreferences, notifications, users } from "@/server/db/schema";
-import { translatorFor } from "@/server/notifications/audience";
+import { emailOutbox, memberships, notificationPreferences, notifications, smsPhones, users } from "@/server/db/schema";
+import { appUrl, translatorFor } from "@/server/notifications/audience";
 import { enqueueEmail } from "@/server/notifications/email";
 import { enqueuePush, getPushTransport } from "@/server/notifications/push";
 import { quietUntil } from "@/server/notifications/quiet-hours";
+import { enqueueSms, getSmsTransport } from "@/server/notifications/sms";
 import { effectiveAlertSettings, ALERT_CAPABILITY, ALERT_KINDS, alertColumn, offersChoice } from "@/server/notifications/alert-settings";
 import { AppError } from "@/server/http";
 import { uuidSchema } from "@/server/validation";
@@ -54,9 +55,11 @@ export async function notifyUsers(db: DbOrTx, now: Date, items: (NewNotification
   const pushing = getPushTransport() !== null;
   const withEmail = created.filter((n) => emailFor.get(n.dedupeKey));
   const toPush = pushing ? created.filter((n) => n.priority !== "low") : [];
-  if (withEmail.length === 0 && toPush.length === 0) return created;
+  // Text messages (only for people with a verified number; see below for which alerts).
+  const toText = getSmsTransport() ? created.filter((n) => n.priority !== "low") : [];
+  if (withEmail.length === 0 && toPush.length === 0 && toText.length === 0) return created;
 
-  const ids = [...new Set([...withEmail, ...toPush].map((n) => n.userId))];
+  const ids = [...new Set([...withEmail, ...toPush, ...toText].map((n) => n.userId))];
   const people = await db
     .select({
       id: users.id,
@@ -86,6 +89,32 @@ export async function notifyUsers(db: DbOrTx, now: Date, items: (NewNotification
       dedupeKey: `notification:${n.id}`,
       notBefore: notBeforeFor(n, person),
     });
+  }
+
+  if (toText.length > 0) {
+    const phones = new Map(
+      (await db.select().from(smsPhones).where(and(inArray(smsPhones.userId, [...new Set(toText.map((n) => n.userId))]), isNotNull(smsPhones.verifiedAt)))).map((p) => [p.userId, p]),
+    );
+    for (const n of toText) {
+      const phone = phones.get(n.userId);
+      const person = byId.get(n.userId);
+      // Requests for help are always texted; other alerts only when the person asked for all alerts.
+      if (!phone || !person || (phone.urgentOnly && n.priority !== "critical")) continue;
+      const t = translatorFor(person.locale);
+      const link = appUrl(n.link ?? "/app/notifications");
+      await enqueueSms(db, {
+        userId: n.userId,
+        to: phone.phone,
+        // A text can be read by anyone holding the phone, and passes through the phone company: the
+        // title of a help request (a name, never health details), otherwise only that there's an alert.
+        body: n.priority === "critical" ? t("notif.smsUrgent", { title: n.title, link }) : t("notif.smsAlert", { link }),
+        kind: "alert",
+        urgent: n.priority === "critical",
+        notificationId: n.id,
+        dedupeKey: `notification:${n.id}`,
+        notBefore: notBeforeFor(n, person),
+      });
+    }
   }
 
   for (const n of withEmail) {
