@@ -115,4 +115,21 @@ describe("my 'today' across circles (Scenario F)", () => {
     expect(res.status).toBe(200);
     expect((await res.json()).unreadNotifications).toBe(0);
   });
+
+  it("shows today's doses and the next appointment only to those allowed to see them", async () => {
+    const { elder, family, neighbour, as } = await busyCircle();
+    const forFamily = (await getMyToday(as(family, NOON))).circles[0];
+    expect(forFamily.doses).toMatchObject({ taken: 1, unconfirmed: 0 });
+    expect(forFamily.doses!.upcoming + forFamily.doses!.due).toBe(2);
+    expect(forFamily.nextAppointment).toMatchObject({ title: "Cardiology" });
+
+    const forNeighbour = (await getMyToday(as(neighbour, NOON))).circles[0];
+    expect(forNeighbour.doses).toBeNull();
+    expect(forNeighbour.nextAppointment).toBeNull();
+
+    await putConsentFor(elder, forFamily.circle.id, { shareMedications: false, shareAppointments: false, shareHealth: true });
+    const withheld = (await getMyToday(as(family, NOON))).circles[0];
+    expect(withheld.doses).toBeNull();
+    expect(withheld.nextAppointment).toBeNull();
+  });
 });

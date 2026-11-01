@@ -74,7 +74,9 @@
     "attentionCount": "Needs attention: {count}",
     "helpOpen": "Help has been requested",
     "allClear": "Nothing needs attention",
-    "unread": "Unread notifications: {count}"
+    "unread": "Unread notifications: {count}",
+    "dosesToday": "Medicines today: {done} of {total} answered",
+    "nextAppointment": "Next: {title}, {when}"
   },
   "account": {
     "title": "Your account",

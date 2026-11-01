@@ -74,7 +74,9 @@
     "attentionCount": "శ్రద్ధ అవసరమైనవి: {count}",
     "helpOpen": "సహాయం కోసం అభ్యర్థన వచ్చింది",
     "allClear": "శ్రద్ధ పెట్టాల్సినది ఏమీ లేదు",
-    "unread": "చదవని నోటిఫికేషన్లు: {count}"
+    "unread": "చదవని నోటిఫికేషన్లు: {count}",
+    "dosesToday": "ఈ రోజు మందులు: {total}లో {done}కి జవాబు వచ్చింది",
+    "nextAppointment": "తదుపరి: {title}, {when}"
   },
   "account": {
     "title": "మీ ఖాతా",

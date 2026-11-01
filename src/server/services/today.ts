@@ -174,6 +174,9 @@ export async function getMyToday(ctx: ServiceContext) {
       attention: today.attention,
       lastRecordedActivity: today.lastRecordedActivity,
       myOpenTasks: today.tasks?.mine.length ?? 0,
+      // Only what this person may already see on the circle's own page (null otherwise).
+      doses: today.medicines?.counts ?? null,
+      nextAppointment: today.appointments?.upcoming[0] ? { id: today.appointments.upcoming[0].id, title: today.appointments.upcoming[0].title, startsAt: today.appointments.upcoming[0].startsAt } : null,
       openHelpRequest: today.emergency?.openRequest && !today.emergency.openRequest.isPractice ? today.emergency.openRequest : null,
     });
   }
