@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { effectiveAlertSettings, wantsAlert } from "./alert-settings";
+import { effectiveAlertSettings, offersChoice, wantsAlert } from "./alert-settings";
 import { quietUntil } from "./quiet-hours";
 
 describe("quietUntil", () => {
@@ -32,12 +32,20 @@ describe("quietUntil", () => {
 });
 
 describe("alert settings", () => {
-  const none = { notifyDoseReminders: null, notifyUnconfirmedDoses: null, notifyRefills: null };
+  const none = { notifyDoseReminders: null, notifyUnconfirmedDoses: null, notifyRefills: null, notifyAppointments: null, notifyTasks: null };
 
   it("uses role defaults", () => {
-    expect(effectiveAlertSettings("care_recipient", none)).toEqual({ doseReminders: true, unconfirmedDoses: false, refills: false });
-    expect(effectiveAlertSettings("family", none)).toEqual({ doseReminders: false, unconfirmedDoses: true, refills: true });
-    expect(effectiveAlertSettings("emergency_contact", none)).toEqual({ doseReminders: false, unconfirmedDoses: false, refills: false });
+    expect(effectiveAlertSettings("care_recipient", none)).toEqual({ doseReminders: true, unconfirmedDoses: false, refills: false, appointments: true, tasks: false });
+    expect(effectiveAlertSettings("family", none)).toEqual({ doseReminders: false, unconfirmedDoses: true, refills: true, appointments: true, tasks: true });
+    expect(effectiveAlertSettings("emergency_contact", none)).toEqual({ doseReminders: false, unconfirmedDoses: false, refills: false, appointments: false, tasks: false });
+  });
+
+  it("offers appointment and task choices only to roles those alerts can reach", () => {
+    expect(offersChoice("care_recipient", "appointments")).toBe(true);
+    expect(offersChoice("family", "tasks")).toBe(true);
+    expect(offersChoice("caregiver", "tasks")).toBe(false);
+    expect(offersChoice("clinician", "appointments")).toBe(false);
+    expect(offersChoice("emergency_contact", "doseReminders")).toBe(true);
   });
 
   it("lets each person override their own defaults", () => {

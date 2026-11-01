@@ -4,7 +4,7 @@ import { LOCAL_TIME_PATTERN } from "@/server/domain/schedule";
 import { emailOutbox, memberships, notificationPreferences, notifications, users } from "@/server/db/schema";
 import { enqueueEmail } from "@/server/notifications/email";
 import { quietUntil } from "@/server/notifications/quiet-hours";
-import { effectiveAlertSettings, ALERT_KINDS, alertColumn } from "@/server/notifications/alert-settings";
+import { effectiveAlertSettings, ALERT_CAPABILITY, ALERT_KINDS, alertColumn, offersChoice } from "@/server/notifications/alert-settings";
 import { AppError } from "@/server/http";
 import { uuidSchema } from "@/server/validation";
 import { loadCircleAccess, requireWritable, type DbOrTx, type ServiceContext } from "./access";
@@ -217,7 +217,7 @@ export async function updatePreferences(ctx: ServiceContext, input: z.infer<type
 // ── Per-circle alert choices ───────────────────────────────────────────────────────────────
 
 export const alertSettingsSchema = z
-  .object({ doseReminders: z.boolean(), unconfirmedDoses: z.boolean(), refills: z.boolean() })
+  .object({ doseReminders: z.boolean(), unconfirmedDoses: z.boolean(), refills: z.boolean(), appointments: z.boolean(), tasks: z.boolean() })
   .partial()
   .refine((v) => Object.keys(v).length > 0, { message: "Nothing to update." });
 
@@ -226,7 +226,9 @@ export async function getMyAlertSettings(ctx: ServiceContext, circleId: string) 
   const [m] = await ctx.db.select().from(memberships).where(eq(memberships.id, access.membership.id));
   return {
     settings: effectiveAlertSettings(m.role, m),
-    // Medicine alerts only reach people who are allowed to see medicines.
+    // The choices that can make a difference for this person: alerts only reach people allowed to
+    // see what they're about (e.g. medicines the parent shares), and only some roles get each kind.
+    available: ALERT_KINDS.filter((k) => offersChoice(m.role, k) && access.can(ALERT_CAPABILITY[k])),
     canReceiveMedicationAlerts: access.can("medication.view"),
   };
 }

@@ -64,26 +64,32 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
         <h2 id="alerts-heading" className="text-2xl font-semibold">
           {t("alerts.title")}
         </h2>
-        {alerts.canReceiveMedicationAlerts ? (
+        {alerts.available.length > 0 ? (
           <>
-            <p className="mt-2 text-muted">{t("alerts.intro", { name })}</p>
-            {role === "admin" && <p className="mt-2 text-muted">{t("alerts.escalationNote")}</p>}
+            <p className="mt-2 text-muted">{t("alerts.introGeneral", { name })}</p>
+            <p className="mt-2 text-muted">{t("alerts.commitments")}</p>
+            {role === "admin" && alerts.canReceiveMedicationAlerts && <p className="mt-2 text-muted">{t("alerts.escalationNote")}</p>}
             <AlertSettingsForm
               url={`/api/v1/circles/${circleId}/my-alerts`}
+              kinds={alerts.available}
               settings={alerts.settings}
               labels={{
                 ...messages,
                 doseReminders: t("alerts.doseReminders"),
                 unconfirmedDoses: t("alerts.unconfirmedDoses"),
                 refills: t("alerts.refills"),
+                appointments: t("alerts.appointments", { name }),
+                tasks: t("alerts.tasks"),
                 save: t("common.save"),
                 saved: t("common.saved"),
               }}
             />
           </>
         ) : (
-          <p className="mt-2">{t("alerts.notShared", { name })}</p>
+          <p className="mt-2">{t("alerts.noneAvailable")}</p>
         )}
+        {/* Family and admins lose medicine alerts when the parent keeps medicines private; say why. */}
+        {!alerts.canReceiveMedicationAlerts && (role === "admin" || role === "family") && <p className="mt-2">{t("alerts.notShared", { name })}</p>}
       </section>
 
       <section aria-labelledby="privacy-heading" className="card">

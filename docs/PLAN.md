@@ -294,7 +294,6 @@ user is not a member of, to avoid leaking existence.
   email or the app will not ring.
 - The worker processes every active circle each tick; fine for MVP scale, needs batching for thousands of circles.
 - "I'll drive" records a person's commitment only; CareNest does not book transport.
-- Appointment and task alerts have no per-person opt-out yet (only the global email switch and quiet hours).
 - Emergency alerts reach people only through CareNest (in-app) and email. There is no SMS, push or
   automatic phone call yet, so contacts without an account must be phoned by hand (the app lists them).
 - Location is shared only for a single alert when the person ticks the box; there is no tracking.
