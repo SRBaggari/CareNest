@@ -127,6 +127,18 @@ Admins can send a clearly labelled **practice alert** to check the setup; it nev
   who looked after their information.
 - **Signed-in devices** (Account) lets you sign out a lost phone or a shared tablet remotely.
 
+## Calendar
+
+To see appointments, visits and your own tasks in Google Calendar, Apple Calendar or Outlook, open the
+circle's **Settings & privacy → Add to your calendar** and tap **Create my calendar link**. The link is
+shown once: open it in your calendar app, or copy it and add it as a subscribed calendar (the page explains
+where). Your calendar refreshes by itself; how often depends on the app (Google can take several hours).
+
+The link is private to you: anyone who has it can see these events. If it may have been shared, make a new
+link (the old one stops working) or stop it. Calendars get only titles, times, places and who is driving:
+never reasons for a visit, questions for the doctor or health notes. If you leave the circle, or the person
+you care for stops sharing appointments, your calendar stops showing them.
+
 ## 10. Languages
 
 CareNest is available in English, Hindi (हिन्दी), Telugu (తెలుగు) and Tamil (தமிழ்). Each person chooses
