@@ -289,3 +289,16 @@ Defects these tests found, both fixed in the same change:
 - Browser: one sibling adds a shared cost and sees the other owes half; the other marks it paid and both
   are settled. Expenses is in the accessibility scan (light and dark), the phone-layout check in four
   languages and the black-box two-family sweep. The demo data now includes expenses.
+
+## Update, 2026-11-01: T2-8 voice for parents
+
+- 29 unit tests: phrases in English, Hindi, Telugu and Tamil (and mixed) for "took my medicine", "need
+  help", "fine" and "not well"; a negated "I didn't take it" is never "took"; help wins over everything else;
+  anything else is not guessed at.
+- Browser (with simulated speech, as CI browsers have no voices or microphone): the day is read aloud with
+  the medicines due; speaking is off until turned on with its notice; an unclear phrase records nothing; "I
+  took my medicine" asks first and then records the dose (checked through the API); "I need help" opens the
+  normal Help confirmation and sends nothing by itself; the choice is remembered and can be turned off; the
+  voice controls pass the accessibility scan; without speech support no voice controls appear at all.
+- No new server endpoints: voice uses the existing dose and check-in APIs, whose permission, outsider,
+  signed-out and two-family tests already cover it.
