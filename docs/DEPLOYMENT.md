@@ -42,6 +42,11 @@ npm run worker              # in a second process / service
 
 Choose a database region close to your users (for families in India, e.g. Mumbai/`ap-south-1`).
 
+The database must use the **UTF8** character set (CareNest stores Hindi, Telugu and Tamil). Managed
+providers and the official Docker image use UTF8 by default; a database created on a Windows or older
+Linux server may not. `npm run db:migrate` checks this and stops with instructions if it isn't UTF8.
+To create one by hand: `CREATE DATABASE carenest ENCODING 'UTF8' TEMPLATE template0;`
+
 ## Configuration
 
 | Variable | Required | Meaning |
