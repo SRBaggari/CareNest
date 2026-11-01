@@ -113,7 +113,7 @@ export function PrivacyForm(props: {
       {error && <Alert tone="error">{error}</Alert>}
       {saved && <Alert tone="success">{l.saved}</Alert>}
       {CONSENT_KEYS.map((k) => (
-        <label key={k} className="flex min-h-12 items-center gap-3 rounded-lg border-2 border-border px-4">
+        <label key={k} className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4">
           <input type="checkbox" name={k} defaultChecked={props.consent[k]} className="size-6" />
           {l[k]}
         </label>

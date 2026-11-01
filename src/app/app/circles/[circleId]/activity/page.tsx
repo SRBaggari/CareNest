@@ -32,7 +32,7 @@ export default async function ActivityPage({ params }: PageProps<"/app/circles/[
             const meta = e.metadata as { email?: string; role?: string; name?: string };
             const vars = { email: meta.email ?? "", role: meta.role ? t(`roles.${meta.role}`) : "", name: meta.name ?? "" };
             return (
-              <li key={e.id} className="rounded-lg border border-border bg-surface p-4">
+              <li key={e.id} className="rounded-xl border border-border bg-sunken p-4">
                 <p>
                   <span className="font-semibold">{e.actor?.name ?? t("audit.someone")}</span> {t(`audit.${auditKey(e.action)}`, vars)}
                 </p>

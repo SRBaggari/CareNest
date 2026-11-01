@@ -34,7 +34,7 @@ function FieldShell({ label, hint, errors, children }: FieldShellProps) {
 }
 
 const controlClass =
-  "min-h-12 w-full rounded-lg border-2 border-border bg-surface px-3 text-lg aria-[invalid=true]:border-danger";
+  "min-h-12 w-full rounded-xl border-2 border-border bg-surface px-4 text-lg transition hover:border-muted focus:border-primary aria-[invalid=true]:border-danger";
 
 export function TextField({
   label,

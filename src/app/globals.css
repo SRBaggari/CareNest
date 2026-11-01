@@ -1,49 +1,72 @@
 @import "tailwindcss";
 
-/* Calm, high-contrast palette. All text/background pairs meet WCAG 2.1 AA (most AAA). */
+/*
+ * Warm, calm palette. Every text/background pair meets WCAG 2.1 AA (most AAA), in both themes:
+ * "*-soft" colours are tinted backgrounds for status rows and badges; their matching text colour
+ * (primary, success, warning, danger) stays readable on them.
+ */
 :root {
-  --background: #fbfaf7;
+  --background: #f6f4ef;
   --surface: #ffffff;
-  --foreground: #1c1f23;
-  --muted: #4a5159;
-  --border: #d6d3cc;
-  --primary: #1f5f8b;
+  --sunken: #efebe3;
+  --foreground: #1b2420;
+  --muted: #4b5550;
+  --border: #dcd6cb;
+  --primary: #0e6457;
   --primary-foreground: #ffffff;
-  --success: #1e6b3a;
-  --warning: #8a5a00;
-  --danger: #a3261b;
+  --primary-soft: #e2f0ec;
+  --success: #1d6b3c;
+  --success-soft: #e3f2e8;
+  --warning: #855400;
+  --warning-soft: #fbf0d6;
+  --danger: #b0281c;
+  --danger-soft: #fbe9e6;
   --focus: #c25e00;
+  --shadow-card: 0 1px 2px rgb(27 36 32 / 0.05), 0 6px 20px -8px rgb(27 36 32 / 0.12);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #111417;
-    --surface: #1a1e22;
-    --foreground: #eef0f2;
-    --muted: #b6bdc4;
-    --border: #3a4148;
-    --primary: #7cc0ee;
-    --primary-foreground: #0b1a24;
+    --background: #0f1513;
+    --surface: #17201c;
+    --sunken: #1e2924;
+    --foreground: #edf2ef;
+    --muted: #b0bdb7;
+    --border: #2e3b35;
+    --primary: #6fd3c0;
+    --primary-foreground: #05201a;
+    --primary-soft: #163731;
     --success: #7fd69c;
+    --success-soft: #163322;
     --warning: #f0c069;
+    --warning-soft: #382c10;
     --danger: #ff9b8f;
+    --danger-soft: #3d1915;
     --focus: #ffb86b;
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
   }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
   --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
   --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
   --color-danger: var(--danger);
-  --font-sans: system-ui, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", "Noto Sans Telugu",
-    "Noto Sans Tamil", sans-serif;
+  --color-danger-soft: var(--danger-soft);
+  --shadow-card: var(--shadow-card);
+  /* Atkinson Hyperlegible was designed for readers with low vision; Indian scripts fall back to Noto. */
+  --font-sans: "Atkinson Hyperlegible Next Variable", system-ui, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari",
+    "Noto Sans Telugu", "Noto Sans Tamil", sans-serif;
 }
 
 /* 18px base text: comfortable for older eyes; users can still scale with browser zoom. */
@@ -56,6 +79,33 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+/* The standard content card. */
+@utility card {
+  border-radius: 1.25rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem;
+  @media (width >= 40rem) {
+    padding: 1.5rem;
+  }
+}
+
+/* Horizontal scrollers (the circle tabs) keep their scrollbar out of the way. */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Always-visible, thick focus ring for keyboard users. */

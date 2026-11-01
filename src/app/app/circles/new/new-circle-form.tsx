@@ -55,7 +55,7 @@ export function NewCircleForm(props: {
       <fieldset className="flex flex-col gap-3">
         <legend className="mb-2 font-semibold">{l.whoCreates}</legend>
         {(["admin", "care_recipient"] as const).map((role) => (
-          <label key={role} className="flex min-h-12 items-center gap-3 rounded-lg border-2 border-border bg-surface px-4">
+          <label key={role} className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface px-4 transition hover:border-primary">
             <input
               type="radio"
               name="creatorRole"
@@ -85,7 +85,7 @@ export function NewCircleForm(props: {
             { value: "yes", label: l.selfManagingYes },
             { value: "no", label: l.selfManagingNo },
           ].map((o) => (
-            <label key={o.value} className="flex min-h-12 items-center gap-3 rounded-lg border-2 border-border bg-surface px-4">
+            <label key={o.value} className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface px-4 transition hover:border-primary">
               <input type="radio" name="selfManaging" value={o.value} defaultChecked={o.value === "yes"} className="size-6" />
               {o.label}
             </label>

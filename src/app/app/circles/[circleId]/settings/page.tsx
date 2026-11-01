@@ -33,7 +33,7 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
   return (
     <div className="flex flex-col gap-8">
       {caps.has("circle.manage") && active && (
-        <section aria-labelledby="profile-heading" className="rounded-xl border border-border bg-surface p-6">
+        <section aria-labelledby="profile-heading" className="card">
           <h2 id="profile-heading" className="text-2xl font-semibold">
             {t("circle.profileTitle")}
           </h2>
@@ -60,7 +60,7 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
         </section>
       )}
 
-      <section aria-labelledby="alerts-heading" className="rounded-xl border border-border bg-surface p-6">
+      <section aria-labelledby="alerts-heading" className="card">
         <h2 id="alerts-heading" className="text-2xl font-semibold">
           {t("alerts.title")}
         </h2>
@@ -86,7 +86,7 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
         )}
       </section>
 
-      <section aria-labelledby="privacy-heading" className="rounded-xl border border-border bg-surface p-6">
+      <section aria-labelledby="privacy-heading" className="card">
         <h2 id="privacy-heading" className="text-2xl font-semibold">
           {t("circle.privacyTitle")}
         </h2>
@@ -109,7 +109,7 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
         />
       </section>
 
-      <section aria-labelledby="autonomy-heading" className="rounded-xl border border-border bg-surface p-6">
+      <section aria-labelledby="autonomy-heading" className="card">
         <h2 id="autonomy-heading" className="text-2xl font-semibold">
           {t("circle.autonomyTitle")}
         </h2>
@@ -130,7 +130,7 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
       </section>
 
       {caps.has("circle.manage") && (
-        <section aria-labelledby="export-heading" className="rounded-xl border border-border bg-surface p-6">
+        <section aria-labelledby="export-heading" className="card">
           <h2 id="export-heading" className="text-2xl font-semibold">
             {t("data.circleExport")}
           </h2>
@@ -146,7 +146,7 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
       )}
 
       {caps.has("circle.manage") && active && (
-        <section aria-labelledby="archive-heading" className="rounded-xl border-2 border-warning bg-surface p-6">
+        <section aria-labelledby="archive-heading" className="card border-2 border-warning">
           <h2 id="archive-heading" className="text-2xl font-semibold">
             {t("circle.archiveTitle")}
           </h2>

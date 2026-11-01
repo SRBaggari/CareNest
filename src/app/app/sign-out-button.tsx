@@ -1,10 +1,11 @@
 "use client";
 
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { callApi } from "@/lib/api-client";
 
-export function SignOutButton({ label }: { label: string }) {
+export function SignOutButton({ label, className }: { label: string; className?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
 
@@ -21,9 +22,10 @@ export function SignOutButton({ label }: { label: string }) {
       onClick={signOut}
       disabled={busy}
       aria-busy={busy || undefined}
-      className="min-h-12 rounded-lg border-2 border-border px-4 font-medium"
+      className={className ?? "inline-flex min-h-12 items-center gap-2 rounded-xl border-2 border-border px-4 font-semibold hover:border-primary hover:text-primary"}
     >
-      {label}
+      <LogOut aria-hidden="true" className="size-5" />
+      <span>{label}</span>
     </button>
   );
 }

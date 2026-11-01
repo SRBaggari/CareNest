@@ -66,9 +66,9 @@ export default async function TimelinePage({ params, searchParams }: PageProps<"
         {kinds && <input type="hidden" name="kinds" value={kinds} />}
         <label className="flex flex-col gap-1">
           <span className="font-semibold">{t("timeline.searchLabel")}</span>
-          <input type="search" name="q" defaultValue={q} maxLength={100} className="min-h-12 rounded-lg border-2 border-border bg-surface px-3 text-lg" />
+          <input type="search" name="q" defaultValue={q} maxLength={100} className="min-h-12 rounded-xl border-2 border-border bg-surface px-4 focus:border-primary text-lg" />
         </label>
-        <button type="submit" className="min-h-12 rounded-lg bg-primary px-5 font-semibold text-primary-foreground">
+        <button type="submit" className="min-h-12 rounded-xl bg-primary px-5 text-lg font-semibold text-primary-foreground shadow-sm transition hover:brightness-110">
           {t("timeline.search")}
         </button>
       </form>
@@ -95,7 +95,7 @@ export default async function TimelinePage({ params, searchParams }: PageProps<"
           const { title, detail } = describe(item, t, name);
           const late = item.recordedAt && Math.abs(item.recordedAt.getTime() - item.at.getTime()) > 30 * 60_000;
           return (
-            <li key={item.id} className="flex flex-col gap-1 rounded-lg border border-border bg-surface p-4">
+            <li key={item.id} className="flex flex-col gap-1 rounded-xl border border-border bg-sunken p-4">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <Link href={item.link} className="text-lg font-semibold hover:underline">
                   {item.isCorrection && <span className="mr-2 text-warning">{t("timeline.correction")}:</span>}
@@ -116,7 +116,7 @@ export default async function TimelinePage({ params, searchParams }: PageProps<"
         })}
       </ol>
       {result.nextBefore && (
-        <Link href={link({ before: result.nextBefore })} className="self-start rounded-lg border-2 border-border px-5 py-3 font-semibold">
+        <Link href={link({ before: result.nextBefore })} className="self-start rounded-xl border-2 border-border bg-surface transition hover:border-primary px-5 py-3 font-semibold">
           {t("timeline.older")}
         </Link>
       )}

@@ -138,12 +138,12 @@ export default async function AssistancePage({ params }: PageProps<"/app/circles
           </h2>
           <ul className="flex flex-col gap-2">
             {r.contactsWithoutAlerts.map((c) => (
-              <li key={`${c.name}-${c.phone}`} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4">
+              <li key={`${c.name}-${c.phone}`} className="flex flex-wrap items-center justify-between gap-3 card">
                 <span className="text-lg font-semibold">
                   {c.name}
                   {c.relationship && <span className="font-normal text-muted"> · {c.relationship}</span>}
                 </span>
-                <a href={`tel:${c.phone}`} className="inline-flex min-h-12 items-center rounded-lg bg-primary px-5 font-semibold text-primary-foreground">
+                <a href={`tel:${c.phone}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-lg font-semibold text-primary-foreground shadow-sm transition hover:brightness-110">
                   📞 {c.phone}
                 </a>
               </li>

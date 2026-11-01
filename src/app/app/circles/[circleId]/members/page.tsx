@@ -41,7 +41,7 @@ export default async function MembersPage({ params }: PageProps<"/app/circles/[c
           {members.map((m) => {
             const isMe = m.userId === session.user.id;
             return (
-              <li key={m.id} className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
+              <li key={m.id} className="flex flex-col gap-3 card">
                 <div>
                   <p className="text-lg font-semibold">
                     {m.name} {isMe && <span className="font-normal text-muted">{t("circle.you")}</span>}
@@ -98,7 +98,7 @@ export default async function MembersPage({ params }: PageProps<"/app/circles/[c
 
       {canManage && (
         <>
-          <section aria-labelledby="invite-heading" className="rounded-xl border border-border bg-surface p-6">
+          <section aria-labelledby="invite-heading" className="card">
             <h2 id="invite-heading" className="text-2xl font-semibold">
               {t("circle.invite")}
             </h2>
@@ -130,7 +130,7 @@ export default async function MembersPage({ params }: PageProps<"/app/circles/[c
             ) : (
               <ul className="mt-4 flex flex-col gap-3">
                 {pending.map((inv) => (
-                  <li key={inv.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-5">
+                  <li key={inv.id} className="flex flex-wrap items-center justify-between gap-3 card">
                     <div>
                       <p className="break-all font-semibold">{inv.email}</p>
                       <p>{t(`roles.${inv.role}`)}</p>

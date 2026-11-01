@@ -57,7 +57,7 @@ export function HelpButton({ url, circleId, practice, labels }: { url: string; c
         onClick={() => setStage("confirm")}
         className={
           practice
-            ? "min-h-12 self-start rounded-lg border-2 border-border px-5 font-semibold"
+            ? "min-h-12 self-start rounded-xl border-2 border-border bg-surface transition hover:border-primary px-5 font-semibold"
             : "min-h-24 w-full rounded-2xl bg-danger px-6 text-3xl font-bold text-primary-foreground sm:w-auto sm:min-w-96"
         }
       >
@@ -80,9 +80,9 @@ export function HelpButton({ url, circleId, practice, labels }: { url: string; c
       {note && <Alert>{note}</Alert>}
       <label className="flex flex-col gap-1">
         <span className="font-semibold">{labels.message}</span>
-        <textarea name="message" maxLength={500} className="min-h-20 w-full rounded-lg border-2 border-border bg-surface p-3 text-lg" />
+        <textarea name="message" maxLength={500} className="min-h-20 w-full rounded-xl border-2 border-border bg-surface px-4 focus:border-primary text-lg" />
       </label>
-      <label className="flex min-h-12 items-center gap-3 rounded-lg border-2 border-border px-4">
+      <label className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4">
         <input type="checkbox" name="shareLocation" className="size-6" />
         {labels.shareLocation}
       </label>

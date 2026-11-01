@@ -9,7 +9,7 @@ import { useApiSubmit } from "@/lib/api-client";
 import { isoToZonedInput, zonedInputToIso } from "@/lib/zoned";
 
 type Option = { value: string; label: string };
-const textareaClass = "min-h-20 w-full rounded-lg border-2 border-border bg-surface p-3 text-lg";
+const textareaClass = "min-h-20 w-full rounded-xl border-2 border-border bg-surface px-4 focus:border-primary text-lg";
 
 export function TaskForm(props: {
   method: "POST" | "PATCH";
@@ -62,7 +62,7 @@ export function TaskForm(props: {
     );
   }
   return (
-    <form onSubmit={onSubmit} noValidate className="flex w-full max-w-2xl flex-col gap-5 rounded-xl border-2 border-primary bg-surface p-5">
+    <form onSubmit={onSubmit} noValidate className="flex w-full max-w-2xl flex-col gap-5 card border-2 border-primary">
       {error && <Alert tone="error">{error}</Alert>}
       <TextField label={l.title} hint={l.titleHint} name="title" defaultValue={initial?.title} required errors={fieldErrors.title} />
       <label className="flex flex-col gap-1">
