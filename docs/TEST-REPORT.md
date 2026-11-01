@@ -273,3 +273,19 @@ Defects these tests found, both fixed in the same change:
 - Browser: the family opens Reports from the navigation, sees medicines, readings and notes, narrows the
   period, and downloads the CSV. Reports is in the accessibility scan (light and dark) and the phone-layout
   check in four languages; the black-box two-family sweep now includes the summary and the CSV.
+
+## Update, 2026-11-01: T2-7 expenses
+
+- 13 unit tests: exact amounts (no floating point; refuses zero, three decimals and typos with extra
+  zeros), equal splits where the payer absorbs leftover paisa, custom splits that must add up, balances per
+  currency (never converted), settle-up in few payments that is the same for everyone, and a deleted
+  account grouped as a former member who is never asked to pay. Two new permissions in the role matrix.
+- 11 integration tests: equal, custom and payer-only splits; balances and settle-up; quiet notifications to
+  the people sharing a cost; validation of amounts, dates, people and splits (caregivers are never part of
+  shared costs); recording and removing a payment; currencies kept apart; only the person who added an
+  entry or a circle manager can remove it; closed to caregivers, clinicians and emergency contacts; 404 for
+  outsiders and 401 when signed out; two families never mixed; history kept when an account is deleted;
+  formula-safe CSV and inclusion in the circle's data export.
+- Browser: one sibling adds a shared cost and sees the other owes half; the other marks it paid and both
+  are settled. Expenses is in the accessibility scan (light and dark), the phone-layout check in four
+  languages and the black-box two-family sweep. The demo data now includes expenses.

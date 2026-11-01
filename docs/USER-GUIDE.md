@@ -186,6 +186,26 @@ medical record. You see only the parts you're allowed to see: if the parent does
 health details with you, those sections are left out. Making a report or downloading readings is noted in
 the circle's activity log.
 
+## Expenses
+
+Open **Expenses** (under Family) to keep track of care costs the family shares, such as medicines,
+physiotherapy, a caregiver's wages or a taxi to hospital.
+
+- **Add an expense**: what it was for, the amount, who paid and the date. Choose how it's shared: **split
+  equally** between the people you tick, **different amounts** for each person (they must add up to the
+  total), or **not shared** if the payer is covering it. When a total can't be split exactly, the payer
+  takes the extra paisa.
+- **Where everyone stands** shows who should pay whom to settle up, in as few payments as possible. When
+  someone has paid, press **Mark as paid** (or **Record a payment** for any other amount).
+- Costs in different currencies (rupees and pounds, say) are kept apart; CareNest never converts them.
+- The people sharing a cost see it in their notifications and evening summary. Nothing is ever charged:
+  CareNest only keeps the record.
+
+Expenses are seen by the family and the person receiving care, not by caregivers (who may be the ones
+being paid), doctors or emergency contacts. The person who added an entry, or someone who manages the
+circle, can remove it; it stays in the activity log. **Download all (CSV)** gives the full list for a
+spreadsheet, and expenses are part of the circle's data download.
+
 ## Calendar
 
 To see appointments, visits and your own tasks in Google Calendar, Apple Calendar or Outlook, open the

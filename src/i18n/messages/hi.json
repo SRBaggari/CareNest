@@ -218,7 +218,8 @@
     "health": "सेहत",
     "documents": "दस्तावेज़",
     "messages": "संदेश",
-    "reports": "रिपोर्ट"
+    "reports": "रिपोर्ट",
+    "expenses": "ख़र्च"
   },
   "invite": {
     "title": "आपको आमंत्रित किया गया है",
@@ -289,7 +290,11 @@
     "document_version_added": "ने {name} की नई कॉपी जोड़ी",
     "document_removed": "ने सेहत का दस्तावेज़ {name} हटाया",
     "report_generated": "ने देखभाल की सारांश रिपोर्ट बनाई",
-    "measurement_exported": "ने सेहत की रीडिंग स्प्रेडशीट फ़ाइल के रूप में डाउनलोड कीं"
+    "measurement_exported": "ने सेहत की रीडिंग स्प्रेडशीट फ़ाइल के रूप में डाउनलोड कीं",
+    "expense_added": "ने एक ख़र्च जोड़ा",
+    "expense_removed": "ने एक ख़र्च हटाया",
+    "expense_settlement_recorded": "ने परिवार के बीच एक भुगतान दर्ज किया",
+    "expense_settlement_removed": "ने दर्ज किया गया एक भुगतान हटाया"
   },
   "meds": {
     "dayTitle": "{date} की खुराकें",
@@ -459,7 +464,11 @@
     "messageTitle": "{author} ने “{title}” में लिखा",
     "messageForYouTitle": "{author} चाहते हैं कि आप “{title}” पढ़ें",
     "messageEmailSubject": "{author} ने CareNest में आपको संदेश भेजा",
-    "messageEmailBody": "{author} ने आपसे “{title}” में एक संदेश पढ़ने को कहा है। CareNest खोलें: {link}"
+    "messageEmailBody": "{author} ने आपसे “{title}” में एक संदेश पढ़ने को कहा है। CareNest खोलें: {link}",
+    "expenseTitle": "{name} ने एक ख़र्च जोड़ा: {what}",
+    "expenseBody": "कुल {amount}; आपका हिस्सा {share}। {link}",
+    "settlementTitle": "{name} ने एक भुगतान दर्ज किया",
+    "settlementBody": "{from} ने {to} को {amount} दिए। {link}"
   },
   "inbox": {
     "title": "सूचनाएँ",
@@ -1067,5 +1076,55 @@
     "since": "{date} से",
     "prescriber": "{name} द्वारा लिखी गई",
     "readingCount": "रीडिंग: {count}"
+  },
+  "expenses": {
+    "title": "ख़र्च",
+    "intro": "देखभाल के ख़र्च जो परिवार बाँटता है: किसने भुगतान किया, और किसे किसका देना है। CareNest केवल हिसाब रखता है; यह पैसे नहीं भेजता।",
+    "notAllowed": "साझा ख़र्च केवल परिवार और {name} देख सकते हैं।",
+    "standing": "किसका कितना हिसाब है",
+    "settled": "सबका हिसाब बराबर है।",
+    "pays": "{from} को {to} को {amount} देने हैं",
+    "markPaid": "भुगतान हो गया",
+    "markPaidConfirm": "दर्ज करें कि {from} ने {to} को {amount} दिए?",
+    "isOwed": "{name} को {amount} मिलने हैं",
+    "owes": "{name} को {amount} देने हैं",
+    "formerMember": "पूर्व सदस्य",
+    "add": "ख़र्च जोड़ें",
+    "description": "यह किस लिए था?",
+    "descriptionHint": "जैसे “अक्टूबर की फ़िज़ियोथेरेपी” या “व्हीलचेयर का किराया”।",
+    "amount": "राशि",
+    "currency": "मुद्रा",
+    "category": "ख़र्च का प्रकार",
+    "cat_medicine": "दवाइयाँ",
+    "cat_doctor": "डॉक्टर और जाँच",
+    "cat_caregiver": "देखभाल करने वाले",
+    "cat_transport": "आना-जाना",
+    "cat_household": "घर का सामान",
+    "cat_equipment": "उपकरण",
+    "cat_other": "अन्य",
+    "spentOn": "तारीख़",
+    "paidBy": "किसने भुगतान किया?",
+    "split": "इसे कैसे बाँटा जाए?",
+    "split_equal": "बराबर बाँटें",
+    "split_custom": "अलग-अलग राशि",
+    "split_payer_only": "बाँटा नहीं (केवल भुगतान करने वाला)",
+    "sharedBy": "किनके बीच",
+    "customHint": "हर व्यक्ति का हिस्सा। सभी हिस्से मिलकर कुल राशि के बराबर हों।",
+    "note": "नोट (वैकल्पिक)",
+    "save": "ख़र्च जोड़ें",
+    "recordPayment": "भुगतान दर्ज करें",
+    "payFrom": "किसने दिया",
+    "payTo": "किसे दिया",
+    "savePayment": "भुगतान दर्ज करें",
+    "historyTitle": "सभी ख़र्च",
+    "paymentsTitle": "परिवार के बीच भुगतान",
+    "paidByOn": "{name} ने भुगतान किया · {date}",
+    "paymentLine": "{from} ने {to} को {amount} दिए",
+    "notShared": "बाँटा नहीं गया",
+    "remove": "हटाएँ",
+    "removeConfirm": "यह ख़र्च हटाएँ? यह गतिविधि लॉग में बना रहेगा।",
+    "removePaymentConfirm": "यह भुगतान हटाएँ? यह गतिविधि लॉग में बना रहेगा।",
+    "none": "अभी कोई ख़र्च नहीं। जब कोई किसी चीज़ का भुगतान करे, तो पहला ख़र्च जोड़ें।",
+    "download": "सब डाउनलोड करें (CSV)"
   }
 }

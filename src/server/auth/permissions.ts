@@ -27,6 +27,8 @@ export const CAPABILITIES = [
   "emergency.view",
   "emergency.raise",
   "audit.view",
+  "expense.view",
+  "expense.record",
 ] as const;
 export type Capability = (typeof CAPABILITIES)[number];
 
@@ -118,6 +120,12 @@ const MATRIX: Matrix = {
   "emergency.view": { care_recipient: true, admin: true, family: true, caregiver: true, clinician: true, emergency_contact: true },
   "emergency.raise": { care_recipient: true, admin: true, family: true, caregiver: true, emergency_contact: true },
   "audit.view": { care_recipient: true, admin: true },
+  /**
+   * Shared care costs are a family matter. Caregivers don't see them (they may be the person being
+   * paid); neither do clinicians or emergency contacts.
+   */
+  "expense.view": { care_recipient: true, admin: true, family: true },
+  "expense.record": { care_recipient: true, admin: true, family: true },
 };
 
 export function can(member: MemberContext, profile: ProfileContext, capability: Capability): boolean {

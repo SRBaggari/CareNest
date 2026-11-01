@@ -141,6 +141,31 @@ test("the family prepares a summary for the doctor and downloads the readings @p
   expect(csv).toContain(",blood_pressure,128,82,mmHg,,proxy,Meena,After the morning walk");
 });
 
+test("a sibling adds a shared cost; the other sees what they owe and marks it paid @phone", async ({ browser }) => {
+  const priya = await new Actor("Priya").register();
+  const ravi = await new Actor("Ravi").register();
+  const circleId = await circleWith(priya, [[ravi, "family"]]);
+
+  const page = await pageAs(browser, priya);
+  await page.goto(`/app/circles/${circleId}/expenses`);
+  await expect(page.getByText("Everyone is settled up.")).toBeVisible();
+  await page.getByRole("button", { name: "Add an expense" }).click();
+  await page.getByLabel("What was it for?").fill("October physiotherapy");
+  await page.getByLabel("Amount", { exact: true }).fill("1200");
+  await page.getByRole("button", { name: "Add expense" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Done." })).toBeVisible();
+  await expect(page.getByRole("listitem").filter({ hasText: "October physiotherapy" }).getByText("₹1,200.00")).toBeVisible();
+  await expect(page.getByText("Ravi pays Priya ₹600.00")).toHaveCount(1);
+
+  const sibling = await pageAs(browser, ravi);
+  await sibling.goto(`/app/circles/${circleId}/expenses`);
+  await expect(sibling.getByText("Ravi owes ₹600.00")).toBeVisible();
+  sibling.once("dialog", (d) => d.accept());
+  await sibling.getByRole("button", { name: "Mark as paid" }).click();
+  await expect(sibling.getByText("Everyone is settled up.")).toBeVisible();
+  await expect(sibling.getByText("Ravi paid Priya ₹600.00")).toBeVisible();
+});
+
 test("a caregiver photographs a prescription; the family opens it and the document shows who looked @phone", async ({ browser }) => {
   const owner = await new Actor("Priya").register();
   const caregiver = await new Actor("Meena").register("Asia/Kolkata");

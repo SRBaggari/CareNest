@@ -134,6 +134,13 @@
       "when": 1793533493867,
       "tag": "0018_messages",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1793538891887,
+      "tag": "0019_expenses",
+      "breakpoints": true
     }
   ]
 }

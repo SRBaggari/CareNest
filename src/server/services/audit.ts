@@ -37,6 +37,7 @@ const AUDIT_CATEGORY_CAPABILITY: [prefix: string, capability: Capability][] = [
   ["appointment", "appointment.view"],
   ["measurement", "health.view"],
   ["document", "health.view"],
+  ["expense", "expense.view"],
 ];
 
 export async function listAuditEvents(ctx: ServiceContext, circleId: string, options: { before?: Date; limit?: number } = {}) {
