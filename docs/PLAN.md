@@ -294,7 +294,9 @@ user is not a member of, to avoid leaking existence.
   verified against a real provider yet. Without `SMTP_URL`, emails are logged and shown as "not sent".
 - Notifications are in-app and email only: no push or SMS yet (Tier 2), so a phone that is not checking
   email or the app will not ring.
-- The worker processes every active circle each tick; fine for MVP scale, needs batching for thousands of circles.
+- Dose preparation is batched: each tick is one query to find circles whose schedule changed (new local day,
+  medicine added/edited/stopped) plus one statement for overdue doses. Reminders and alerts are claimed per
+  due item. Thousands of circles are fine; much larger scale would want sharding the worker by circle.
 - "I'll drive" records a person's commitment only; CareNest does not book transport.
 - Emergency alerts reach people only through CareNest (in-app) and email. There is no SMS, push or
   automatic phone call yet, so contacts without an account must be phoned by hand (the app lists them).

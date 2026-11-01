@@ -1,0 +1,1 @@
+ALTER TABLE "care_profiles" ADD COLUMN "doses_prepared_key" text;
