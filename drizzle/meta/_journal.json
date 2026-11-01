@@ -85,6 +85,13 @@
       "when": 1793525641901,
       "tag": "0011_daily_digest",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793526246025,
+      "tag": "0012_appointment_task_alert_choices",
+      "breakpoints": true
     }
   ]
 }

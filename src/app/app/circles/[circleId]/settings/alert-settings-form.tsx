@@ -6,12 +6,14 @@ import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useApiSubmit } from "@/lib/api-client";
 
-const KINDS = ["doseReminders", "unconfirmedDoses", "refills"] as const;
+type Kind = "doseReminders" | "unconfirmedDoses" | "refills" | "appointments" | "tasks";
 
+/** One switch per alert kind that can reach this person; the server says which those are. */
 export function AlertSettingsForm(props: {
   url: string;
-  settings: Record<(typeof KINDS)[number], boolean>;
-  labels: Record<(typeof KINDS)[number] | "network" | "generic" | "fixErrors" | "save" | "saved", string>;
+  kinds: Kind[];
+  settings: Record<Kind, boolean>;
+  labels: Record<Kind | "network" | "generic" | "fixErrors" | "save" | "saved", string>;
 }) {
   const { labels: l } = props;
   const router = useRouter();
@@ -22,7 +24,7 @@ export function AlertSettingsForm(props: {
     event.preventDefault();
     setSaved(false);
     const f = new FormData(event.currentTarget);
-    if (await submit("PUT", props.url, Object.fromEntries(KINDS.map((k) => [k, f.get(k) === "on"])))) setSaved(true);
+    if (await submit("PUT", props.url, Object.fromEntries(props.kinds.map((k) => [k, f.get(k) === "on"])))) setSaved(true);
     router.refresh();
   }
 
@@ -30,9 +32,9 @@ export function AlertSettingsForm(props: {
     <form onSubmit={onSubmit} className="mt-4 flex flex-col gap-3">
       {error && <Alert tone="error">{error}</Alert>}
       {saved && <Alert tone="success">{l.saved}</Alert>}
-      {KINDS.map((k) => (
-        <label key={k} className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4">
-          <input type="checkbox" name={k} defaultChecked={props.settings[k]} className="size-6" />
+      {props.kinds.map((k) => (
+        <label key={k} className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface px-4 py-2 transition hover:border-primary">
+          <input type="checkbox" name={k} defaultChecked={props.settings[k]} className="size-6 shrink-0" />
           {l[k]}
         </label>
       ))}

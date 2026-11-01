@@ -119,6 +119,8 @@ export const memberships = pgTable(
     notifyDoseReminders: boolean("notify_dose_reminders"),
     notifyUnconfirmedDoses: boolean("notify_unconfirmed_doses"),
     notifyRefills: boolean("notify_refills"),
+    notifyAppointments: boolean("notify_appointments"),
+    notifyTasks: boolean("notify_tasks"),
   },
   (t) => [unique("memberships_circle_user_unique").on(t.circleId, t.userId), index("memberships_user_idx").on(t.userId)],
 );

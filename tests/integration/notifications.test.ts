@@ -128,13 +128,29 @@ describe("per-circle alert choices", () => {
     const url = `/api/v1/circles/${circle.id}/my-alerts`;
 
     const defaults = await (await getMyAlerts(apiRequest("GET", url, { cookie: caregiver.cookie }), p)).json();
-    expect(defaults).toEqual({ settings: { doseReminders: true, unconfirmedDoses: true, refills: true }, canReceiveMedicationAlerts: true });
+    expect(defaults).toEqual({
+      settings: { doseReminders: true, unconfirmedDoses: true, refills: true, appointments: false, tasks: false },
+      // Caregivers only hear about appointments and tasks they've taken on, so there's nothing to choose there.
+      available: ["doseReminders", "unconfirmedDoses", "refills"],
+      canReceiveMedicationAlerts: true,
+    });
 
     const res = await putMyAlerts(apiRequest("PUT", url, { cookie: caregiver.cookie, body: { refills: false } }), p);
-    expect((await res.json()).settings).toEqual({ doseReminders: true, unconfirmedDoses: true, refills: false });
+    expect((await res.json()).settings).toMatchObject({ doseReminders: true, unconfirmedDoses: true, refills: false });
 
     const ownerView = await (await getMyAlerts(apiRequest("GET", url, { cookie: owner.cookie }), p)).json();
-    expect(ownerView.settings).toEqual({ doseReminders: false, unconfirmedDoses: true, refills: true });
+    expect(ownerView.settings).toEqual({ doseReminders: false, unconfirmedDoses: true, refills: true, appointments: true, tasks: true });
+    expect(ownerView.available).toEqual(["doseReminders", "unconfirmedDoses", "refills", "appointments", "tasks"]);
+
+    const off = await putMyAlerts(apiRequest("PUT", url, { cookie: owner.cookie, body: { appointments: false, tasks: false } }), p);
+    expect((await off.json()).settings).toMatchObject({ appointments: false, tasks: false });
+  });
+
+  it("needs a signed-in member", async () => {
+    const owner = await signUp();
+    const circle = await createTestCircle(owner);
+    const url = `/api/v1/circles/${circle.id}/my-alerts`;
+    expect((await putMyAlerts(apiRequest("PUT", url, { body: { tasks: false } }), params({ circleId: circle.id }))).status).toBe(401);
   });
 
   it("is 404 for non-members", async () => {

@@ -459,12 +459,16 @@
   },
   "alerts": {
     "title": "My alerts for this circle",
-    "intro": "Choose which medicine alerts you get for {name}. These choices only affect you.",
     "doseReminders": "Reminders when a medicine is due",
     "unconfirmedDoses": "Alerts when a dose hasn't been confirmed",
     "refills": "Alerts when a medicine is running low",
     "notShared": "You won't get medicine alerts because {name} has chosen not to share medicines with family.",
-    "escalationNote": "Admins always receive urgent follow-ups if a dose stays unconfirmed and nobody is checking."
+    "escalationNote": "Admins always receive urgent follow-ups if a dose stays unconfirmed and nobody is checking.",
+    "introGeneral": "Choose which alerts you get about {name}. These choices only affect you.",
+    "appointments": "Appointment reminders, and alerts when nobody has offered to take {name}",
+    "tasks": "Alerts about tasks nobody has taken on, or that are overdue",
+    "commitments": "You always hear about things you've taken on yourself, such as a task assigned to you or a drive you offered.",
+    "noneAvailable": "There are no alerts for you to choose in this circle."
   },
   "appts": {
     "upcoming": "Upcoming appointments",

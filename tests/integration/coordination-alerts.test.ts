@@ -4,6 +4,7 @@ import { notifications } from "@/server/db/schema";
 import { assignHelper, createAppointment, updateAppointment } from "@/server/services/appointments";
 import { putConsentFor } from "../helpers/consent";
 import { claimTask, completeTask, createTask } from "@/server/services/tasks";
+import { updateMyAlertSettings } from "@/server/services/notifications";
 import { runTick } from "@/server/worker/tick";
 import { createTeam } from "../helpers/circles";
 import { setupTestDb } from "../helpers/db";
@@ -119,3 +120,39 @@ describe("task alerts: nothing silently forgotten", () => {
     expect((await inbox(admin, "task_overdue")).map((n) => n.title)).toEqual(["Overdue: Collect report"]);
   });
 });
+
+describe("choosing not to get appointment and task alerts", () => {
+  it("stops driver requests and reminders for whoever opts out, but never for the person driving", async () => {
+    const { admin, family, elder, circle, as } = await createTeam(db());
+    await updateMyAlertSettings(as(family, T0), circle.id, { appointments: false });
+    await updateMyAlertSettings(as(elder, T0), circle.id, { appointments: false });
+    const appt = await createAppointment(as(admin, T0), circle.id, { title: "Cardiology", kind: "in_person", transportNeeded: true, startsAt: at(30).toISOString() });
+    await runTick(db(), at(1));
+    expect(await inbox(family, "transport_needed")).toHaveLength(0);
+    expect(await inbox(admin, "transport_needed")).toHaveLength(1);
+
+    // Ravi opted out, but once he offers to drive he's told about the appointment anyway.
+    await assignHelper(as(family, at(2)), circle.id, appt.id, { role: "transport", memberId: family.memberId });
+    await runTick(db(), at(7));
+    expect(await inbox(family, "appointment_reminder")).toHaveLength(1);
+    expect(await inbox(elder, "appointment_reminder")).toHaveLength(0);
+  });
+
+  it("stops unclaimed and overdue task alerts for organisers who opt out, but never for the assignee", async () => {
+    const { admin, family, circle, as } = await createTeam(db());
+    await updateMyAlertSettings(as(family, T0), circle.id, { tasks: false });
+    await updateMyAlertSettings(as(admin, T0), circle.id, { tasks: false });
+    await createTask(as(admin, T0), circle.id, { title: "Buy BP medicine", dueAt: at(30).toISOString() });
+    await runTick(db(), T0);
+    expect(await inbox(family, "task_unassigned")).toHaveLength(0);
+    expect(await inbox(admin, "task_unassigned")).toHaveLength(0);
+
+    await createTask(as(admin, T0), circle.id, { title: "Pay hospital bill", dueAt: at(5).toISOString(), assigneeMemberId: family.memberId });
+    await runTick(db(), at(2.5));
+    expect(await inbox(family, "task_due")).toHaveLength(1);
+    await runTick(db(), at(29.5));
+    expect(await inbox(family, "task_overdue")).toHaveLength(1);
+    expect(await inbox(admin, "task_overdue")).toHaveLength(0);
+  });
+});
+

@@ -103,7 +103,10 @@ Admins can send a clearly labelled **practice alert** to check the setup; it nev
 - **Daily summary.** Everyday news (a visit that went fine, an ordinary update such as "I'm fine today")
   doesn't email you one by one. Instead, at 6 pm your time you get one email listing what you haven't
   already seen in the app — titles only, no details. Turn it off under Account → Notifications.
-- Each circle lets you choose your own alerts: medicine reminders, unconfirmed doses, running low.
+- Each circle lets you choose your own alerts (Settings & privacy → My alerts): medicine reminders,
+  unconfirmed doses, running low, appointment reminders and driver requests, and unclaimed or overdue
+  tasks. Alerts about something you've taken on yourself — a task assigned to you, a drive you
+  offered — always reach you.
   Admins always receive urgent follow-ups if a dose stays unconfirmed and nobody is checking.
 - Tap **I'm checking on it** on an alert so the rest of the family knows someone is on it.
 

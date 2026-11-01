@@ -5,6 +5,7 @@
 import { and, eq, gt, inArray, isNotNull, isNull, lte, sql } from "drizzle-orm";
 import type { Db } from "@/server/db";
 import { appointments, careProfiles, memberships, tasks, users, visits } from "@/server/db/schema";
+import { wantsAlert } from "@/server/notifications/alert-settings";
 import { appUrl, circleAudience, translatorFor, type AudienceMember } from "@/server/notifications/audience";
 import { notifyUsers, type NewNotification } from "@/server/services/notifications";
 
@@ -84,8 +85,12 @@ export async function sendAppointmentReminders(db: Db, now: Date) {
       memberNames(db, [a.transportMemberId, a.companionMemberId]),
     ]);
     const helpers = new Set([a.transportMemberId, a.companionMemberId].filter(Boolean));
+    // Whoever is driving or going along always hears; the parent and organisers can opt out.
     const recipients = audience.filter(
-      (m) => m.can("appointment.view") && (m.role === "care_recipient" || helpers.has(m.memberId) || (helpers.size === 0 && m.can("appointment.manage") && m.role !== "clinician")),
+      (m) =>
+        m.can("appointment.view") &&
+        (helpers.has(m.memberId) ||
+          ((m.role === "care_recipient" || (helpers.size === 0 && m.can("appointment.manage") && m.role !== "clinician")) && wantsAlert(m.role, m.overrides, "appointments"))),
     );
     const link = `/app/circles/${a.circleId}/appointments`;
     await notifyUsers(
@@ -136,7 +141,9 @@ export async function sendTransportAlerts(db: Db, now: Date) {
   for (const a of claimed) {
     const [profile, audience] = await Promise.all([profileOf(db, a.circleId), circleAudience(db, a.circleId, now)]);
     const link = `/app/circles/${a.circleId}/appointments`;
-    const recipients = audience.filter((m) => m.can("appointment.view") && (m.role === "admin" || m.role === "family"));
+    const recipients = audience.filter(
+      (m) => m.can("appointment.view") && (m.role === "admin" || m.role === "family") && wantsAlert(m.role, m.overrides, "appointments"),
+    );
     await notifyUsers(
       db,
       now,
@@ -211,7 +218,9 @@ export async function sendUnassignedTaskAlerts(db: Db, now: Date) {
     )
     .returning();
   for (const task of claimed) {
-    const audience = (await circleAudience(db, task.circleId, now)).filter((m) => m.can("task.manage") && m.role !== "care_recipient");
+    const audience = (await circleAudience(db, task.circleId, now)).filter(
+      (m) => m.can("task.manage") && m.role !== "care_recipient" && wantsAlert(m.role, m.overrides, "tasks"),
+    );
     const items: Item[] = [];
     for (const r of audience) {
       const { t, link, vars } = await taskTexts(db, task, r, now);
@@ -247,7 +256,10 @@ export async function sendOverdueTaskAlerts(db: Db, now: Date) {
   for (const task of claimed) {
     const audience = await circleAudience(db, task.circleId, now);
     const names = await memberNames(db, [task.assigneeMemberId]);
-    const recipients = audience.filter((m) => m.memberId === task.assigneeMemberId || (m.role === "admin" && m.can("task.view")));
+    // The person who took the task on always hears; admins can opt out.
+    const recipients = audience.filter(
+      (m) => m.memberId === task.assigneeMemberId || (m.role === "admin" && m.can("task.view") && wantsAlert(m.role, m.overrides, "tasks")),
+    );
     const items: Item[] = [];
     for (const r of recipients) {
       const { t, link, vars } = await taskTexts(db, task, r, now);
