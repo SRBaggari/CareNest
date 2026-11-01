@@ -275,6 +275,7 @@ user is not a member of, to avoid leaking existence.
 | M6 Caregiver & timeline | Nov 21 – 24 | Visits check-in/out, observations, handover, care updates, unified timeline with corrections | ✅ done (tag `m6`) |
 | M7 Emergency | Nov 24 – 27 | Contacts, info card, assistance request, alert sequence, acknowledgments, failure visibility | ✅ done (tag `m7`) |
 | M8 Dashboards & hardening | Nov 27 – Dec 1 | ✅ backend: today/dashboard APIs, data export & account deletion, retention, real-PostgreSQL tests, Docker + compose + CI deploy smoke test, deployment guide, user guide, labelled demo seed · ✅ UI: Simple view for the person receiving care, family/caregiver Today dashboard, home-page circle status, data download & account deletion buttons, new visual design (palette, Atkinson Hyperlegible, icons) · ✅ Playwright + axe browser tests in CI, incl. no sideways scrolling on phones in all four languages · ✅ full hi/te/ta translations (pending native-speaker review) | ✅ |
+| Tier 1 completion | Nov 1 | ✅ daily digest of everyday news · per-person appointment/task alert choices · instant circle navigation (skeletons) · Scenario C browser test + two-family isolation sweep · batched dose preparation · UTF8 database guard · fixed: visit lists leaked across circles | ✅ (tag `tier1`) |
 
 ## 12. Known limitations (MVP)
 
