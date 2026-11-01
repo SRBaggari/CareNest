@@ -99,6 +99,13 @@
       "when": 1793528361377,
       "tag": "0013_dose_preparation_key",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1793528957930,
+      "tag": "0014_web_push",
+      "breakpoints": true
     }
   ]
 }
