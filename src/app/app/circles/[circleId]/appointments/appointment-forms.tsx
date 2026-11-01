@@ -8,7 +8,7 @@ import { SelectField, TextField } from "@/components/ui/field";
 import { useApiSubmit } from "@/lib/api-client";
 import { isoToZonedInput, zonedInputToIso } from "@/lib/zoned";
 
-const textareaClass = "min-h-24 w-full rounded-lg border-2 border-border bg-surface p-3 text-lg";
+const textareaClass = "min-h-24 w-full rounded-xl border-2 border-border bg-surface px-4 focus:border-primary text-lg";
 
 type Initial = {
   title: string;
@@ -70,7 +70,7 @@ export function AppointmentForm(props: {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex w-full max-w-2xl flex-col gap-5 rounded-xl border-2 border-primary bg-surface p-5">
+    <form onSubmit={onSubmit} noValidate className="flex w-full max-w-2xl flex-col gap-5 card border-2 border-primary">
       {error && <Alert tone="error">{error}</Alert>}
       <TextField label={l.title} hint={l.titleHint} name="title" defaultValue={initial?.title} required errors={fieldErrors.title} />
       <SelectField
@@ -95,7 +95,7 @@ export function AppointmentForm(props: {
         <textarea name="questions" defaultValue={initial?.questions ?? ""} className={textareaClass} maxLength={4000} />
       </label>
       {kind === "in_person" && (
-        <label className="flex min-h-12 items-center gap-3 rounded-lg border-2 border-border px-4">
+        <label className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4">
           <input type="checkbox" name="transportNeeded" defaultChecked={initial?.transportNeeded ?? true} className="size-6" />
           {l.transportNeeded}
         </label>
@@ -144,7 +144,7 @@ export function OutcomeForm(props: { url: string; labels: Record<string, string>
     );
   }
   return (
-    <form onSubmit={onSubmit} className="flex w-full max-w-2xl flex-col gap-4 rounded-xl border-2 border-primary bg-surface p-5">
+    <form onSubmit={onSubmit} className="flex w-full max-w-2xl flex-col gap-4 card border-2 border-primary">
       {error && <Alert tone="error">{error}</Alert>}
       {(["outcomeNote", "followUp"] as const).map((k) => (
         <label key={k} className="flex flex-col gap-1">

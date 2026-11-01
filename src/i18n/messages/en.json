@@ -26,7 +26,8 @@
     "copied": "Link copied.",
     "notAllowed": "You don't have permission to see this.",
     "notifications": "Notifications",
-    "notificationsUnread": "Notifications ({count} unread)"
+    "notificationsUnread": "Notifications ({count} unread)",
+    "notificationsShort": "Alerts"
   },
   "landing": {
     "getStarted": "Get started",

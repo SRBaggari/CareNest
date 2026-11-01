@@ -29,7 +29,7 @@ export default async function UpdatesPage({ params }: PageProps<"/app/circles/[c
     <div className="flex flex-col gap-6">
       <p className="text-lg text-muted">{t("updates.intro", { name })}</p>
       {canPost && (
-        <section className="rounded-xl border border-border bg-surface p-5">
+        <section className="card">
           <SimpleForm
             method="POST"
             url={url}

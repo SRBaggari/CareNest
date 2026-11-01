@@ -61,7 +61,7 @@ export default async function EmergencyPage({ params }: PageProps<"/app/circles/
 
       {canRaise && !openRequest && <HelpButton url={`${base}/requests`} circleId={circleId} labels={helpLabels} />}
 
-      <section aria-labelledby="card-heading" className="rounded-xl border border-border bg-surface p-5">
+      <section aria-labelledby="card-heading" className="card">
         <h2 id="card-heading" className="text-2xl font-semibold">
           {t("emergency.infoTitle")}
         </h2>
@@ -123,7 +123,7 @@ export default async function EmergencyPage({ params }: PageProps<"/app/circles/
         {contacts.length === 0 && <p>{t("emergency.noContacts")}</p>}
         <ul className="flex flex-col gap-3">
           {contacts.map((c) => (
-            <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4">
+            <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 card">
               <div>
                 <p className="text-lg font-semibold">
                   {c.name}
@@ -134,7 +134,7 @@ export default async function EmergencyPage({ params }: PageProps<"/app/circles/
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <a href={`tel:${c.phone}`} className="inline-flex min-h-12 items-center rounded-lg bg-primary px-5 font-semibold text-primary-foreground">
+                <a href={`tel:${c.phone}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-lg font-semibold text-primary-foreground shadow-sm transition hover:brightness-110">
                   📞 {c.phone}
                 </a>
                 {canEdit && (
@@ -181,7 +181,7 @@ export default async function EmergencyPage({ params }: PageProps<"/app/circles/
         <ul className="flex flex-col gap-2">
           {requests.map((r) => (
             <li key={r.id}>
-              <Link href={`/app/circles/${circleId}/emergency/${r.id}`} className="flex flex-wrap justify-between gap-2 rounded-lg border border-border bg-surface p-4 hover:border-primary">
+              <Link href={`/app/circles/${circleId}/emergency/${r.id}`} className="flex flex-wrap justify-between gap-2 rounded-xl border border-border bg-sunken p-4 hover:border-primary">
                 <span className="font-semibold">
                   {r.isPractice && <span className="mr-2 text-warning">{t("emergency.practiceBadge")}</span>}
                   {t("emergency.raisedBy", { name: r.raisedBy ?? t("audit.someone"), when: fmt(r.createdAt) })}

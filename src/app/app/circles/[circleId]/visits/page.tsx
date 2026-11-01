@@ -61,7 +61,7 @@ export default async function VisitsPage({ params }: PageProps<"/app/circles/[ci
     const mine = v.visitor?.memberId === me.id;
     const late = v.status === "planned" && v.plannedStart.getTime() < ctx.now.getTime();
     return (
-      <li key={v.id} className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-5">
+      <li key={v.id} className="flex flex-col gap-2 card">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h3 className="text-xl font-semibold">{v.visitor?.name ?? t("audit.someone")}</h3>
           <span className={`font-semibold ${late ? "text-warning" : "text-muted"}`}>{late ? t("visits.notChecked") : t(`visits.status_${v.status}`)}</span>

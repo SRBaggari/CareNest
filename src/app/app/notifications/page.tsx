@@ -57,7 +57,7 @@ export default async function NotificationsPage() {
                 {n.emailStatus && <p className="text-muted">{t(`inbox.email_${n.emailStatus}`)}</p>}
                 <div className="flex flex-wrap items-start gap-3">
                   {n.link && (
-                    <Link href={n.link} className="inline-flex min-h-12 items-center rounded-lg bg-primary px-5 font-semibold text-primary-foreground">
+                    <Link href={n.link} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-lg font-semibold text-primary-foreground shadow-sm transition hover:brightness-110">
                       {t("inbox.open")}
                     </Link>
                   )}

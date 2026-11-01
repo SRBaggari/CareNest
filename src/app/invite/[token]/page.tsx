@@ -18,7 +18,7 @@ export default function InvitePage({ params }: PageProps<"/invite/[token]">) {
       <Link href="/" className="mb-8 text-2xl font-bold text-primary">
         CareNest
       </Link>
-      <main id="main" className="w-full max-w-lg rounded-xl border border-border bg-surface p-6 sm:p-8">
+      <main id="main" className="w-full max-w-lg card sm:p-8">
         <Suspense fallback={<p aria-busy="true">…</p>}>
           <Invite params={params} />
         </Suspense>
@@ -76,13 +76,13 @@ async function Invite({ params }: { params: PageProps<"/invite/[token]">["params
         <div className="flex flex-wrap gap-3">
           <Link
             href={`/login?next=${encodeURIComponent(returnTo)}`}
-            className="inline-flex min-h-12 items-center rounded-lg bg-primary px-5 font-semibold text-primary-foreground"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-lg font-semibold text-primary-foreground shadow-sm transition hover:brightness-110"
           >
             {t("invite.signInToAccept")}
           </Link>
           <Link
             href={`/register?next=${encodeURIComponent(returnTo)}`}
-            className="inline-flex min-h-12 items-center rounded-lg border-2 border-border px-5 font-semibold"
+            className="inline-flex min-h-12 items-center rounded-xl border-2 border-border bg-surface transition hover:border-primary px-5 font-semibold"
           >
             {t("invite.createToAccept")}
           </Link>

@@ -34,7 +34,7 @@ export function NotificationPreferencesForm(props: {
     <form onSubmit={onSubmit} noValidate className="mt-4 flex max-w-xl flex-col gap-5">
       {error && <Alert tone="error">{error}</Alert>}
       {saved && <Alert tone="success">{l.saved}</Alert>}
-      <label className="flex min-h-12 items-center gap-3 rounded-lg border-2 border-border px-4">
+      <label className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4">
         <input type="checkbox" name="emailEnabled" defaultChecked={p.emailEnabled} className="size-6" />
         {l.email}
       </label>

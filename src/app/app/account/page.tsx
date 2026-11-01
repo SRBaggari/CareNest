@@ -38,7 +38,7 @@ export default async function AccountPage() {
     <div lang={locale} className="flex flex-col gap-10">
       <h1 className="text-3xl font-bold">{t("account.title")}</h1>
 
-      <section aria-labelledby="profile-heading" className="rounded-xl border border-border bg-surface p-6">
+      <section aria-labelledby="profile-heading" className="card">
         <h2 id="profile-heading" className="text-2xl font-semibold">
           {t("account.profile")}
         </h2>
@@ -50,7 +50,7 @@ export default async function AccountPage() {
         />
       </section>
 
-      <section aria-labelledby="notif-heading" className="rounded-xl border border-border bg-surface p-6">
+      <section aria-labelledby="notif-heading" className="card">
         <h2 id="notif-heading" className="text-2xl font-semibold">
           {t("prefs.title")}
         </h2>
@@ -69,7 +69,7 @@ export default async function AccountPage() {
         />
       </section>
 
-      <section aria-labelledby="password-heading" className="rounded-xl border border-border bg-surface p-6">
+      <section aria-labelledby="password-heading" className="card">
         <h2 id="password-heading" className="text-2xl font-semibold">
           {t("account.security")}
         </h2>
@@ -85,7 +85,7 @@ export default async function AccountPage() {
         />
       </section>
 
-      <section aria-labelledby="devices-heading" className="rounded-xl border border-border bg-surface p-6">
+      <section aria-labelledby="devices-heading" className="card">
         <h2 id="devices-heading" className="text-2xl font-semibold">
           {t("account.devices")}
         </h2>
@@ -100,7 +100,7 @@ export default async function AccountPage() {
           labels={{ ...common, thisDevice: t("account.thisDevice"), signOutDevice: t("account.signOutDevice") }}
         />
       </section>
-      <section aria-labelledby="data-heading" className="rounded-xl border border-border bg-surface p-6">
+      <section aria-labelledby="data-heading" className="card">
         <h2 id="data-heading" className="text-2xl font-semibold">
           {t("data.title")}
         </h2>
@@ -115,7 +115,7 @@ export default async function AccountPage() {
         <p className="mt-2 text-muted">{t("data.downloadHint")}</p>
       </section>
 
-      <section aria-labelledby="delete-heading" className="rounded-xl border-2 border-danger bg-surface p-6">
+      <section aria-labelledby="delete-heading" className="card border-2 border-danger">
         <h2 id="delete-heading" className="text-2xl font-semibold">
           {t("data.deleteTitle")}
         </h2>

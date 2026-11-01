@@ -85,13 +85,13 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
             {t("meds.dayTitle", { date: dayLabel })}
           </h2>
           <nav aria-label={t("meds.dayTitle", { date: dayLabel })} className="flex flex-wrap gap-2">
-            <Link href={`${base}?date=${addDays(day.fromDate, -1)}`} className="inline-flex min-h-12 items-center rounded-lg border-2 border-border px-4 font-medium">
+            <Link href={`${base}?date=${addDays(day.fromDate, -1)}`} className="inline-flex min-h-12 items-center rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4 font-medium">
               ← {t("meds.previousDay")}
             </Link>
-            <Link href={base} className="inline-flex min-h-12 items-center rounded-lg border-2 border-border px-4 font-medium">
+            <Link href={base} className="inline-flex min-h-12 items-center rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4 font-medium">
               {t("meds.today")}
             </Link>
-            <Link href={`${base}?date=${addDays(day.fromDate, 1)}`} className="inline-flex min-h-12 items-center rounded-lg border-2 border-border px-4 font-medium">
+            <Link href={`${base}?date=${addDays(day.fromDate, 1)}`} className="inline-flex min-h-12 items-center rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4 font-medium">
               {t("meds.nextDay")} →
             </Link>
           </nav>
@@ -107,7 +107,7 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
               const recorder = dose.recordedBy?.name ?? t("audit.someone");
               const recorded = dose.status !== "scheduled" && dose.status !== "unconfirmed";
               return (
-                <li key={dose.id} className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
+                <li key={dose.id} className="flex flex-col gap-3 card">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <p className="text-xl font-semibold">
@@ -171,7 +171,7 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
           </h2>
           <ul className="flex flex-col gap-3">
             {asNeeded.map((m) => (
-              <li key={m.id} className="rounded-xl border border-border bg-surface p-5">
+              <li key={m.id} className="card">
                 <p className="text-lg font-semibold">
                   {m.name} · {m.dosage}
                 </p>
@@ -195,7 +195,7 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
           {activeMeds.map((m) => {
             const left = daysOfSupply(m.supplyCount, (m.daysOfWeek ? m.daysOfWeek.length / 7 : 1) * m.times.length, m.unitsPerDose);
             return (
-              <li key={m.id} className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-5">
+              <li key={m.id} className="flex flex-col gap-2 card">
                 <p className="text-lg font-semibold">
                   {m.name} · {m.dosage}
                 </p>
@@ -260,7 +260,7 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
       </section>
 
       {stoppedMeds.length > 0 && (
-        <details className="rounded-xl border border-border bg-surface p-5">
+        <details className="card">
           <summary className="min-h-12 cursor-pointer text-lg font-semibold">{t("meds.stoppedTitle", { count: stoppedMeds.length })}</summary>
           <ul className="mt-3 flex flex-col gap-2">
             {stoppedMeds.map((m) => (

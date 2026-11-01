@@ -10,7 +10,7 @@ import { useApiSubmit } from "@/lib/api-client";
 type Messages = { network: string; generic: string; fixErrors: string };
 type Status = "taken" | "administered" | "skipped" | "refused";
 
-const textareaClass = "min-h-24 w-full rounded-lg border-2 border-border bg-surface p-3 text-lg";
+const textareaClass = "min-h-24 w-full rounded-xl border-2 border-border bg-surface px-4 focus:border-primary text-lg";
 
 /**
  * One-tap confirmation for "taken"/"given"; skipping or refusing opens a short optional form for a
@@ -262,7 +262,7 @@ export function MedicationForm(props: {
 
   const everyDay = days === null;
   return (
-    <form onSubmit={onSubmit} noValidate className="flex w-full max-w-2xl flex-col gap-5 rounded-xl border-2 border-primary bg-surface p-5">
+    <form onSubmit={onSubmit} noValidate className="flex w-full max-w-2xl flex-col gap-5 card border-2 border-primary">
       <p className="text-muted">{l.formIntro}</p>
       {error && <Alert tone="error">{error}</Alert>}
       <TextField label={l.name} name="name" defaultValue={initial?.name} required errors={fieldErrors.name} />
@@ -274,7 +274,7 @@ export function MedicationForm(props: {
         <TextField label={l.endDate} name="endDate" type="date" defaultValue={initial?.endDate ?? ""} errors={fieldErrors.endDate} />
       </div>
 
-      <label className="flex min-h-12 items-center gap-3 rounded-lg border-2 border-border px-4">
+      <label className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4">
         <input type="checkbox" checked={asNeeded} onChange={(e) => setAsNeeded(e.target.checked)} className="size-6" />
         {l.asNeededField}
       </label>
@@ -290,7 +290,7 @@ export function MedicationForm(props: {
                   aria-label={`${l.times} ${i + 1}`}
                   value={time}
                   onChange={(e) => setTimes(times.map((v, j) => (j === i ? e.target.value : v)))}
-                  className="min-h-12 rounded-lg border-2 border-border bg-surface px-3 text-lg"
+                  className="min-h-12 rounded-xl border-2 border-border bg-surface px-4 focus:border-primary text-lg"
                 />
                 {times.length > 1 && (
                   <Button type="button" variant="secondary" onClick={() => setTimes(times.filter((_, j) => j !== i))}>
@@ -316,7 +316,7 @@ export function MedicationForm(props: {
             {!everyDay && (
               <div className="flex flex-wrap gap-2">
                 {props.weekdays.map((d) => (
-                  <label key={d.value} className="flex min-h-12 items-center gap-2 rounded-lg border-2 border-border px-3">
+                  <label key={d.value} className="flex min-h-12 items-center gap-2 rounded-xl border-2 border-border bg-surface transition hover:border-primary px-3">
                     <input
                       type="checkbox"
                       checked={days!.includes(d.value)}

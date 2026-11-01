@@ -15,7 +15,7 @@ export type SimpleField =
   /** A date-time typed in `timeZone` (the care recipient's), sent as an ISO instant. */
   | { name: string; type: "zoned-datetime"; label: string; hint?: string; required?: boolean };
 
-const textareaClass = "min-h-24 w-full rounded-lg border-2 border-border bg-surface p-3 text-lg";
+const textareaClass = "min-h-24 w-full rounded-xl border-2 border-border bg-surface px-4 focus:border-primary text-lg";
 
 /**
  * A small form described by data, so server components can render it: a button opens it, it
@@ -91,7 +91,7 @@ export function SimpleForm(props: {
             return <SelectField key={field.name} label={field.label} hint={field.hint} name={field.name} defaultValue={field.defaultValue} options={field.options} errors={errors} />;
           case "checkbox":
             return (
-              <label key={field.name} className="flex min-h-12 items-center gap-3 rounded-lg border-2 border-border px-4">
+              <label key={field.name} className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4">
                 <input type="checkbox" name={field.name} defaultChecked={field.defaultChecked} className="size-6" />
                 {field.label}
               </label>

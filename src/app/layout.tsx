@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import "@fontsource-variable/atkinson-hyperlegible-next";
 import "./globals.css";
 
 export const metadata: Metadata = {

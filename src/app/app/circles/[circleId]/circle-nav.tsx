@@ -1,24 +1,50 @@
 "use client";
 
+import { CalendarDays, ClipboardList, DoorOpen, History, LayoutDashboard, ListChecks, MessageSquareText, Pill, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 
-export function CircleNav({ tabs, label }: { tabs: { href: string; label: string }[]; label: string }) {
+// Icons are looked up here because components can't be passed from the server layout.
+const icons = {
+  overview: LayoutDashboard,
+  medicines: Pill,
+  appointments: CalendarDays,
+  tasks: ListChecks,
+  visits: DoorOpen,
+  updates: MessageSquareText,
+  timeline: History,
+  members: Users,
+  settings: Settings,
+  activity: ClipboardList,
+};
+
+export type CircleTab = { href: string; label: string; icon: keyof typeof icons };
+
+/** One row of tabs that scrolls sideways on small screens instead of wrapping into a wall of links. */
+export function CircleNav({ tabs, label }: { tabs: CircleTab[]; label: string }) {
   const pathname = usePathname();
+  const current = useRef<HTMLAnchorElement>(null);
+  // Keep the current tab in view when the row is scrolled.
+  useEffect(() => current.current?.scrollIntoView({ block: "nearest", inline: "center" }), [pathname]);
+
   return (
-    <nav aria-label={label} className="border-b border-border">
-      <ul className="flex flex-wrap gap-1">
+    <nav aria-label={label} className="-mx-4 sm:mx-0">
+      <ul className="scrollbar-none flex gap-1 overflow-x-auto px-4 pb-1 sm:flex-wrap sm:px-0">
         {tabs.map((tab) => {
-          const current = pathname === tab.href;
+          const active = pathname === tab.href;
+          const Icon = icons[tab.icon];
           return (
-            <li key={tab.href}>
+            <li key={tab.href} className="shrink-0">
               <Link
+                ref={active ? current : undefined}
                 href={tab.href}
-                aria-current={current ? "page" : undefined}
-                className={`inline-flex min-h-12 items-center border-b-4 px-4 font-semibold ${
-                  current ? "border-primary text-primary" : "border-transparent text-muted hover:text-foreground"
+                aria-current={active ? "page" : undefined}
+                className={`inline-flex min-h-12 items-center gap-2 rounded-full px-4 font-semibold transition ${
+                  active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted hover:bg-surface hover:text-foreground"
                 }`}
               >
+                <Icon aria-hidden="true" className="size-5" />
                 {tab.label}
               </Link>
             </li>

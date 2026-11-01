@@ -129,7 +129,7 @@ export default async function AppointmentsPage({ params }: PageProps<"/app/circl
         {upcoming.length === 0 && <p className="text-muted">{t("appts.none")}</p>}
         <ol className="flex flex-col gap-4">
           {upcoming.map((a) => (
-            <li key={a.id} className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
+            <li key={a.id} className="flex flex-col gap-3 card">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h3 className="text-xl font-semibold">{a.title}</h3>
                 {a.status !== "scheduled" && <span className="font-semibold text-muted">{t(`appts.status_${a.status}`)}</span>}
@@ -169,7 +169,7 @@ export default async function AppointmentsPage({ params }: PageProps<"/app/circl
         {past.length === 0 && <p className="text-muted">{t("appts.nonePast")}</p>}
         <ol className="flex flex-col gap-3">
           {past.map((a) => (
-            <li key={a.id} className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-5">
+            <li key={a.id} className="flex flex-col gap-2 card">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h3 className="text-lg font-semibold">{a.title}</h3>
                 {a.status !== "scheduled" && <span className="font-semibold text-muted">{t(`appts.status_${a.status}`)}</span>}

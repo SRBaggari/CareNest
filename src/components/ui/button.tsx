@@ -1,26 +1,36 @@
 import type { ButtonHTMLAttributes } from "react";
 
 const variants = {
-  primary: "bg-primary text-primary-foreground",
-  secondary: "border-2 border-border bg-surface text-foreground",
-  danger: "border-2 border-danger bg-surface text-danger",
+  primary: "bg-primary text-primary-foreground shadow-sm hover:brightness-110",
+  secondary: "border-2 border-border bg-surface text-foreground hover:border-primary hover:text-primary",
+  danger: "border-2 border-danger bg-surface text-danger hover:bg-danger-soft",
+  dangerSolid: "bg-danger text-primary-foreground shadow-sm hover:brightness-110",
+  ghost: "text-foreground hover:bg-sunken",
 };
+
+const sizes = {
+  md: "min-h-12 gap-2 rounded-xl px-5 text-lg",
+  lg: "min-h-14 gap-3 rounded-2xl px-6 text-xl",
+};
+
+export type ButtonVariant = keyof typeof variants;
+
+/** Shared by <Button> and links styled as buttons, so both look and size the same. */
+export function buttonClass(variant: ButtonVariant = "primary", size: keyof typeof sizes = "md") {
+  return `inline-flex items-center justify-center font-semibold transition disabled:opacity-60 ${sizes[size]} ${variants[variant]}`;
+}
 
 /** 48px minimum touch target; shows a busy state without changing the label's meaning. */
 export function Button({
   variant = "primary",
+  size = "md",
   busy = false,
   className = "",
   children,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: keyof typeof variants; busy?: boolean }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant; size?: keyof typeof sizes; busy?: boolean }) {
   return (
-    <button
-      className={`inline-flex min-h-12 items-center justify-center rounded-lg px-5 text-lg font-semibold disabled:opacity-60 ${variants[variant]} ${className}`}
-      disabled={busy || props.disabled}
-      aria-busy={busy || undefined}
-      {...props}
-    >
+    <button className={`${buttonClass(variant, size)} ${className}`} disabled={busy || props.disabled} aria-busy={busy || undefined} {...props}>
       {children}
     </button>
   );
