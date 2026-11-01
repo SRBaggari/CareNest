@@ -29,7 +29,15 @@ describe("getTranslator", () => {
   });
 
   it("falls back to English for untranslated keys, then to the key itself", () => {
-    expect(getTranslator("te")("landing.featureMedsTitle")).toBe("Medicines, clearly tracked");
+    // Every key is translated now, so remove one Telugu string for the duration of the test.
+    const landing = catalogs.te.landing as Record<string, string>;
+    const saved = landing.featureMedsTitle;
+    delete landing.featureMedsTitle;
+    try {
+      expect(getTranslator("te")("landing.featureMedsTitle")).toBe("Medicines, clearly tracked");
+    } finally {
+      landing.featureMedsTitle = saved;
+    }
     expect(getTranslator("ta")("does.not.exist")).toBe("does.not.exist");
   });
 
@@ -74,24 +82,25 @@ describe("audit action labels", () => {
   });
 });
 
-describe("Simple view translations", () => {
-  it("are complete in every language, because the parent's own screen must not fall back to English", () => {
-    const english = flattenKeys(catalogs.en).filter((k) => k.startsWith("simple."));
-    expect(english.length).toBeGreaterThan(30);
-    for (const locale of LOCALES) {
-      const have = new Set(flattenKeys(catalogs[locale]));
-      expect([locale, english.filter((k) => !have.has(k))]).toEqual([locale, []]);
-    }
+describe("translations", () => {
+  const english = flattenKeys(catalogs.en);
+  const placeholders = (text: string) => (text.match(/\{\w+\}/g) ?? []).sort();
+
+  // Missing strings would silently show English to someone who chose Hindi, Telugu or Tamil;
+  // on the parent's own screen and in emergency alerts that is not acceptable.
+  it.each(LOCALES.filter((l) => l !== "en"))("%s translates every English string", (locale) => {
+    const have = new Set(flattenKeys(catalogs[locale]));
+    expect(english.filter((k) => !have.has(k))).toEqual([]);
   });
 
-  it("keep every {placeholder} so names and times are filled in", () => {
+  it.each(LOCALES.filter((l) => l !== "en"))("%s keeps every {placeholder} so names and times are filled in", (locale) => {
     const en = getTranslator("en");
-    for (const locale of LOCALES) {
-      const t = getTranslator(locale);
-      for (const key of flattenKeys(catalogs.en).filter((k) => k.startsWith("simple."))) {
-        const wanted = (en(key).match(/\{\w+\}/g) ?? []).sort();
-        expect([locale, key, (t(key).match(/\{\w+\}/g) ?? []).sort()]).toEqual([locale, key, wanted]);
-      }
-    }
+    const t = getTranslator(locale);
+    const wrong = english.filter((key) => placeholders(t(key)).join() !== placeholders(en(key)).join());
+    expect(wrong).toEqual([]);
+  });
+
+  it("keeps the literal word DELETE in the account-deletion prompt, because that is what must be typed", () => {
+    for (const locale of LOCALES) expect(getTranslator(locale)("data.confirmLabel")).toContain("DELETE");
   });
 });
