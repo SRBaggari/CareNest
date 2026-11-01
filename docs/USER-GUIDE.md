@@ -106,13 +106,9 @@ Admins can send a clearly labelled **practice alert** to check the setup; it nev
 
 ## 9. Your data and privacy
 
-> The download and delete actions below are available through the CareNest API today
-> (`GET /api/v1/me/export`, `GET /api/v1/circles/:id/export`, `DELETE /api/v1/me`); buttons on the
-> Account and Settings pages arrive with the next design update.
-
-- **Download my data**: everything CareNest holds about you.
-- Circle admins (and a parent managing their own care) can download the circle's complete record.
-- **Delete my account** needs your password. It is refused while you are the only person who can
+- **Download my data** (Account → Your data): everything CareNest holds about you.
+- Circle admins (and a parent managing their own care) can download the circle's complete record (Settings & privacy).
+- **Delete my account** (Account) needs your password and typing DELETE. It is refused while you are the only person who can
   manage a circle — make someone else an admin first. Care notes you wrote stay in your parent's
   history, but your name is removed from them.
 - The **Activity log** (admins and the parent) shows who changed what, so your parent can always see
