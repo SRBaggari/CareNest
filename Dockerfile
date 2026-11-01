@@ -20,6 +20,9 @@ ENV NODE_ENV=production \
 WORKDIR /app
 # tsx (used by the worker and migrations) is a dev dependency, so the full install is kept.
 COPY --from=build --chown=node:node /app ./
+# Uploaded health documents live here (a volume in production); it must belong to the app user.
+ENV DOCUMENT_STORAGE_DIR=/data/documents
+RUN mkdir -p /data/documents && chown -R node:node /data
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \

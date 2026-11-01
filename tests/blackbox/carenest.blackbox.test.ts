@@ -158,6 +158,13 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
       await zed.post(z("/emergency/contacts"), { name: "Zebra Contact", phone: "+91 90000 00099" });
       expect((await zelda.post(z("/emergency/requests"), { message: "Zebra help" })).status).toBe(201);
       await zed.post(z("/invitations"), { email: "zebra@example.test", role: "family" });
+      // A real file upload: also proves the server (e.g. the Docker image) can store documents.
+      const form = new FormData();
+      form.set("title", "Zebra scan");
+      form.set("category", "report");
+      form.set("file", new File([new TextEncoder().encode("%PDF-1.7 zebra")], "zebra.pdf", { type: "application/pdf" }));
+      const uploaded = await fetch(`${BASE}${z("/documents")}`, { method: "POST", headers: { cookie: zoe.cookie, origin: BASE, "x-forwarded-for": zoe.ip }, body: form });
+      expect(uploaded.status).toBe(201);
       // Control: the other family does see all of it, so a clean result below means something.
       for (const [path, marker] of [
         ["/visits", "Zebra live visit"],
@@ -169,6 +176,7 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
         ["/invitations", "zebra@example.test"],
         ["/timeline", "Zebra"],
         ["/export", "Zebramycin"],
+        ["/documents", "Zebra scan"],
       ]) {
         expect([path, (await zed.get(z(path))).text.includes(marker)]).toEqual([path, true]);
       }
@@ -203,6 +211,7 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
           "/audit",
           "/today",
           "/export",
+          "/documents",
         ].map((p) => [priya, m(p)] as [Actor, string]),
         [priya, "/api/v1/me/today"],
         [priya, "/api/v1/me/export"],

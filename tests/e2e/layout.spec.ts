@@ -17,7 +17,7 @@ for (const locale of ["en", "hi", "te", "ta"]) {
 
     const page = await pageAs(browser, owner, { viewport: { width: 360, height: 800 } });
     const base = `/app/circles/${circleId}`;
-    const paths = ["/app", "/app/notifications", "/app/account", base, ...["medicines", "health", "appointments", "tasks", "visits", "updates", "timeline", "members", "settings", "emergency", "activity"].map((p) => `${base}/${p}`)];
+    const paths = ["/app", "/app/notifications", "/app/account", base, ...["medicines", "health", "documents", "appointments", "tasks", "visits", "updates", "timeline", "members", "settings", "emergency", "activity"].map((p) => `${base}/${p}`)];
     const wide: string[] = [];
     for (const path of paths) {
       // Measure the settled page: before the web font loads, text briefly lays out in a fallback font.

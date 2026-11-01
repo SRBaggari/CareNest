@@ -424,6 +424,64 @@ export const calendarFeeds = pgTable(
   (t) => [index("calendar_feeds_user_circle_idx").on(t.userId, t.circleId)],
 );
 
+// ── Health documents (Tier 2) ────────────────────────────────────────────────────────────────
+
+/**
+ * A health document (prescription, report, discharge summary…) with one or more versions. Removing a
+ * document deletes its files; the row stays (with who removed it) so the activity log still makes sense.
+ */
+export const documents = pgTable(
+  "documents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    category: text("category", { enum: ["prescription", "report", "discharge", "insurance", "other"] }).notNull(),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+    removedAt: timestamp("removed_at", { withTimezone: true }),
+    removedBy: uuid("removed_by").references(() => users.id, { onDelete: "set null" }),
+  },
+  (t) => [index("documents_circle_idx").on(t.circleId, t.createdAt)],
+);
+
+/** One uploaded file. The storage key is random; the file name is only shown, never used on disk. */
+export const documentVersions = pgTable(
+  "document_versions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+    storageKey: text("storage_key").notNull().unique(),
+    filename: text("filename").notNull(),
+    contentType: text("content_type").notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    sha256: text("sha256").notNull(),
+    note: text("note"),
+    uploadedBy: uuid("uploaded_by").references(() => users.id, { onDelete: "set null" }),
+    uploadedAt: timestamp("uploaded_at", { withTimezone: true }).notNull(),
+  },
+  (t) => [index("document_versions_document_idx").on(t.documentId, t.uploadedAt)],
+);
+
+/** Who opened which document, and when: shown on the document so families can see who looked at it. */
+export const documentAccess = pgTable(
+  "document_access",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+    versionId: uuid("version_id").references(() => documentVersions.id, { onDelete: "set null" }),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    at: timestamp("at", { withTimezone: true }).notNull(),
+  },
+  (t) => [index("document_access_document_idx").on(t.documentId, t.at)],
+);
+
 // ── Appointments (M5) ────────────────────────────────────────────────────────────────────────
 
 export const appointments = pgTable(

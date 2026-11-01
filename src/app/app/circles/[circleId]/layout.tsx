@@ -61,7 +61,12 @@ async function CircleHeader({ params }: { params: LayoutProps<"/app/circles/[cir
   const tabs: CircleTab[] = [
     { href: base, label: t("circle.overview"), icon: "overview" },
     ...(can("medication.view") ? [{ href: `${base}/medicines`, label: t("circle.medicines"), icon: "medicines" } as const] : []),
-    ...(can("health.view") ? [{ href: `${base}/health`, label: t("circle.health"), icon: "health" } as const] : []),
+    ...(can("health.view")
+      ? ([
+          { href: `${base}/health`, label: t("circle.health"), icon: "health" },
+          { href: `${base}/documents`, label: t("circle.documents"), icon: "documents" },
+        ] as const)
+      : []),
     ...(can("appointment.view") ? [{ href: `${base}/appointments`, label: t("circle.appointments"), icon: "appointments" } as const] : []),
     ...(can("task.view") ? [{ href: `${base}/tasks`, label: t("circle.tasks"), icon: "tasks" } as const] : []),
     ...(can("update.view")

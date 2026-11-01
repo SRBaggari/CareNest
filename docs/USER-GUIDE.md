@@ -144,6 +144,17 @@ admin; the activity log notes that it was removed.
 At the top, **How … has been** shows the parent's answers to "How are you today?" on their Simple view for
 the last two weeks.
 
+## Documents
+
+Keep prescriptions, test reports, discharge summaries and insurance papers under the **Documents** tab.
+Add a PDF or a photo (up to 10 MB): on a phone you can take the photo straight from the form. Give it a
+name such as "Blood test, March". **Open** shows it, **Download** saves it. If a clearer copy arrives,
+upload a newer copy: older versions are kept.
+
+Documents are health details: only people the parent shares health details with can see or add them.
+Each document lists who opened it and when. Whoever added a document, or an admin, can remove it; that
+deletes its files for good, and the activity log keeps a note.
+
 ## Calendar
 
 To see appointments, visits and your own tasks in Google Calendar, Apple Calendar or Outlook, open the

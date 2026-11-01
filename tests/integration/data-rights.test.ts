@@ -161,7 +161,7 @@ describe("circle export respects the parent's sharing choices", () => {
     const limited = await exportAs();
     for (const text of ["Metformin", "Cardiology", "Dizzy", "Breathless"]) expect([text, limited.includes(text)]).toEqual([text, false]);
     expect(limited).toContain("Went to the temple");
-    expect(JSON.parse(limited).withheld).toEqual(["medications", "doses", "appointments", "health and mood notes", "visit notes", "health readings"]);
+    expect(JSON.parse(limited).withheld).toEqual(["medications", "doses", "appointments", "health and mood notes", "visit notes", "health readings", "health documents"]);
   });
 });
 

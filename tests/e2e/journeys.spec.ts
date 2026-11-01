@@ -106,6 +106,29 @@ test("a caregiver records blood pressure; the family sees the latest reading and
   await expect(family.getByText(/doesn't judge readings/)).toBeVisible();
 });
 
+test("a caregiver photographs a prescription; the family opens it and the document shows who looked @phone", async ({ browser }) => {
+  const owner = await new Actor("Priya").register();
+  const caregiver = await new Actor("Meena").register("Asia/Kolkata");
+  const circleId = await circleWith(owner, [[caregiver, "caregiver"]]);
+
+  const phone = await pageAs(browser, caregiver);
+  await phone.goto(`/app/circles/${circleId}/documents`);
+  await phone.getByLabel("File (a PDF or a photo, up to 10 MB)").setInputFiles({ name: "prescription.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.7 %%EOF") });
+  await phone.getByLabel("Name", { exact: true }).fill("Dr Rao's prescription");
+  await phone.getByLabel("Type").selectOption("prescription");
+  await phone.getByRole("button", { name: "Upload" }).click();
+  await expect(phone.getByText("Document added.")).toBeVisible();
+
+  const family = await pageAs(browser, owner);
+  await family.goto(`/app/circles/${circleId}/documents`);
+  await expect(family.getByRole("heading", { name: "Dr Rao's prescription" })).toBeVisible();
+  const opened = await family.request.get(await family.getByRole("link", { name: "Open" }).getAttribute("href") as string);
+  expect(opened.headers()["content-type"]).toBe("application/pdf");
+  await family.reload();
+  await family.getByText(/Versions and who opened it/).click();
+  await expect(family.getByText(/Priya opened it/)).toBeVisible();
+});
+
 test("Scenario D: a missing driver shows on the dashboard until someone offers", async ({ browser }) => {
   const owner = await new Actor("Priya").register();
   const circleId = await circleWith(owner);
