@@ -310,6 +310,10 @@ export const notificationPreferences = pgTable("notification_preferences", {
   /** Quiet hours in the user's own time zone ("HH:MM"); critical alerts ignore them. */
   quietStart: text("quiet_start"),
   quietEnd: text("quiet_end"),
+  /** One evening email listing the day's low-priority news (visits, everyday updates) instead of none. */
+  digestEnabled: boolean("digest_enabled").notNull().default(true),
+  /** When the last digest was queued; the worker claims a person's day with it so only one is sent. */
+  lastDigestAt: timestamp("last_digest_at", { withTimezone: true }),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

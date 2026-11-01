@@ -401,6 +401,7 @@
     "visitCheckInReminderTitle": "దయచేసి మీ {time} సందర్శనకు చెక్-ఇన్ చేయండి",
     "visitCheckInReminderBody": "{name}తో మీ సందర్శన {time}కి ప్లాన్ చేశారు. అక్కడికి చేరుకున్నప్పుడు “నేను వచ్చాను” నొక్కండి, లేదా రాలేకపోతే కుటుంబానికి తెలియజేయండి.",
     "updateImportantTitle": "{author} నుంచి ముఖ్యమైన అప్‌డేట్",
+    "updateTitle": "{author} {name} గురించి ఒక అప్‌డేట్ పంచుకున్నారు",
     "updateImportantBody": "{body}",
     "updateEmailSubject": "{name} గురించి ముఖ్యమైన అప్‌డేట్",
     "updateEmailBody": "{name} సంరక్షణ బృందంలో {author} ఒక ముఖ్యమైన అప్‌డేట్ పోస్ట్ చేశారు. CareNest తెరవండి: {link}",
@@ -418,7 +419,11 @@
     "assistResolvedTitle": "పరిష్కారమైంది: {name} సహాయ అభ్యర్థన",
     "assistResolvedBody": "{responder}: {note}",
     "assistCancelledTitle": "పొరపాటు హెచ్చరిక: {name} సహాయ అభ్యర్థన రద్దు చేయబడింది",
-    "assistCancelledBody": "{responder} హెచ్చరికను రద్దు చేశారు."
+    "assistCancelledBody": "{responder} హెచ్చరికను రద్దు చేశారు.",
+    "digestSubject": "CareNest: ఈ రోజు వార్తలు ({count})",
+    "digestIntro": "ఈ రోజు CareNestలో జరిగినవి, మీరు ఇంకా చూడనివి:",
+    "digestMore": "…ఇంకా మరో {count}.",
+    "digestFooter": "అన్నీ చూడండి: {link}\nఈ రోజువారీ సారాంశాన్ని ఖాతా → నోటిఫికేషన్లలో ఆపవచ్చు."
   },
   "inbox": {
     "title": "నోటిఫికేషన్లు",
@@ -444,6 +449,8 @@
     "title": "నోటిఫికేషన్లు",
     "intro": "నోటిఫికేషన్లు ఎప్పుడూ CareNestలో కనిపిస్తాయి. వాటి కాపీని ఈమెయిల్‌లో కూడా పొందవచ్చు.",
     "email": "నోటిఫికేషన్లను నాకు ఈమెయిల్‌లో కూడా పంపండి",
+    "digest": "రోజువారీ సాధారణ వార్తలతో (సందర్శనలు, అప్‌డేట్‌లు) ప్రతి సాయంత్రం ఒక ఈమెయిల్ పంపండి",
+    "digestHint": "అత్యవసర, ముఖ్యమైన హెచ్చరికలు మాత్రం వెంటనే వస్తాయి.",
     "quietTitle": "నిశ్శబ్ద సమయం (ఐచ్ఛికం)",
     "quietIntro": "నిశ్శబ్ద సమయంలో ఈమెయిల్స్ ఆ సమయం ముగిసే వరకు ఆగుతాయి. అత్యవసర హెచ్చరికలు మాత్రం ఎప్పుడూ వెంటనే పంపబడతాయి.",
     "quietStart": "నుంచి",

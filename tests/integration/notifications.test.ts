@@ -84,14 +84,24 @@ describe("in-app notifications", () => {
 });
 
 describe("notification preferences", () => {
-  it("defaults to email on and no quiet hours, and can be changed", async () => {
+  it("defaults to email and the daily digest on and no quiet hours, and can be changed", async () => {
     const user = await signUp();
     const initial = await (await getPrefs(apiRequest("GET", "/api/v1/me/notification-preferences", { cookie: user.cookie }))).json();
-    expect(initial.preferences).toEqual({ emailEnabled: true, quietStart: null, quietEnd: null });
+    expect(initial.preferences).toEqual({ emailEnabled: true, quietStart: null, quietEnd: null, digestEnabled: true });
     const res = await putPrefs(
       apiRequest("PUT", "/api/v1/me/notification-preferences", { cookie: user.cookie, body: { emailEnabled: false, quietStart: "22:00", quietEnd: "07:00" } }),
     );
-    expect((await res.json()).preferences).toEqual({ emailEnabled: false, quietStart: "22:00", quietEnd: "07:00" });
+    // Leaving digestEnabled out keeps the current choice rather than switching it off.
+    expect((await res.json()).preferences).toEqual({ emailEnabled: false, quietStart: "22:00", quietEnd: "07:00", digestEnabled: true });
+    const off = await putPrefs(
+      apiRequest("PUT", "/api/v1/me/notification-preferences", { cookie: user.cookie, body: { emailEnabled: true, quietStart: null, quietEnd: null, digestEnabled: false } }),
+    );
+    expect((await off.json()).preferences.digestEnabled).toBe(false);
+  });
+
+  it("needs a signed-in user", async () => {
+    expect((await getPrefs(apiRequest("GET", "/api/v1/me/notification-preferences"))).status).toBe(401);
+    expect((await putPrefs(apiRequest("PUT", "/api/v1/me/notification-preferences", { body: { emailEnabled: true, quietStart: null, quietEnd: null, digestEnabled: false } }))).status).toBe(401);
   });
 
   it("requires both quiet-hour ends and valid times", async () => {

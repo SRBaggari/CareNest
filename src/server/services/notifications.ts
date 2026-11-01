@@ -188,26 +188,30 @@ export async function acknowledge(ctx: ServiceContext, notificationId: string) {
 const quietTime = z.string().regex(LOCAL_TIME_PATTERN, "Use 24-hour times like 22:00.").nullable();
 
 export const preferencesSchema = z
-  .object({ emailEnabled: z.boolean(), quietStart: quietTime, quietEnd: quietTime })
+  // digestEnabled is optional so clients that predate it don't switch the digest off by omission.
+  .object({ emailEnabled: z.boolean(), quietStart: quietTime, quietEnd: quietTime, digestEnabled: z.boolean().optional() })
   .refine((v) => (v.quietStart === null) === (v.quietEnd === null), {
     message: "Set both a start and an end for quiet hours, or neither.",
     path: ["quietEnd"],
   });
 
-export type Preferences = z.infer<typeof preferencesSchema>;
-export const DEFAULT_PREFERENCES: Preferences = { emailEnabled: true, quietStart: null, quietEnd: null };
+export type Preferences = Required<z.infer<typeof preferencesSchema>>;
+export const DEFAULT_PREFERENCES: Preferences = { emailEnabled: true, quietStart: null, quietEnd: null, digestEnabled: true };
 
 export async function getPreferences(db: DbOrTx, userId: string): Promise<Preferences> {
   const [row] = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, userId));
-  return row ? { emailEnabled: row.emailEnabled, quietStart: row.quietStart, quietEnd: row.quietEnd } : DEFAULT_PREFERENCES;
+  return row
+    ? { emailEnabled: row.emailEnabled, quietStart: row.quietStart, quietEnd: row.quietEnd, digestEnabled: row.digestEnabled }
+    : DEFAULT_PREFERENCES;
 }
 
-export async function updatePreferences(ctx: ServiceContext, input: Preferences): Promise<Preferences> {
+export async function updatePreferences(ctx: ServiceContext, input: z.infer<typeof preferencesSchema>): Promise<Preferences> {
+  const set = Object.fromEntries(Object.entries(input).filter(([, v]) => v !== undefined));
   await ctx.db
     .insert(notificationPreferences)
-    .values({ userId: ctx.userId, ...input, updatedAt: ctx.now })
-    .onConflictDoUpdate({ target: notificationPreferences.userId, set: { ...input, updatedAt: ctx.now } });
-  return input;
+    .values({ userId: ctx.userId, ...set, updatedAt: ctx.now })
+    .onConflictDoUpdate({ target: notificationPreferences.userId, set: { ...set, updatedAt: ctx.now } });
+  return getPreferences(ctx.db, ctx.userId);
 }
 
 // ── Per-circle alert choices ───────────────────────────────────────────────────────────────

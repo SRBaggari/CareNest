@@ -401,6 +401,7 @@
     "visitCheckInReminderTitle": "कृपया {time} बजे की अपनी मुलाक़ात के लिए चेक-इन करें",
     "visitCheckInReminderBody": "{name} के साथ आपकी मुलाक़ात {time} बजे तय थी। वहाँ पहुँचने पर “मैं पहुँच गया/गई” दबाएँ, या अगर नहीं आ सकते तो परिवार को बता दें।",
     "updateImportantTitle": "{author} का ज़रूरी अपडेट",
+    "updateTitle": "{author} ने {name} के बारे में एक अपडेट साझा किया",
     "updateImportantBody": "{body}",
     "updateEmailSubject": "{name} के बारे में ज़रूरी अपडेट",
     "updateEmailBody": "{author} ने {name} के देखभाल समूह में एक ज़रूरी अपडेट डाला है। CareNest खोलें: {link}",
@@ -418,7 +419,11 @@
     "assistResolvedTitle": "सुलझ गया: {name} का मदद का अनुरोध",
     "assistResolvedBody": "{responder}: {note}",
     "assistCancelledTitle": "ग़लत अलार्म: {name} का मदद का अनुरोध रद्द कर दिया गया",
-    "assistCancelledBody": "{responder} ने अलर्ट रद्द कर दिया।"
+    "assistCancelledBody": "{responder} ने अलर्ट रद्द कर दिया।",
+    "digestSubject": "CareNest: आज की खबरें ({count})",
+    "digestIntro": "आज CareNest में ये बातें हुईं, जो आपने अभी तक नहीं देखीं:",
+    "digestMore": "…और {count} बातें।",
+    "digestFooter": "सब कुछ देखें: {link}\nयह रोज़ का सारांश आप खाता → सूचनाएँ में बंद कर सकते हैं।"
   },
   "inbox": {
     "title": "सूचनाएँ",
@@ -444,6 +449,8 @@
     "title": "सूचनाएँ",
     "intro": "सूचनाएँ हमेशा CareNest में दिखती हैं। आप चाहें तो उनकी एक कॉपी ईमेल पर भी पा सकते हैं।",
     "email": "मुझे सूचनाएँ ईमेल पर भी भेजें",
+    "digest": "हर शाम दिन की आम खबरों (मुलाक़ातें, अपडेट) का एक ईमेल भेजें",
+    "digestHint": "ज़रूरी और महत्वपूर्ण अलर्ट फिर भी तुरंत आएँगे।",
     "quietTitle": "शांत समय (वैकल्पिक)",
     "quietIntro": "शांत समय के दौरान ईमेल तब तक रुके रहते हैं जब तक शांत समय ख़त्म न हो। बहुत ज़रूरी अलर्ट हमेशा तुरंत भेजे जाते हैं।",
     "quietStart": "से",

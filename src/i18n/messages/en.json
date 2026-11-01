@@ -401,6 +401,7 @@
     "visitCheckInReminderTitle": "Please check in for your {time} visit",
     "visitCheckInReminderBody": "Your visit with {name} was planned for {time}. Tap “I've arrived” when you're there, or let the family know if you can't come.",
     "updateImportantTitle": "Important update from {author}",
+    "updateTitle": "{author} shared an update about {name}",
     "updateImportantBody": "{body}",
     "updateEmailSubject": "Important update about {name}",
     "updateEmailBody": "{author} posted an important update in {name}'s care circle. Open CareNest: {link}",
@@ -418,7 +419,11 @@
     "assistResolvedTitle": "Resolved: {name}'s request for help",
     "assistResolvedBody": "{responder}: {note}",
     "assistCancelledTitle": "False alarm: {name}'s request for help was cancelled",
-    "assistCancelledBody": "{responder} cancelled the alert."
+    "assistCancelledBody": "{responder} cancelled the alert.",
+    "digestSubject": "CareNest: today's news ({count})",
+    "digestIntro": "Here is what happened today that you haven't seen in CareNest yet:",
+    "digestMore": "…and {count} more.",
+    "digestFooter": "See everything: {link}\nYou can turn this daily summary off under Account → Notifications."
   },
   "inbox": {
     "title": "Notifications",
@@ -444,6 +449,8 @@
     "title": "Notifications",
     "intro": "Notifications always appear in CareNest. You can also get a copy by email.",
     "email": "Also send me notifications by email",
+    "digest": "Send me one email each evening with the day's everyday news (visits, updates)",
+    "digestHint": "Urgent and important alerts still come straight away.",
     "quietTitle": "Quiet hours (optional)",
     "quietIntro": "During quiet hours, emails wait until the quiet hours end. Urgent alerts are always sent straight away.",
     "quietStart": "From",
