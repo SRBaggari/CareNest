@@ -197,7 +197,8 @@
     "timeline": "समय-रेखा",
     "help": "मदद",
     "health": "सेहत",
-    "documents": "दस्तावेज़"
+    "documents": "दस्तावेज़",
+    "messages": "संदेश"
   },
   "invite": {
     "title": "आपको आमंत्रित किया गया है",
@@ -432,7 +433,11 @@
     "digestFooter": "सब कुछ देखें: {link}\nयह रोज़ का सारांश आप खाता → सूचनाएँ में बंद कर सकते हैं।",
     "pushOpenForDetails": "जानकारी देखने के लिए CareNest खोलें।",
     "pushTestTitle": "CareNest परीक्षण अलर्ट",
-    "pushTestBody": "इस डिवाइस पर अलर्ट काम कर रहे हैं।"
+    "pushTestBody": "इस डिवाइस पर अलर्ट काम कर रहे हैं।",
+    "messageTitle": "{author} ने “{title}” में लिखा",
+    "messageForYouTitle": "{author} चाहते हैं कि आप “{title}” पढ़ें",
+    "messageEmailSubject": "{author} ने CareNest में आपको संदेश भेजा",
+    "messageEmailBody": "{author} ने आपसे “{title}” में एक संदेश पढ़ने को कहा है। CareNest खोलें: {link}"
   },
   "inbox": {
     "title": "सूचनाएँ",
@@ -978,5 +983,28 @@
     "neverOpened": "अभी तक किसी ने नहीं खोला।",
     "remove": "हटाएँ (फ़ाइलें मिट जाएँगी)",
     "removeConfirm": "“{title}” हटाएँ और इसकी सारी फ़ाइलें मिटा दें? यह वापस नहीं होगा।"
+  },
+  "messages": {
+    "title": "संदेश",
+    "intro": "{name} की देखभाल की बातें एक ही जगह करें, ताकि सबको एक जैसी जानकारी मिले।",
+    "start": "बातचीत शुरू करें",
+    "subject": "विषय",
+    "subjectHint": "जैसे “दिवाली पर मिलने की योजना”।",
+    "message": "संदेश",
+    "notify": "इन लोगों को बताएँ (उन्हें अलर्ट मिलेगा)",
+    "notifyHint": "बातचीत में बाक़ी सब इसे CareNest में और शाम के सारांश में देखेंगे।",
+    "send": "भेजें",
+    "sent": "भेज दिया।",
+    "none": "अभी कोई बातचीत नहीं।",
+    "unread": "नए: {count}",
+    "removed": "संदेश हटाया गया",
+    "remove": "हटाएँ",
+    "removeConfirm": "अपना संदेश हटाएँ? बाक़ी लोगों को “संदेश हटाया गया” दिखेगा।",
+    "back": "सभी बातचीत",
+    "about_appointment": "एक अपॉइंटमेंट के बारे में",
+    "about_task": "एक काम के बारे में",
+    "discuss": "चर्चा करें",
+    "reply": "जवाब दें",
+    "noMessages": "अभी कोई संदेश नहीं। नीचे पहला संदेश लिखें।"
   }
 }

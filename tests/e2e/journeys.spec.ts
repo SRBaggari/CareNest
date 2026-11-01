@@ -129,6 +129,32 @@ test("a caregiver photographs a prescription; the family opens it and the docume
   await expect(family.getByText(/Priya opened it/)).toBeVisible();
 });
 
+test("family asks the caregiver something; she sees it as new and replies @phone", async ({ browser }) => {
+  const owner = await new Actor("Priya").register();
+  const caregiver = await new Actor("Meena").register("Asia/Kolkata");
+  const circleId = await circleWith(owner, [[caregiver, "caregiver"]]);
+
+  const family = await pageAs(browser, owner);
+  await family.goto(`/app/circles/${circleId}/messages`);
+  await family.getByLabel("Subject").fill("Pharmacy run");
+  await family.getByLabel("Message", { exact: true }).fill("Can you pick up the BP tablets tomorrow?");
+  await family.getByRole("checkbox", { name: "Meena" }).check();
+  await family.getByRole("button", { name: "Start a conversation" }).click();
+  await expect(family.getByRole("heading", { name: "Pharmacy run" })).toBeVisible();
+
+  const phone = await pageAs(browser, caregiver);
+  await phone.goto(`/app/circles/${circleId}/messages`);
+  await expect(phone.getByText("New: 1")).toBeVisible();
+  await phone.getByRole("link", { name: /Pharmacy run/ }).click();
+  await expect(phone.getByText("Can you pick up the BP tablets tomorrow?")).toBeVisible();
+  await phone.getByLabel("Reply").fill("Yes, after my morning visit.");
+  await phone.getByRole("button", { name: "Send" }).click();
+  await expect(phone.getByText("Yes, after my morning visit.")).toBeVisible();
+
+  await family.reload();
+  await expect(family.getByText("Yes, after my morning visit.")).toBeVisible();
+});
+
 test("Scenario D: a missing driver shows on the dashboard until someone offers", async ({ browser }) => {
   const owner = await new Actor("Priya").register();
   const circleId = await circleWith(owner);

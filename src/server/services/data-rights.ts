@@ -17,6 +17,8 @@ import {
   doseEventHistory,
   doseEvents,
   emailOutbox,
+  messages,
+  messageThreads,
   measurements,
   pushOutbox,
   pushSubscriptions,
@@ -47,7 +49,7 @@ export async function exportMyData(ctx: ServiceContext) {
     .select({ id: users.id, email: users.email, name: users.name, locale: users.locale, timeZone: users.timeZone, createdAt: users.createdAt })
     .from(users)
     .where(eq(users.id, ctx.userId));
-  const [preferences, devices, alertDevices, circles, myNotifications, myUpdates, myDoseRecords, myAudit] = await Promise.all([
+  const [preferences, devices, alertDevices, circles, myNotifications, myUpdates, myMessages, myDoseRecords, myAudit] = await Promise.all([
     ctx.db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, ctx.userId)),
     ctx.db
       .select({ createdAt: sessions.createdAt, lastSeenAt: sessions.lastSeenAt, expiresAt: sessions.expiresAt, userAgent: sessions.userAgent })
@@ -69,6 +71,11 @@ export async function exportMyData(ctx: ServiceContext) {
       .limit(1000),
     ctx.db.select({ body: careUpdates.body, category: careUpdates.category, createdAt: careUpdates.createdAt }).from(careUpdates).where(eq(careUpdates.authorUserId, ctx.userId)),
     ctx.db
+      .select({ conversation: messageThreads.title, body: messages.body, createdAt: messages.createdAt })
+      .from(messages)
+      .innerJoin(messageThreads, eq(messageThreads.id, messages.threadId))
+      .where(and(eq(messages.authorUserId, ctx.userId), isNull(messages.removedAt))),
+    ctx.db
       .select({ status: doseEventHistory.status, occurredAt: doseEventHistory.occurredAt, recordedAt: doseEventHistory.recordedAt, note: doseEventHistory.note })
       .from(doseEventHistory)
       .where(eq(doseEventHistory.recordedBy, ctx.userId)),
@@ -84,6 +91,7 @@ export async function exportMyData(ctx: ServiceContext) {
     circles,
     notifications: myNotifications,
     updatesIWrote: myUpdates,
+    messagesIWrote: myMessages,
     doseRecordsIMade: myDoseRecords,
     myActions: myAudit,
   };
@@ -139,6 +147,7 @@ export async function exportCircle(ctx: ServiceContext, circleId: string) {
     visits: health ? visitRows : visitRows.map((v) => ({ ...v, observations: null, handoverNote: null, unresolvedIssues: null })),
     updates,
     healthReadings: readings,
+    conversations: await circleConversations(ctx, circleId, appts),
     /** The list only; the files themselves can be downloaded one by one in CareNest. */
     healthDocuments: health ? await documentIndex(ctx, circleId) : [],
     emergencyInfo: card[0]?.info ?? {},
@@ -237,4 +246,17 @@ export async function purgeExpiredData(db: ServiceContext["db"], now: Date) {
     .where(lt(rateLimits.windowStart, new Date(now.getTime() - RETENTION.rateLimitHours * 3_600_000)))
     .returning({ key: rateLimits.key });
   return { sessions: expiredSessions.length, notifications: oldNotifications.length, emails: oldEmails.length, pushAlerts: oldPush.length, rateLimits: staleLimits.length };
+}
+
+/** Conversations for the circle export; those about appointments follow the appointment-sharing choice. */
+async function circleConversations(ctx: ServiceContext, circleId: string, includeAppointments: boolean) {
+  const threads = await ctx.db.select().from(messageThreads).where(eq(messageThreads.circleId, circleId));
+  const kept = threads.filter((t) => includeAppointments || t.subjectType !== "appointment");
+  if (kept.length === 0) return [];
+  const rows = await ctx.db
+    .select({ threadId: messages.threadId, author: users.name, body: messages.body, createdAt: messages.createdAt })
+    .from(messages)
+    .leftJoin(users, eq(users.id, messages.authorUserId))
+    .where(and(inArray(messages.threadId, kept.map((t) => t.id)), isNull(messages.removedAt)));
+  return kept.map((t) => ({ title: t.title, about: t.subjectType, messages: rows.filter((m) => m.threadId === t.id).map(({ threadId: _t, ...m }) => m) }));
 }

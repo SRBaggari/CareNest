@@ -165,6 +165,7 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
       form.set("file", new File([new TextEncoder().encode("%PDF-1.7 zebra")], "zebra.pdf", { type: "application/pdf" }));
       const uploaded = await fetch(`${BASE}${z("/documents")}`, { method: "POST", headers: { cookie: zoe.cookie, origin: BASE, "x-forwarded-for": zoe.ip }, body: form });
       expect(uploaded.status).toBe(201);
+      expect((await zed.post(z("/threads"), { title: "Zebra conversation", body: "Zebra message" })).status).toBe(201);
       // Control: the other family does see all of it, so a clean result below means something.
       for (const [path, marker] of [
         ["/visits", "Zebra live visit"],
@@ -177,6 +178,7 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
         ["/timeline", "Zebra"],
         ["/export", "Zebramycin"],
         ["/documents", "Zebra scan"],
+        ["/threads", "Zebra conversation"],
       ]) {
         expect([path, (await zed.get(z(path))).text.includes(marker)]).toEqual([path, true]);
       }
@@ -212,6 +214,7 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
           "/today",
           "/export",
           "/documents",
+          "/threads",
         ].map((p) => [priya, m(p)] as [Actor, string]),
         [priya, "/api/v1/me/today"],
         [priya, "/api/v1/me/export"],
