@@ -54,6 +54,36 @@ test("Scenario B: the parent confirms a dose on the Simple view and the family s
   await expect(family.getByText(/Last recorded: a medicine by Amma/)).toBeVisible();
 });
 
+test("Scenario C: a caregiver checks in and out on their phone; the family sees the visit and the handover @phone", async ({ browser }) => {
+  const owner = await new Actor("Priya").register();
+  const caregiver = await new Actor("Meena").register("Asia/Kolkata");
+  const circleId = await circleWith(owner, [[caregiver, "caregiver"]]);
+  const plannedStart = new Date(Date.now() + 10 * 60_000).toISOString();
+  expect((await caregiver.post(`/api/v1/circles/${circleId}/visits`, { plannedStart, purpose: "Morning care" })).status).toBe(201);
+
+  const phone = await pageAs(browser, caregiver);
+  await phone.goto(`/app/circles/${circleId}/visits`);
+  await phone.getByRole("button", { name: "I've arrived" }).click();
+  await expect(phone.getByRole("button", { name: "Finish visit" })).toBeVisible();
+
+  const family = await pageAs(browser, owner);
+  await family.goto(`/app/circles/${circleId}`);
+  await expect(family.getByRole("region", { name: "Visits today" }).getByText("Meena is there now")).toBeVisible();
+
+  await phone.getByRole("button", { name: "Finish visit" }).click();
+  await phone.getByLabel("How was Amma? What did you do?").fill("Bathed and had breakfast. Cheerful.");
+  await phone.getByLabel("Note for whoever comes next (optional)").fill("Evening tablets are in the blue box.");
+  await phone.getByRole("button", { name: "Finish visit" }).click();
+  await expect(phone.getByText("Finished").first()).toBeVisible();
+
+  await family.reload();
+  const visits = family.getByRole("region", { name: "Visits today" });
+  await expect(visits.getByText("Latest handover note from Meena")).toBeVisible();
+  await expect(visits.getByText("Evening tablets are in the blue box.")).toBeVisible();
+  await family.goto("/app/notifications");
+  await expect(family.getByText("Meena finished a visit with Amma")).toBeVisible();
+});
+
 test("Scenario D: a missing driver shows on the dashboard until someone offers", async ({ browser }) => {
   const owner = await new Actor("Priya").register();
   const circleId = await circleWith(owner);

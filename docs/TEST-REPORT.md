@@ -168,3 +168,20 @@ Defects these tests found, both fixed in the same change:
 - **Total browser tests: 21 / 21 passing**, run twice in a row to rule out flakiness.
 - Not verified: the quality of the translations themselves. They need a native-speaker review before launch.
 
+## Update, 2026-11-01 (later): Tier 1 completion
+
+- **Security defect found and fixed: visit lists returned other families' visits (critical).**
+  `listVisits` combined the circle filter with a raw SQL `x or y` fragment that the query builder does
+  not bracket, so it read as `(this circle and x) or y`. Every in-progress visit (and, on the Visits
+  page's "recent" list, every completed or cancelled visit with its notes) from all circles appeared
+  to anyone who could see visits. Present since M6. No deployment exists, so no real data was exposed.
+  It was found by the new Scenario C browser test: running the same test several times in parallel
+  put two families' visits in one database, which no earlier test had done. Fixed, with a two-family
+  regression test (fails on the old code) and a guard test that rejects any raw SQL fragment with an
+  unbracketed OR anywhere in the server code.
+- Scenario C (caregiver arrives and finishes on their phone; the family dashboard shows the visit and the
+  handover note; the summary notification arrives) is now clicked through in the browser, on desktop and
+  phone. **All main scenarios A–F now have browser tests: 23 / 23 passing.**
+- Lesson: tests that create one family per database can't catch leaks between families. New tests for
+  lists now set up a second family alongside.
+
