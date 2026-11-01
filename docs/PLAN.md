@@ -277,6 +277,28 @@ user is not a member of, to avoid leaking existence.
 | M8 Dashboards & hardening | Nov 27 – Dec 1 | ✅ backend: today/dashboard APIs, data export & account deletion, retention, real-PostgreSQL tests, Docker + compose + CI deploy smoke test, deployment guide, user guide, labelled demo seed · ✅ UI: Simple view for the person receiving care, family/caregiver Today dashboard, home-page circle status, data download & account deletion buttons, new visual design (palette, Atkinson Hyperlegible, icons) · ✅ Playwright + axe browser tests in CI, incl. no sideways scrolling on phones in all four languages · ✅ full hi/te/ta translations (pending native-speaker review) | ✅ |
 | Tier 1 completion | Nov 1 | ✅ daily digest of everyday news · per-person appointment/task alert choices · instant circle navigation (skeletons) · Scenario C browser test + two-family isolation sweep · batched dose preparation · UTF8 database guard · fixed: visit lists leaked across circles | ✅ (tag `tier1`) |
 
+### 11.1 Tier 2 roadmap
+
+Order: safety first (alerts that actually reach a phone), then quick wins, then the larger features,
+with the AI assistant last because it depends on everything else being solid. Every feature ships the
+same way as Tier 1: service + Zod-validated API, unit + integration tests (including unauthenticated and
+cross-circle cases, and a second family in the database for any list), UI in all four languages,
+browser + axe tests, its own branch merged with `--no-ff`, pushed to both repos, tagged per milestone.
+
+| Milestone | Scope | Why this order | Status |
+|---|---|---|---|
+| T2-1 Phone alerts (web push) | Installable app (manifest + service worker), "Alert me on this phone" per device, push delivery from an outbox with retries, quiet hours honoured except for urgent alerts, help requests pushed immediately | Today an alert only reaches someone who opens the app or email; a phone that buzzes matters most when a parent asks for help | ⏳ |
+| T2-2 Calendar export | Private, revocable calendar link (ICS) per person per circle: appointments, visits, task due dates | Small; families already live in Google/Apple calendars | ⏳ |
+| T2-3 Well-being & measurements | Daily check-in history; blood pressure, blood sugar, weight, temperature, pulse with units, who recorded, charts over time; consent follows "health details" | Most-asked-for after medicines; no medical interpretation, only trends | ⏳ |
+| T2-4 Health documents | Upload prescriptions, reports, discharge summaries; versions; who viewed it; storage adapter (local disk now, S3-compatible later); size/type limits | Needs a storage decision and careful access control | ⏳ |
+| T2-5 Circle messages | Threads per circle (and per appointment/task), mentions, read state, notifications | Replaces the family WhatsApp thread for care matters | ⏳ |
+| T2-6 Reports & exports | Printable "for the doctor" summary (medicines, adherence, measurements, recent notes) for a chosen period; CSV of measurements | Builds on T2-3 and T2-4 | ⏳ |
+| T2-7 Expenses | Record care expenses, who paid, split between family, settle-up summary | Independent; common source of family friction | ⏳ |
+| T2-8 Voice for parents | Simple view: tap-to-speak "I took my medicine", "I need help", read-aloud of today's plan (Web Speech API, on-device where available) | Builds on the Simple view; falls back gracefully where unsupported | ⏳ |
+| T2-9 Offline reading | Service worker caches today's plan, emergency card and contacts for reading without a connection | Reuses T2-1's service worker | ⏳ |
+| T2-10 SMS channel | SMS adapter with a fake transport in tests; real provider wiring postponed with the other launch-readiness items | Adapter now, provider later | ⏳ |
+| T2-11 AI assistant | Grounded summaries and Q&A over records the asker may see, with citations; never medical advice; off unless configured | Depends on all the data above; needs the most care | ⏳ |
+
 ## 12. Known limitations (MVP)
 
 - CareNest is **not** an emergency service and does not contact emergency services; it shows the local
