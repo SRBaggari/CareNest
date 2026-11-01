@@ -17,7 +17,8 @@
     "check": "npm run lint && npm run typecheck && npm test",
     "worker": "tsx scripts/worker.ts",
     "test:coverage": "vitest run --coverage",
-    "test:blackbox": "vitest run --project blackbox"
+    "test:blackbox": "vitest run --project blackbox",
+    "demo:seed": "tsx scripts/seed-demo.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.14",
