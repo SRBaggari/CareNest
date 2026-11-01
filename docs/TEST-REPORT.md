@@ -203,3 +203,21 @@ Defects these tests found, both fixed in the same change:
   says so instead of a generic error).
 - Not verified on physical phones (Android Chrome, iPhone Safari) yet.
 
+## Update, 2026-11-01: T2-3 health readings, and a privacy fix
+
+- **Privacy defect found and fixed (high): the circle export and the activity log ignored the parent's
+  sharing choices.** An admin could download, through "Download this circle's records", the medicines,
+  appointments, health and mood notes and visit notes the person receiving care had chosen not to share
+  with them; the activity log (on screen and in the export) also showed entries such as "added the
+  medicine Metformin". Both now follow the same rules as the screens; the export lists what was withheld
+  and why, and the parent still sees their full activity log. Found while adding readings to the export.
+  Tests cover both, with sharing on and off.
+- Health readings: 6 unit tests for units, conversions and plausibility ranges (a very high but plausible
+  reading is always recorded, never refused), 6 integration tests (units, self vs. someone else, typing
+  mistakes, the parent's health-sharing choice for seeing and recording, outsiders and signed-out
+  requests, removal by the recorder or an admin with an activity-log entry, daily check-ins), a browser
+  journey (a caregiver records blood pressure on a phone; the family sees the latest reading and the
+  chart), and the Health page in the accessibility scan and in the phone-layout check in all four
+  languages. Chart colours were checked with the data-visualisation palette validator (lightness, chroma,
+  colour-blind separation, contrast) in light and dark mode.
+
