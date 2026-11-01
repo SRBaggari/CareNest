@@ -45,10 +45,30 @@ tests/integration/  Route-handler + database tests (each file gets its own fresh
 docs/               Plan, architecture, decisions
 ```
 
+## Testing
+
+| Command | What it runs |
+|---|---|
+| `npm test` | Unit + integration tests (embedded PostgreSQL) |
+| `npm run test:postgres` | The integration suite on a **real PostgreSQL** server (started automatically) |
+| `npm run test:coverage` | With a coverage report in `coverage/` |
+| `BLACKBOX_URL=http://localhost:3000 npm run test:blackbox` | Black-box HTTP suite against a running server |
+
+See [docs/TEST-REPORT.md](docs/TEST-REPORT.md) for the latest white-box and black-box results.
+
+## Demo
+
+```bash
+npm run build && PGLITE_DATA_DIR=.data/demo CRON_SECRET=demo INSECURE_COOKIES=true npm start
+DEMO_URL=http://localhost:3000 CRON_SECRET=demo npm run demo:seed   # in another terminal
+```
+
+Sign in as `priya@demo.carenest` (or ravi, meena, amma, dr.iyer, neighbour) with `carenest demo 2026`.
+
 ## Production
 
-Set `DATABASE_URL` to a PostgreSQL 15+ database, run `npm run db:migrate`, then `npm run build && npm start`.
-Full deployment guide arrives with milestone M8.
+See **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**: Docker Compose or any Node host with PostgreSQL,
+the required background worker, configuration, security checklist, backups and upgrades.
 
 ## License
 

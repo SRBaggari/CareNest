@@ -1,0 +1,61 @@
+# Self-hosted CareNest: PostgreSQL + migrations + web app + background worker.
+#   cp .env.example .env   # then set POSTGRES_PASSWORD, APP_URL, CRON_SECRET, SMTP_URL…
+#   docker compose up -d --build
+# Put a TLS-terminating reverse proxy (Caddy, nginx, a cloud load balancer) in front of "web"
+# and set TRUST_PROXY=true. See docs/DEPLOYMENT.md.
+
+x-app: &app
+  build: .
+  restart: unless-stopped
+  environment:
+    DATABASE_URL: postgres://carenest:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@db:5432/carenest
+    APP_URL: ${APP_URL:-http://localhost:3000}
+    TRUST_PROXY: ${TRUST_PROXY:-false}
+    INSECURE_COOKIES: ${INSECURE_COOKIES:-false}
+    SMTP_URL: ${SMTP_URL:-}
+    EMAIL_FROM: ${EMAIL_FROM:-CareNest <no-reply@example.com>}
+    CRON_SECRET: ${CRON_SECRET:-}
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: carenest
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: carenest
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U carenest -d carenest"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  migrate:
+    <<: *app
+    restart: "no"
+    command: ["npm", "run", "db:migrate"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    <<: *app
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    <<: *app
+    command: ["npm", "run", "worker"]
+    healthcheck:
+      disable: true
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:

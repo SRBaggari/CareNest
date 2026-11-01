@@ -45,3 +45,52 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  postgres:
+    name: Integration tests on real PostgreSQL
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run test:postgres
+
+  deploy-smoke:
+    name: Docker image + compose stack, black-box tested
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Only on main and pull requests: building the image is the slowest job.
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+    env:
+      POSTGRES_PASSWORD: ci-only-password
+      APP_URL: http://localhost:3000
+      # The black-box suite simulates many clients via X-Forwarded-For, as a proxy would set it.
+      TRUST_PROXY: "true"
+      CRON_SECRET: ci-only-cron-secret
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Start the stack (db, migrate, web, worker)
+        run: docker compose up -d --build --wait web
+      - name: Black-box suite against the running stack
+        run: BLACKBOX_URL=http://localhost:3000 npm run test:blackbox
+      - name: Worker is running
+        run: docker compose ps worker --format '{{.State}}' | grep -q running
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail 200
+      - name: Stop
+        if: always()
+        run: docker compose down -v
