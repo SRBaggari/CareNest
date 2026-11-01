@@ -274,7 +274,7 @@ user is not a member of, to avoid leaking existence.
 | M5 Appointments & tasks | Nov 18 – 21 | Appointments with transport/companion, tasks (recurring, overdue escalation) | ✅ done (tag `m5`) |
 | M6 Caregiver & timeline | Nov 21 – 24 | Visits check-in/out, observations, handover, care updates, unified timeline with corrections | ✅ done (tag `m6`) |
 | M7 Emergency | Nov 24 – 27 | Contacts, info card, assistance request, alert sequence, acknowledgments, failure visibility | ✅ done (tag `m7`) |
-| M8 Dashboards & hardening | Nov 27 – Dec 1 | ✅ backend: today/dashboard APIs, data export & account deletion, retention, real-PostgreSQL tests, Docker + compose + CI deploy smoke test, deployment guide, user guide, labelled demo seed · ⏳ deferred (UI phase): dashboard screens, axe/Playwright browser tests, hi/te/ta translations | 🟡 backend done |
+| M8 Dashboards & hardening | Nov 27 – Dec 1 | ✅ backend: today/dashboard APIs, data export & account deletion, retention, real-PostgreSQL tests, Docker + compose + CI deploy smoke test, deployment guide, user guide, labelled demo seed · ✅ UI: Simple view for the person receiving care, family/caregiver Today dashboard, home-page circle status, data download & account deletion buttons · ⏳ remaining: axe/Playwright browser tests, full hi/te/ta translations | 🟡 UI in progress |
 
 ## 12. Known limitations (MVP)
 
