@@ -10,6 +10,8 @@ const alias = {
 export default defineConfig({
   resolve: { alias },
   test: {
+    // The "postgres" project has no tests unless CARENEST_PG_TESTS=true.
+    passWithNoTests: true,
     // White-box coverage of everything with logic: services, auth, worker, domain rules,
     // API route handlers and shared libraries. React pages are covered by black-box tests.
     coverage: {
@@ -37,6 +39,19 @@ export default defineConfig({
           environment: "node",
           include: ["tests/blackbox/**/*.test.ts"],
           testTimeout: 60_000,
+        },
+      },
+      {
+        resolve: { alias },
+        test: {
+          // The integration suite again, on a real PostgreSQL server (npm run test:postgres).
+          name: "postgres",
+          environment: "node",
+          include: process.env.CARENEST_PG_TESTS === "true" ? ["tests/integration/**/*.test.ts"] : [],
+          globalSetup: ["tests/helpers/postgres-global-setup.ts"],
+          env: { TRUST_PROXY: "true" },
+          testTimeout: 60_000,
+          hookTimeout: 120_000,
         },
       },
       {
