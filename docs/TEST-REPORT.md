@@ -326,3 +326,23 @@ Defects these tests found, both fixed in the same change:
 - Browser: a family member adds a number, confirms the code (read from the test server's SMS file), and
   receives a text immediately when the parent asks for help.
 - Not tested: a real SMS provider. None is wired (postponed with the other launch-readiness items).
+
+## Update, 2026-11-01: T2-11 AI assistant (Ask CareNest)
+
+- 3 unit tests: records are sent one JSON object per line inside a records block, so text in a note can't
+  break out of its record; the question and answer language are framed separately; off without an API key.
+- 9 integration tests (with a fake model that records what it was sent): off until the circle's sharing
+  choices allow it and off without a key; only records the asker could open are sent (a caregiver gets
+  readings and health notes, family without health sharing gets neither, and no medicines once those
+  aren't shared); answers in the asker's language; citations limited to records actually sent, with
+  labels and links; medical-advice and declined replies never pass the model's words on; the activity log
+  notes the question without its text; 20 questions an hour per person; a model outage reported plainly;
+  another family's records never sent; 404 outsiders, 403 emergency contacts, 401 signed out.
+- Browser (with the test stand-in model): no "Ask" in the menu until the parent turns it on (the admin
+  can't for a parent who manages their own care); the answer shows with its source link and disclaimer
+  and passes the accessibility scan; a dose question gets the fixed safety answer.
+- Fixed along the way: on phones the Notifications link said "Alerts" on screen but announced
+  "Notifications" (WCAG 2.5.3, label in name); the spoken name now matches what's shown, with the unread
+  count read separately.
+- Not tested: the real Claude model. The request shape (model, refusal fallback, cached system prompt,
+  JSON-schema output) is type-checked against the SDK; a live call needs an API key.

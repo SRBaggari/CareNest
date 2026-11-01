@@ -25,6 +25,6 @@ export default defineConfig({
     url: `${URL}/api/health`,
     reuseExistingServer: false,
     timeout: 120_000,
-    env: { PGLITE_DATA_DIR: ".data/e2e", DOCUMENT_STORAGE_DIR: ".data/e2e-documents", INSECURE_COOKIES: "true", TRUST_PROXY: "true", SMS_TRANSPORT: "file:.data/e2e-sms.jsonl" },
+    env: { PGLITE_DATA_DIR: ".data/e2e", DOCUMENT_STORAGE_DIR: ".data/e2e-documents", INSECURE_COOKIES: "true", TRUST_PROXY: "true", SMS_TRANSPORT: "file:.data/e2e-sms.jsonl", ASSISTANT_MODEL: "test" },
   },
 });

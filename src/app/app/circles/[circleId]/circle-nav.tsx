@@ -14,6 +14,7 @@ import {
   MessagesSquare,
   Pill,
   Settings,
+  Sparkles,
   Sun,
   Users,
   UsersRound,
@@ -40,6 +41,7 @@ const icons = {
   activity: ClipboardList,
   reports: FileChartColumn,
   expenses: Wallet,
+  assistant: Sparkles,
 };
 const groupIcons: Record<GroupId, LucideIcon> = { today: Sun, care: Pill, plans: CalendarDays, family: UsersRound, circle: Settings };
 

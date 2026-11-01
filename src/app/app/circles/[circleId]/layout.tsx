@@ -9,6 +9,7 @@ import { formatLocalTime } from "@/lib/format";
 import { orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { unreadThreadCount } from "@/server/services/messages";
+import { getAssistantModel } from "@/server/assistant/model";
 import { CircleNav, type NavGroup, type NavItem } from "./circle-nav";
 
 /**
@@ -116,12 +117,18 @@ async function CircleNavigation({ params }: { params: LayoutProps<"/app/circles/
   const can = (c: string) => circle.myCapabilities.includes(c as (typeof circle.myCapabilities)[number]);
   const base = `/app/circles/${circleId}`;
   const unread = can("update.view") ? await unreadThreadCount(ctx, circleId) : 0;
+  const assistantOn = can("update.view") && circle.profile.consent.allowAssistant === true && getAssistantModel() !== null;
   const item = (path: string, key: string, icon: NavItem["icon"], show = true, badge?: number): NavItem[] =>
     show ? [{ href: path ? `${base}/${path}` : base, label: t(`circle.${key}`), icon, badge }] : [];
 
   const groups: NavGroup[] = (
     [
-      { id: "today", label: t("nav.today"), items: [{ href: base, label: t("nav.today"), icon: "overview" }] },
+      {
+        id: "today",
+        label: t("nav.today"),
+        // "Ask" appears only where it works: AI set up on the server and turned on for this circle.
+        items: [{ href: base, label: t("nav.today"), icon: "overview" }, ...item("assistant", "assistant", "assistant", assistantOn)],
+      },
       {
         id: "care",
         label: t("nav.care"),

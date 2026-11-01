@@ -201,6 +201,22 @@ On the parent's Simple view:
   help" opens the same "Alert your family now?" confirmation as the red Help button. "I didn't take my
   medicine" is never recorded as taken.
 
+## Ask CareNest (AI assistant)
+
+**Ask** (under Today) answers questions about the care records in plain words, such as "When did she last
+see the doctor?", "Who visited this week?" or "Has the Metformin been confirmed today?". Each answer links
+to the records it came from; tap one to check. AI answers can be wrong, so check before acting.
+
+- It answers **only from what's recorded** in CareNest. If something isn't recorded, it says so instead of
+  guessing.
+- It **never gives medical advice**. Questions about doses, symptoms or readings get: "CareNest can't
+  answer medical questions. Please ask a doctor or pharmacist", with the emergency number.
+- It is **off until it's turned on** in **Settings & privacy**, by the person who manages the circle's
+  sharing choices (the parent, if they manage their own care). The server also has to have it set up.
+- When you ask, the records **you** can see are sent to Anthropic's Claude AI to work out the answer.
+  Someone who can't see medicines or health details can't get them through the assistant either.
+  CareNest doesn't keep questions or answers; the activity log notes only that a question was asked.
+
 ## Text messages (SMS)
 
 On the **Account** page, under **Text messages (SMS)**, you can add your mobile number (with the country

@@ -137,6 +137,7 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
             shareMedications: t("circle.shareMedications"),
             shareAppointments: t("circle.shareAppointments"),
             shareHealth: t("circle.shareHealth"),
+            allowAssistant: t("assistant.consentLabel"),
             save: t("circle.savePrivacy"),
             saved: t("common.saved"),
             yes: t("common.yes"),

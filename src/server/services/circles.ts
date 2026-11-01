@@ -75,6 +75,7 @@ export const consentSchema = z.object({
   shareMedications: z.boolean(),
   shareAppointments: z.boolean(),
   shareHealth: z.boolean(),
+  allowAssistant: z.boolean().default(false),
 });
 
 export const selfManagingSchema = z.object({ selfManaging: z.boolean(), version: z.int().positive() });

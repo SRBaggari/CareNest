@@ -228,6 +228,7 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
           "/expenses/balances",
           "/expenses/export",
           "/settlements",
+          "/assistant",
         ].map((p) => [priya, m(p)] as [Actor, string]),
         [priya, "/api/v1/me/today"],
         [priya, "/api/v1/me/export"],

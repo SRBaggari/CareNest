@@ -55,21 +55,22 @@ async function AppHeader() {
           </Link>
           <Link
             href="/app/notifications"
-            aria-label={unread > 0 ? t("common.notificationsUnread", { count: unread }) : t("common.notifications")}
             className={navItem}
           >
             <Bell aria-hidden="true" className="size-5" />
-            <span className="max-sm:sr-only">{t("common.notifications")}</span>
-            <span aria-hidden="true" className="sm:hidden">
-              {t("common.notificationsShort")}
-            </span>
+            {/* The word people see is the word a screen reader says (the short one on phones). */}
+            <span className="max-sm:hidden">{t("common.notifications")}</span>
+            <span className="sm:hidden">{t("common.notificationsShort")}</span>
             {unread > 0 && (
-              <span
-                aria-hidden="true"
-                className="absolute right-1 top-0.5 min-w-6 rounded-full bg-danger px-1.5 text-center text-sm font-bold text-primary-foreground sm:static"
-              >
-                {unread > 99 ? "99+" : unread}
-              </span>
+              <>
+                <span
+                  aria-hidden="true"
+                  className="absolute right-1 top-0.5 min-w-6 rounded-full bg-danger px-1.5 text-center text-sm font-bold text-primary-foreground sm:static"
+                >
+                  {unread > 99 ? "99+" : unread}
+                </span>
+                <span className="sr-only">{t("common.unreadCount", { count: unread })}</span>
+              </>
             )}
           </Link>
           <Link href="/app/account" className={navItem}>
