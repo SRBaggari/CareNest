@@ -141,7 +141,7 @@ export default async function EmergencyPage({ params }: PageProps<"/app/circles/
                   {c.phone}
                 </a>
                 {canEdit && (
-                  <ActionButton method="DELETE" url={`${base}/contacts/${c.id}`} confirm={t("emergency.removeConfirm", { name: c.name })} variant="danger" messages={messages}>
+                  <ActionButton method="DELETE" url={`${base}/contacts/${c.id}`} confirm={t("emergency.removeConfirm", { name: c.name })} variant="quietDanger" messages={messages}>
                     {t("emergency.removeContact")}
                   </ActionButton>
                 )}

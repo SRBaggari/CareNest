@@ -8,6 +8,7 @@ import { orForbidden, orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { listMembers } from "@/server/services/members";
 import { latestHandover, listVisits } from "@/server/services/visits";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Visits" };
 
@@ -113,7 +114,7 @@ export default async function VisitsPage({ params }: PageProps<"/app/circles/[ci
 
   return (
     <div className="flex flex-col gap-8">
-      <p className="text-muted">{t("visits.selfReported")}</p>
+      <PageHeader title={t("circle.visits")} description={t("visits.selfReported")} />
 
       {handover && (
         <section aria-labelledby="handover-heading" className="rounded-xl border-l-8 border-primary bg-surface p-5">

@@ -8,21 +8,28 @@ import { getRequestTranslator } from "@/i18n/server";
 import { formatLocalTime } from "@/lib/format";
 import { orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
-import { CircleNav, type CircleTab } from "./circle-nav";
+import { unreadThreadCount } from "@/server/services/messages";
+import { CircleNav, type NavGroup, type NavItem } from "./circle-nav";
 
 /**
- * The frame renders at once; the header (which needs the circle) and the page each stream in
- * behind their own placeholder, so tapping a circle or a tab shows something immediately.
+ * The frame renders at once; the header, the navigation and the page each stream in behind their
+ * own placeholder, so tapping a circle or a section shows something immediately.
  */
 export default function CircleLayout({ children, params }: LayoutProps<"/app/circles/[circleId]">) {
   return (
-    <div className="flex flex-col gap-5">
+    // Room at the bottom on phones for the fixed section bar.
+    <div className="flex flex-col gap-5 pb-24 lg:pb-0">
       <Suspense fallback={<HeaderSkeleton />}>
         <CircleHeader params={params} />
       </Suspense>
-      <Suspense fallback={<PageSkeleton />}>
-        <InLanguage>{children}</InLanguage>
-      </Suspense>
+      <div className="lg:grid lg:grid-cols-[13.5rem_minmax(0,1fr)] lg:gap-8">
+        <Suspense fallback={<div className="hidden lg:block" />}>
+          <CircleNavigation params={params} />
+        </Suspense>
+        <Suspense fallback={<PageSkeleton />}>
+          <InLanguage>{children}</InLanguage>
+        </Suspense>
+      </div>
     </div>
   );
 }
@@ -30,21 +37,21 @@ export default function CircleLayout({ children, params }: LayoutProps<"/app/cir
 /** Marks the page content with the reader's language, for screen readers and correct fonts. */
 async function InLanguage({ children }: { children: ReactNode }) {
   const { locale } = await getRequestTranslator();
-  return <div lang={locale}>{children}</div>;
+  return (
+    <div lang={locale} className="min-w-0">
+      {children}
+    </div>
+  );
 }
 
 function HeaderSkeleton() {
   return (
-    <div aria-busy="true" className="flex flex-col gap-3">
-      <Bar className="my-4 h-4 w-28" />
-      <div className="flex items-center gap-4">
-        <span aria-hidden="true" className="size-12 animate-pulse rounded-full bg-sunken sm:size-16" />
-        <div className="flex flex-col gap-2">
-          <Bar className="h-7 w-52" />
-          <Bar className="h-4 w-64" />
-        </div>
+    <div aria-busy="true" className="flex items-center gap-3">
+      <span aria-hidden="true" className="size-12 animate-pulse rounded-full bg-sunken" />
+      <div className="flex flex-col gap-2">
+        <Bar className="h-6 w-48" />
+        <Bar className="h-4 w-60" />
       </div>
-      <Bar className="mt-2 h-12 w-full rounded-full" />
     </div>
   );
 }
@@ -55,77 +62,86 @@ async function CircleHeader({ params }: { params: LayoutProps<"/app/circles/[cir
   const circle = await orNotFound(getCircle(ctx, circleId));
   const { locale, t } = await getRequestTranslator();
   const name = circle.profile.preferredName ?? circle.profile.displayName;
-  const can = (c: string) => circle.myCapabilities.includes(c as (typeof circle.myCapabilities)[number]);
   const base = `/app/circles/${circleId}`;
 
-  const tabs: CircleTab[] = [
-    { href: base, label: t("circle.overview"), icon: "overview" },
-    ...(can("medication.view") ? [{ href: `${base}/medicines`, label: t("circle.medicines"), icon: "medicines" } as const] : []),
-    ...(can("health.view")
-      ? ([
-          { href: `${base}/health`, label: t("circle.health"), icon: "health" },
-          { href: `${base}/documents`, label: t("circle.documents"), icon: "documents" },
-        ] as const)
-      : []),
-    ...(can("appointment.view") ? [{ href: `${base}/appointments`, label: t("circle.appointments"), icon: "appointments" } as const] : []),
-    ...(can("task.view") ? [{ href: `${base}/tasks`, label: t("circle.tasks"), icon: "tasks" } as const] : []),
-    ...(can("update.view")
-      ? ([
-          { href: `${base}/visits`, label: t("circle.visits"), icon: "visits" },
-          { href: `${base}/updates`, label: t("circle.updates"), icon: "updates" },
-          { href: `${base}/messages`, label: t("circle.messages"), icon: "messages" },
-          { href: `${base}/timeline`, label: t("circle.timeline"), icon: "timeline" },
-        ] as const)
-      : []),
-    ...(can("members.view") ? [{ href: `${base}/members`, label: t("circle.members"), icon: "members" } as const] : []),
-    { href: `${base}/settings`, label: t("circle.settings"), icon: "settings" },
-    ...(can("audit.view") ? [{ href: `${base}/activity`, label: t("circle.activity"), icon: "activity" } as const] : []),
-  ];
-
   return (
-    <div lang={locale} className="flex flex-col gap-5">
-      <div className="flex flex-col gap-3">
-        <Link href="/app" className="inline-flex min-h-12 items-center gap-1 self-start font-semibold text-primary hover:underline">
-          <ChevronLeft aria-hidden="true" className="size-5" />
-          {t("circle.switch")}
-        </Link>
-        <div className="flex flex-wrap items-center gap-4">
-          <Avatar name={name} size="lg" />
-          <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-bold sm:text-3xl">{circle.name}</h1>
-            <p className="mt-1 flex flex-col text-muted sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2">
-              <span className="font-semibold text-foreground">{name}</span>
-              <span aria-hidden="true" className="max-sm:hidden">
-                ·
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Clock aria-hidden="true" className="size-4 shrink-0" />
-                {t("home.localTime", { time: formatLocalTime(ctx.now, locale, circle.profile.timeZone) })}
-              </span>
-            </p>
-          </div>
-          {/* Always one tap away on every circle page. */}
-          {can("emergency.view") && (
-            <Link href={`${base}/emergency`} className={`${buttonClass("dangerSolid", "lg")} max-sm:w-full`}>
-              <LifeBuoy aria-hidden="true" className="size-6" />
-              {t("circle.help")}
-            </Link>
-          )}
+    <div lang={locale} className="flex flex-col gap-2">
+      <Link href="/app" className="-ml-1 inline-flex min-h-11 items-center gap-1 self-start text-base font-semibold text-primary hover:underline">
+        <ChevronLeft aria-hidden="true" className="size-5" />
+        {t("circle.switch")}
+      </Link>
+      <div className="flex items-center gap-3 sm:gap-4">
+        <Avatar name={name} size="lg" />
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-xl font-bold sm:text-3xl">{circle.name}</h1>
+          <p className="flex flex-wrap items-center gap-x-2 text-base text-muted">
+            <span className="font-semibold text-foreground">{name}</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Clock aria-hidden="true" className="size-4 shrink-0" />
+              {formatLocalTime(ctx.now, locale, circle.profile.timeZone)}
+            </span>
+          </p>
         </div>
-        {/* The person receiving care can go back to their Simple view at any time. */}
-        {circle.myMembership.role === "care_recipient" && (
-          <Link href={`/view?mode=simple&next=${encodeURIComponent(`/simple/${circleId}`)}`} className={`${buttonClass("secondary")} self-start`}>
-            <Smartphone aria-hidden="true" className="size-5" />
-            {t("simple.simpleView")}
+        {/* Always one tap away on every circle page, without taking over the screen. */}
+        {circle.myCapabilities.includes("emergency.view") && (
+          <Link href={`${base}/emergency`} className={`${buttonClass("dangerSolid")} shrink-0 shadow-md shadow-danger/20`}>
+            <LifeBuoy aria-hidden="true" className="size-5" />
+            {t("circle.help")}
           </Link>
         )}
-        {circle.status === "archived" && (
-          <div>
-            <Badge tone="warning">{t("circle.isArchived")}</Badge>
-          </div>
-        )}
       </div>
-      <CircleNav tabs={tabs} label={circle.name} />
+      {/* The person receiving care can go back to their Simple view at any time. */}
+      {circle.myMembership.role === "care_recipient" && (
+        <Link href={`/view?mode=simple&next=${encodeURIComponent(`/simple/${circleId}`)}`} className={`${buttonClass("secondary")} self-start`}>
+          <Smartphone aria-hidden="true" className="size-5" />
+          {t("simple.simpleView")}
+        </Link>
+      )}
+      {circle.status === "archived" && (
+        <div>
+          <Badge tone="warning">{t("circle.isArchived")}</Badge>
+        </div>
+      )}
     </div>
   );
+}
+
+async function CircleNavigation({ params }: { params: LayoutProps<"/app/circles/[circleId]">["params"] }) {
+  const { circleId } = await params;
+  const { ctx } = await pageContext(`/app/circles/${circleId}`);
+  const circle = await orNotFound(getCircle(ctx, circleId));
+  const { t } = await getRequestTranslator();
+  const can = (c: string) => circle.myCapabilities.includes(c as (typeof circle.myCapabilities)[number]);
+  const base = `/app/circles/${circleId}`;
+  const unread = can("update.view") ? await unreadThreadCount(ctx, circleId) : 0;
+  const item = (path: string, key: string, icon: NavItem["icon"], show = true, badge?: number): NavItem[] =>
+    show ? [{ href: path ? `${base}/${path}` : base, label: t(`circle.${key}`), icon, badge }] : [];
+
+  const groups: NavGroup[] = (
+    [
+      { id: "today", label: t("nav.today"), items: [{ href: base, label: t("nav.today"), icon: "overview" }] },
+      {
+        id: "care",
+        label: t("nav.care"),
+        items: [...item("medicines", "medicines", "medicines", can("medication.view")), ...item("health", "health", "health", can("health.view")), ...item("documents", "documents", "documents", can("health.view"))],
+      },
+      {
+        id: "plans",
+        label: t("nav.plans"),
+        items: [...item("appointments", "appointments", "appointments", can("appointment.view")), ...item("tasks", "tasks", "tasks", can("task.view")), ...item("visits", "visits", "visits", can("update.view"))],
+      },
+      {
+        id: "family",
+        label: t("nav.family"),
+        items: [...item("updates", "updates", "updates", can("update.view")), ...item("messages", "messages", "messages", can("update.view"), unread), ...item("timeline", "timeline", "timeline", can("update.view"))],
+      },
+      {
+        id: "circle",
+        label: t("nav.circle"),
+        items: [...item("members", "members", "members", can("members.view")), ...item("settings", "settings", "settings"), ...item("activity", "activity", "activity", can("audit.view"))],
+      },
+    ] satisfies NavGroup[]
+  ).filter((g) => g.items.length > 0);
+
+  return <CircleNav groups={groups} label={t("nav.sections")} newMessagesLabel={t("nav.newMessages")} />;
 }

@@ -21,7 +21,7 @@ export default function AppLayout({ children }: LayoutProps<"/app">) {
       <Suspense fallback={<header className="h-[69px] border-b border-border bg-surface" />}>
         <AppHeader />
       </Suspense>
-      <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:py-8">
+      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:py-8">
         <Suspense fallback={<p aria-busy="true">…</p>}>{children}</Suspense>
       </main>
     </div>
@@ -35,7 +35,7 @@ async function AppHeader() {
   return (
     <header lang={locale} className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur">
       <SkipLink label={t("common.skipToContent")} />
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-2 sm:px-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2 sm:px-4">
         <Link href="/app" aria-label={t("app.name")} className="rounded-xl">
           <Logo name={t("app.name")} compact />
         </Link>

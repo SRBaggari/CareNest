@@ -1,81 +1,133 @@
+import { Bell, CalendarDays, Car, DoorOpen, LifeBuoy, ListChecks, type LucideIcon, MessageSquareText, MessagesSquare, PackageOpen, Pill, UserPlus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionButton } from "@/components/action-button";
+import { buttonClass } from "@/components/ui/button";
+import { Badge, IconTile, type Tone } from "@/components/ui/section";
 import { getRequestTranslator } from "@/i18n/server";
-import { formatDateTime } from "@/lib/format";
+import { localDateIn } from "@/server/domain/schedule";
 import { pageContext } from "@/server/page";
 import { listNotifications } from "@/server/services/notifications";
 
 export const metadata: Metadata = { title: "Notifications" };
 
-const priorityClass = {
-  critical: "border-l-8 border-danger",
-  high: "border-l-8 border-warning",
-  normal: "border-l-4 border-border",
-  low: "border-l-4 border-border",
-};
+/** An icon for what the notification is about, so a list can be scanned at a glance. */
+function iconFor(kind: string): LucideIcon {
+  if (kind.startsWith("assistance")) return LifeBuoy;
+  if (kind.startsWith("refill")) return PackageOpen;
+  if (kind.includes("dose") || kind.startsWith("unconfirmed") || kind.startsWith("reminder")) return Pill;
+  if (kind.startsWith("transport")) return Car;
+  if (kind.startsWith("appointment")) return CalendarDays;
+  if (kind.startsWith("task")) return ListChecks;
+  if (kind.startsWith("visit")) return DoorOpen;
+  if (kind.startsWith("message")) return MessagesSquare;
+  if (kind.includes("update")) return MessageSquareText;
+  if (kind.startsWith("invitation")) return UserPlus;
+  return Bell;
+}
+const toneFor: Record<string, Tone> = { critical: "danger", high: "warning", normal: "primary", low: "neutral" };
 
 export default async function NotificationsPage() {
   const { session, ctx } = await pageContext("/app/notifications");
   const { locale, t } = await getRequestTranslator();
   const { notifications, unreadCount } = await listNotifications(ctx, { limit: 50 });
   const messages = { network: t("common.errorNetwork"), generic: t("common.errorGeneric"), fixErrors: t("common.fixErrors") };
+  const tz = session.user.timeZone;
+
+  // Group by day in the reader's own time zone: Today, Yesterday, then dates.
+  const today = localDateIn(tz, ctx.now);
+  const relative = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  const capitalise = (s: string) => s.charAt(0).toLocaleUpperCase(locale) + s.slice(1);
+  const dayHeading = (date: string) => {
+    const days = Math.round((Date.parse(`${today}T00:00:00Z`) - Date.parse(`${date}T00:00:00Z`)) / 86_400_000);
+    return days <= 1 ? capitalise(relative.format(-days, "day")) : new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
+  };
+  const time = (d: Date) => new Intl.DateTimeFormat(locale, { hour: "numeric", minute: "2-digit", timeZone: tz }).format(d);
+  const groups = new Map<string, typeof notifications>();
+  for (const n of notifications) {
+    const date = localDateIn(tz, n.createdAt);
+    groups.set(date, [...(groups.get(date) ?? []), n]);
+  }
 
   return (
-    <div lang={locale} className="flex flex-col gap-6">
+    <div lang={locale} className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl font-bold">{t("inbox.title")}</h1>
         {unreadCount > 0 && (
-          <ActionButton method="POST" url="/api/v1/notifications/read-all" messages={messages}>
+          <ActionButton method="POST" url="/api/v1/notifications/read-all" variant="ghost" messages={messages}>
             {t("inbox.markAllRead")}
           </ActionButton>
         )}
       </div>
 
       {notifications.length === 0 ? (
-        <p className="text-muted">{t("inbox.empty")}</p>
+        <div className="card flex items-center gap-3">
+          <IconTile icon={Bell} tone="neutral" />
+          <p className="text-muted">{t("inbox.empty")}</p>
+        </div>
       ) : (
-        <ol className="flex flex-col gap-3">
-          {notifications.map((n) => {
-            const others = n.acknowledgedBy.filter((a) => a.userId !== session.user.id);
-            const urgent = n.priority === "high" || n.priority === "critical";
-            return (
-              <li key={n.id} className={`flex flex-col gap-2 rounded-xl bg-surface p-5 ${priorityClass[n.priority]} ${n.readAt ? "" : "shadow-md"}`}>
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <h2 className="text-xl font-semibold">
-                    {!n.readAt && <span className="sr-only">{t("inbox.unread")}: </span>}
-                    {t(`inbox.priority_${n.priority}`) && <span className="mr-2 font-bold text-danger">{t(`inbox.priority_${n.priority}`)}:</span>}
-                    {n.title}
-                  </h2>
-                  <time className="text-muted" dateTime={n.createdAt.toISOString()}>
-                    {formatDateTime(n.createdAt, locale, session.user.timeZone)}
-                  </time>
-                </div>
-                <p>{n.body}</p>
-                {n.acknowledgedAt && <p className="font-medium text-success">✓ {t("inbox.youAreChecking")}</p>}
-                {others.length > 0 && <p className="font-medium">{t("inbox.othersChecking", { names: others.map((a) => a.name).join(", ") })}</p>}
-                {n.emailStatus && <p className="text-muted">{t(`inbox.email_${n.emailStatus}`)}</p>}
-                <div className="flex flex-wrap items-start gap-3">
-                  {n.link && (
-                    <Link href={n.link} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-lg font-semibold text-primary-foreground shadow-sm transition hover:brightness-110">
-                      {t("inbox.open")}
-                    </Link>
-                  )}
-                  {urgent && !n.acknowledgedAt && (
-                    <ActionButton method="POST" url={`/api/v1/notifications/${n.id}/acknowledge`} variant="primary" messages={messages}>
-                      {t("inbox.checking")}
-                    </ActionButton>
-                  )}
-                  {!n.readAt && (
-                    <ActionButton method="POST" url={`/api/v1/notifications/${n.id}/read`} messages={messages}>
-                      {t("inbox.markRead")}
-                    </ActionButton>
-                  )}
-                </div>
-              </li>
-            );
-          })}
-        </ol>
+        [...groups].map(([date, items]) => (
+          <section key={date} aria-labelledby={`day-${date}`} className="flex flex-col gap-3">
+            <h2 id={`day-${date}`} className="text-base font-bold tracking-wide text-muted uppercase">
+              {dayHeading(date)}
+            </h2>
+            <ol className="flex flex-col gap-3">
+              {items.map((n) => {
+                const others = n.acknowledgedBy.filter((a) => a.userId !== session.user.id);
+                const urgent = n.priority === "high" || n.priority === "critical";
+                const unread = !n.readAt;
+                return (
+                  <li
+                    key={n.id}
+                    className={`card flex gap-4 ${n.priority === "critical" && !n.acknowledgedAt ? "border-2 border-danger" : ""} ${unread ? "" : "opacity-90 shadow-none"}`}
+                  >
+                    <div className="relative">
+                      <IconTile icon={iconFor(n.kind)} tone={toneFor[n.priority]} />
+                      {unread && <span aria-hidden="true" className="absolute -top-1 -right-1 size-3.5 rounded-full border-2 border-surface bg-primary" />}
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col gap-2">
+                      <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+                        <h3 className={`text-lg ${unread ? "font-bold" : "font-semibold"}`}>
+                          {unread && <span className="sr-only">{t("inbox.unread")}: </span>}
+                          {n.title}
+                        </h3>
+                        <time className="text-base text-muted" dateTime={n.createdAt.toISOString()}>
+                          {time(n.createdAt)}
+                        </time>
+                      </div>
+                      {t(`inbox.priority_${n.priority}`) && (
+                        <div>
+                          <Badge tone={toneFor[n.priority]}>{t(`inbox.priority_${n.priority}`)}</Badge>
+                        </div>
+                      )}
+                      {n.body && <p className="line-clamp-3 text-muted">{n.body}</p>}
+                      {n.acknowledgedAt && <p className="font-semibold text-success">✓ {t("inbox.youAreChecking")}</p>}
+                      {others.length > 0 && <p className="font-semibold">{t("inbox.othersChecking", { names: others.map((a) => a.name).join(", ") })}</p>}
+                      {n.emailStatus && n.emailStatus !== "logged" && <p className="text-base text-muted">{t(`inbox.email_${n.emailStatus}`)}</p>}
+                      <div className="flex flex-wrap items-start gap-2">
+                        {urgent && !n.acknowledgedAt && (
+                          <ActionButton method="POST" url={`/api/v1/notifications/${n.id}/acknowledge`} variant="primary" messages={messages}>
+                            {t("inbox.checking")}
+                          </ActionButton>
+                        )}
+                        {n.link && (
+                          <Link href={n.link} className={buttonClass("secondary")}>
+                            {t("inbox.open")}
+                          </Link>
+                        )}
+                        {unread && (
+                          <ActionButton method="POST" url={`/api/v1/notifications/${n.id}/read`} variant="ghost" messages={messages}>
+                            {t("inbox.markRead")}
+                          </ActionButton>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        ))
       )}
     </div>
   );

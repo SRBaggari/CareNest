@@ -1006,5 +1006,14 @@
     "discuss": "Discuss",
     "reply": "Reply",
     "noMessages": "No messages yet. Write the first one below."
+  },
+  "nav": {
+    "today": "Today",
+    "care": "Care",
+    "plans": "Plans",
+    "family": "Family",
+    "circle": "Circle",
+    "sections": "Sections of this circle",
+    "newMessages": "{count} conversations with new messages"
   }
 }

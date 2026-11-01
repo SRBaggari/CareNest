@@ -11,6 +11,7 @@ import { getCircle } from "@/server/services/circles";
 import { listMembers } from "@/server/services/members";
 import { listTasks } from "@/server/services/tasks";
 import { CompleteTaskForm, TaskForm } from "./task-forms";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Tasks" };
 
@@ -62,6 +63,7 @@ export default async function TasksPage({ params, searchParams }: PageProps<"/ap
 
   return (
     <div className="flex flex-col gap-6">
+      <PageHeader title={t("circle.tasks")} />
       <nav aria-label={t("circle.tasks")}>
         <ul className="flex flex-wrap gap-2">
           {VIEWS.map((v) => (
@@ -69,7 +71,7 @@ export default async function TasksPage({ params, searchParams }: PageProps<"/ap
               <Link
                 href={`?view=${v}`}
                 aria-current={v === view ? "page" : undefined}
-                className={`inline-flex min-h-12 items-center rounded-full border-2 px-4 font-semibold ${v === view ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}
+                className={`inline-flex min-h-11 items-center rounded-full px-4 font-semibold transition ${v === view ? "bg-primary text-primary-foreground shadow-sm" : "bg-surface text-muted ring-1 ring-border hover:text-foreground"}`}
               >
                 {t(`tasks.view_${v}`)}
               </Link>
@@ -137,7 +139,7 @@ export default async function TasksPage({ params, searchParams }: PageProps<"/ap
                 {canManage && task.status === "open" && (
                   <>
                     <TaskForm method="PATCH" url={`${base}/${task.id}`} timeZone={zone} initial={task} openLabel={t("tasks.edit")} labels={formLabels} options={options} />
-                    <ActionButton method="POST" url={`${base}/${task.id}/status`} body={{ action: "cancel" }} confirm={t("tasks.cancelConfirm")} variant="danger" messages={messages}>
+                    <ActionButton method="POST" url={`${base}/${task.id}/status`} body={{ action: "cancel" }} confirm={t("tasks.cancelConfirm")} variant="quietDanger" messages={messages}>
                       {t("tasks.cancelTask")}
                     </ActionButton>
                   </>

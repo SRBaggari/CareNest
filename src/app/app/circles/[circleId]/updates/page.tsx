@@ -6,6 +6,7 @@ import { formatDateTime } from "@/lib/format";
 import { orForbidden, orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { listUpdates } from "@/server/services/updates";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Updates" };
 
@@ -27,7 +28,7 @@ export default async function UpdatesPage({ params }: PageProps<"/app/circles/[c
 
   return (
     <div className="flex flex-col gap-6">
-      <p className="text-lg text-muted">{t("updates.intro", { name })}</p>
+      <PageHeader title={t("circle.updates")} description={t("updates.intro", { name })} />
       {canPost && (
         <section className="card">
           <SimpleForm

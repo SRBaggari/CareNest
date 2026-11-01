@@ -22,7 +22,8 @@ test("Scenario A: sign up, create a circle and invite a sibling, who joins @phon
   await expect(page.getByRole("heading", { name: "Amma's care", level: 1 })).toBeVisible();
 
   const ravi = await new Actor("Ravi").register();
-  await page.getByRole("link", { name: "Members" }).click();
+  // Desktop: "Members" in the sidebar. Phone: the "Circle" section in the bottom bar opens Members.
+  await page.getByRole("link", { name: /^(Members|Circle)$/ }).filter({ visible: true }).first().click();
   await page.getByLabel("Their email address").fill(ravi.email);
   await page.getByRole("button", { name: "Create invitation" }).click();
   const link = (await page.getByText(/\/invite\//).textContent())!.trim();
@@ -167,7 +168,7 @@ test("Scenario D: a missing driver shows on the dashboard until someone offers",
   await page.getByRole("button", { name: "I'll drive" }).click();
   await expect(page.getByText("Driving: Priya")).toBeVisible();
 
-  await page.getByRole("link", { name: "Overview" }).click();
+  await page.getByRole("link", { name: "Today" }).filter({ visible: true }).first().click();
   await expect(page.getByText(/No driver yet/)).toHaveCount(0);
   await expect(page.getByText("Driver: Priya")).toBeVisible();
 });
