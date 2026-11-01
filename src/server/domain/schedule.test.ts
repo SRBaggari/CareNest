@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addDays, expandSchedule, localDateIn, localDayBounds, localToInstant, type ScheduleSpec } from "./schedule";
+import { addDays, expandSchedule, isValidLocalDate, localDateIn, localDayBounds, localToInstant, type ScheduleSpec } from "./schedule";
 
 const daily = (times: string[], extra: Partial<ScheduleSpec> = {}): ScheduleSpec => ({
   times,
@@ -93,5 +93,26 @@ describe("local day helpers", () => {
       instant: new Date("2026-11-14T02:30:00Z"),
       shifted: false,
     });
+  });
+});
+
+describe("regressions from black-box testing", () => {
+  it("F1: expanding near year 9999 terminates (string-compared dates once looped forever)", () => {
+    const start = Date.now();
+    const doses = expandSchedule(daily(["08:00"]), "UTC", "9999-12-31", "9999-12-31");
+    expect(doses).toHaveLength(1);
+    expect(Date.now() - start).toBeLessThan(1000);
+  });
+
+  it("refuses to expand unreasonably long ranges", () => {
+    expect(() => expandSchedule(daily(["08:00"]), "UTC", "2026-01-01", "2030-01-01")).toThrow(RangeError);
+  });
+
+  it("F2: only real calendar dates within 1900–2200 are valid", () => {
+    expect(isValidLocalDate("2026-11-14")).toBe(true);
+    expect(isValidLocalDate("2028-02-29")).toBe(true);
+    for (const bad of ["2026-02-30", "2026-13-45", "0000-00-00", "9999-12-31", "1899-12-31", "2201-01-01", "2026-1-5", "abc"]) {
+      expect([bad, isValidLocalDate(bad)]).toEqual([bad, false]);
+    }
   });
 });

@@ -50,7 +50,17 @@ describe("assertSameOrigin", () => {
 });
 
 describe("getClientIp", () => {
-  it("uses the first X-Forwarded-For entry", () => {
+  it("F3: ignores X-Forwarded-For unless TRUST_PROXY=true (it is client-controlled)", () => {
+    const original = process.env.TRUST_PROXY;
+    delete process.env.TRUST_PROXY;
+    try {
+      expect(getClientIp(req({ "x-forwarded-for": "10.9.8.7" }))).toBe("unknown");
+    } finally {
+      process.env.TRUST_PROXY = original;
+    }
+  });
+
+  it("uses the first X-Forwarded-For entry behind a trusted proxy", () => {
     expect(getClientIp(req({ "x-forwarded-for": "203.0.113.5, 10.0.0.1" }))).toBe("203.0.113.5");
     expect(getClientIp(req({}))).toBe("unknown");
   });

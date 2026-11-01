@@ -46,12 +46,25 @@ describe("parseBody", () => {
   const schema = z.object({ name: z.string().min(1) });
 
   it("rejects malformed JSON with 400", async () => {
-    const req = new Request("http://x", { method: "POST", body: "{not json" });
+    const req = new Request("http://x", { method: "POST", headers: { "content-type": "application/json" }, body: "{not json" });
     await expect(parseBody(req, schema)).rejects.toMatchObject({ code: "bad_request" });
   });
 
   it("returns parsed data", async () => {
-    const req = new Request("http://x", { method: "POST", body: JSON.stringify({ name: "Asha" }) });
+    const req = new Request("http://x", { method: "POST", headers: { "content-type": "application/json; charset=utf-8" }, body: JSON.stringify({ name: "Asha" }) });
     await expect(parseBody(req, schema)).resolves.toEqual({ name: "Asha" });
+  });
+
+  it("refuses non-JSON content types with 415 (black-box finding F6)", async () => {
+    const req = new Request("http://x", { method: "POST", headers: { "content-type": "text/plain" }, body: JSON.stringify({ name: "Asha" }) });
+    await expect(parseBody(req, schema)).rejects.toMatchObject({ code: "unsupported_media_type", status: 415 });
+  });
+
+  it("adds Retry-After to rate-limit responses", async () => {
+    const res = await handle(async () => {
+      throw new AppError("rate_limited", "Too many", { retryAfterSeconds: 90 });
+    });
+    expect(res.status).toBe(429);
+    expect(res.headers.get("retry-after")).toBe("90");
   });
 });

@@ -1,6 +1,7 @@
 import { IANAZone } from "luxon";
 import { z } from "zod";
 import { LOCALES } from "@/i18n";
+import { isValidLocalDate, MAX_LOCAL_DATE, MIN_LOCAL_DATE } from "@/server/domain/schedule";
 
 export const emailSchema = z
   .string()
@@ -18,3 +19,8 @@ export const timeZoneSchema = z
 export const localeSchema = z.enum(LOCALES);
 
 export const uuidSchema = z.uuid();
+
+/** A real calendar date "YYYY-MM-DD" between 1900 and 2200 (rejects "2026-02-30", "9999-12-31"). */
+export const localDateSchema = z
+  .string()
+  .refine(isValidLocalDate, { message: `Enter a real date between ${MIN_LOCAL_DATE} and ${MAX_LOCAL_DATE}.` });

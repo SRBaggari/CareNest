@@ -9,6 +9,7 @@ export type ErrorCode =
   | "conflict"
   | "validation_failed"
   | "rate_limited"
+  | "unsupported_media_type"
   | "internal";
 
 const STATUS: Record<ErrorCode, number> = {
@@ -19,6 +20,7 @@ const STATUS: Record<ErrorCode, number> = {
   conflict: 409,
   validation_failed: 422,
   rate_limited: 429,
+  unsupported_media_type: 415,
   internal: 500,
 };
 
@@ -47,7 +49,11 @@ export function errorResponse(err: AppError): Response {
     error: { code: err.code, message: err.message },
   };
   if (err.details !== undefined) body.error.details = err.details;
-  return Response.json(body, { status: err.status });
+  const retryAfter = (err.details as { retryAfterSeconds?: number } | undefined)?.retryAfterSeconds;
+  return Response.json(body, {
+    status: err.status,
+    headers: err.code === "rate_limited" && retryAfter ? { "Retry-After": String(retryAfter) } : undefined,
+  });
 }
 
 /** Wraps a route handler: maps AppError/ZodError to JSON errors and hides internal failures. */
@@ -78,6 +84,10 @@ export function fieldErrors(err: z.ZodError): Record<string, string[]> {
 
 /** Parses a JSON request body against a schema; malformed JSON is a 400, invalid fields a 422. */
 export async function parseBody<T extends z.ZodType>(request: Request, schema: T): Promise<z.infer<T>> {
+  const type = request.headers.get("content-type") ?? "";
+  if (!type.toLowerCase().startsWith("application/json")) {
+    throw new AppError("unsupported_media_type", "Send the request body as JSON (Content-Type: application/json).");
+  }
   let raw: unknown;
   try {
     raw = await request.json();

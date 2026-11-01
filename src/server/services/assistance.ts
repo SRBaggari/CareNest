@@ -309,6 +309,7 @@ const resolver = alias(users, "resolver");
 /** Request detail with a per-person delivery report, so silence and failures are visible. */
 export async function getAssistance(ctx: ServiceContext, circleId: string, requestId: string) {
   await authorize(ctx, circleId, "emergency.view");
+  if (!uuidSchema.safeParse(requestId).success) throw new AppError("not_found", "Request not found.");
   const [row] = await ctx.db
     .select({ r: assistanceRequests, raisedByName: raiser.name, acknowledgedByName: acker.name, resolvedByName: resolver.name })
     .from(assistanceRequests)

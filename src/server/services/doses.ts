@@ -9,10 +9,10 @@ import {
   RECORDABLE_STATUSES,
   supplyDelta,
 } from "@/server/domain/doses";
-import { addDays, expandSchedule, LOCAL_DATE_PATTERN, localDateIn, localDayBounds } from "@/server/domain/schedule";
+import { addDays, expandSchedule, localDateIn, localDayBounds } from "@/server/domain/schedule";
 import { doseEventHistory, doseEvents, medications, users } from "@/server/db/schema";
 import { AppError } from "@/server/http";
-import { uuidSchema } from "@/server/validation";
+import { localDateSchema, uuidSchema } from "@/server/validation";
 import { authorize, type DbOrTx, type ServiceContext } from "./access";
 import { recordAudit } from "./audit";
 import { loadMedication } from "./medications";
@@ -30,7 +30,7 @@ const optionalText = (max: number) =>
     .optional();
 
 export const listDosesQuerySchema = z.object({
-  date: z.string().regex(LOCAL_DATE_PATTERN, "Use a date like 2026-11-14.").optional(),
+  date: localDateSchema.optional(),
   days: z.coerce.number().int().min(1).max(7).default(1),
 });
 
@@ -66,7 +66,9 @@ export async function ensureDoses(db: DbOrTx, circleId: string, timeZone: string
       fromDate,
       toDate,
     )
-      // A stopped medicine keeps the doses that were due before it was stopped, nothing after.
+      // Nothing is due before the medicine was added (no instant "unconfirmed" doses for this
+      // morning when it is entered in the evening), and nothing after it was stopped.
+      .filter((o) => o.scheduledFor.getTime() >= m.createdAt.getTime())
       .filter((o) => m.status === "active" || (m.stoppedAt !== null && o.scheduledFor.getTime() <= m.stoppedAt.getTime()))
       .map((o) => ({
         circleId,

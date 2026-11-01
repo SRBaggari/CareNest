@@ -1,0 +1,218 @@
+// Black-box regression suite. Derived from the requirements in docs/PLAN.md only; it exercises a
+// running deployment over HTTP. Run: BLACKBOX_URL=http://localhost:3000 npm run test:blackbox
+
+import { describe, expect, it } from "vitest";
+import { Actor, BASE, circleWith, type Json } from "./client";
+
+describe.skipIf(!BASE)("CareNest black-box", () => {
+  describe("platform", () => {
+    it("health endpoint reports the database", async () => {
+      const res = await new Actor().get("/api/health");
+      expect(res.status).toBe(200);
+      expect(res.json).toEqual({ status: "ok", database: "ok" });
+    });
+
+    it("pages send security headers and no framework banner", async () => {
+      const res = await new Actor().get("/");
+      expect(res.headers.get("x-frame-options")).toBe("DENY");
+      expect(res.headers.get("x-content-type-options")).toBe("nosniff");
+      expect(res.headers.get("referrer-policy")).toBe("strict-origin-when-cross-origin");
+      expect(res.headers.get("x-powered-by")).toBeNull();
+    });
+
+    it("pages are accessible-by-markup: language, skip link, labelled inputs", async () => {
+      const home = await new Actor().get("/");
+      expect(home.text).toMatch(/<html[^>]* lang="en"/);
+      expect(home.text).toContain('href="#main"');
+      const register = await new Actor().get("/register");
+      const inputs = [...register.text.matchAll(/<input[^>]*\sid="([^"]+)"/g)].map((m) => m[1]);
+      expect(inputs.length).toBeGreaterThan(2);
+      for (const id of inputs) expect(register.text).toContain(`for="${id}"`);
+      expect(register.text).not.toMatch(/<img(?![^>]*\balt=)[^>]*>/);
+    });
+
+    it("unknown API routes are a JSON 404", async () => {
+      const res = await new Actor().get("/api/v1/does-not-exist");
+      expect(res.status).toBe(404);
+      expect(res.json.error.code).toBe("not_found");
+    });
+
+    it("regression F1/F2: far-future and impossible dates are rejected fast, server stays up", async () => {
+      const owner = await new Actor().register();
+      const circleId = await circleWith(owner);
+      for (const name of ["A", "B", "C"]) await owner.post(`/api/v1/circles/${circleId}/medications`, { name, dosage: "1", times: ["08:00"] });
+      for (const date of ["9999-12-31", "0001-01-01", "2026-02-30"]) {
+        const started = Date.now();
+        expect([date, (await owner.get(`/api/v1/circles/${circleId}/doses?date=${date}`)).status]).toEqual([date, 422]);
+        expect(Date.now() - started).toBeLessThan(3000);
+      }
+      expect((await new Actor().get("/api/health")).status).toBe(200);
+    });
+
+    it("regression F6: non-JSON bodies are refused with 415", async () => {
+      const a = await new Actor().register();
+      expect((await a.call("PATCH", "/api/v1/me", "name=x", { "content-type": "text/plain" })).status).toBe(415);
+    });
+
+    it("429 responses include Retry-After", async () => {
+      const victim = await new Actor().register();
+      let last;
+      for (let i = 0; i < 6; i++) last = await new Actor().post("/api/v1/auth/login", { email: victim.email, password: "wrong password!!" });
+      expect(last!.status).toBe(429);
+      expect(Number(last!.headers.get("retry-after"))).toBeGreaterThan(0);
+    });
+  });
+
+  describe("authentication", () => {
+    it("register → me → logout → me is 401", async () => {
+      const a = await new Actor("Asha").register();
+      expect((await a.get("/api/v1/me")).json.user.name).toBe("Asha");
+      expect((await a.post("/api/v1/auth/logout")).status).toBe(204);
+      expect((await a.get("/api/v1/me")).status).toBe(401);
+    });
+
+    it("password boundaries: 9 chars rejected, 10 accepted, 129 rejected", async () => {
+      const reg = (pw: string) => new Actor().post("/api/v1/auth/register", { email: `bb-${pw.length}-${Math.random()}@example.test`, name: "X", password: pw });
+      expect((await reg("a".repeat(4) + "bcdef")).status).toBe(422);
+      expect((await reg("abcdefghij")).status).toBe(201);
+      expect((await reg("x".repeat(129))).status).toBe(422);
+    });
+
+    it("emails are case/whitespace-insensitive and unique", async () => {
+      const a = await new Actor().register();
+      const dup = await new Actor().post("/api/v1/auth/register", { email: `  ${a.email.toUpperCase()} `, name: "Dup", password: "correct horse battery staple" });
+      expect(dup.status).toBe(409);
+    });
+
+    it("rejects malformed JSON (400) and wrong types (422)", async () => {
+      expect((await new Actor().call("POST", "/api/v1/auth/login", "{oops")).status).toBe(400);
+      expect((await new Actor().post("/api/v1/auth/login", { email: 42, password: [] })).status).toBe(422);
+    });
+
+    it("mutations without our Origin are refused (CSRF)", async () => {
+      const a = await new Actor().register();
+      expect((await a.call("PATCH", "/api/v1/me", { name: "x" }, { origin: "https://evil.example" })).status).toBe(403);
+      expect((await a.call("PATCH", "/api/v1/me", { name: "x" }, { origin: "" })).status).toBe(403);
+    });
+
+    it("signed-out visitors to /app are redirected to login, and ?next can't redirect off-site", async () => {
+      const res = await new Actor().get("/app/account");
+      expect(res.status).toBe(307);
+      expect(res.headers.get("location")).toContain("/login?next=%2Fapp%2Faccount");
+      const a = await new Actor().register();
+      const login = await a.get("/login?next=https://evil.example");
+      expect(login.text).not.toContain("evil.example\"");
+    });
+  });
+
+  describe("isolation between families (IDOR)", () => {
+    it("a stranger gets 404 for another family's circle and every resource id inside it", async () => {
+      const owner = await new Actor("Priya").register();
+      const circleId = await circleWith(owner);
+      const med = (await owner.post(`/api/v1/circles/${circleId}/medications`, { name: "Metformin", dosage: "500 mg", times: ["08:00"] })).json.medication;
+      const task = (await owner.post(`/api/v1/circles/${circleId}/tasks`, { title: "Buy pills" })).json.task;
+      const help = (await owner.post(`/api/v1/circles/${circleId}/emergency/requests`, { practice: true })).json.request;
+
+      const stranger = await new Actor("Eve").register();
+      const own = await circleWith(stranger);
+      for (const path of [
+        `/api/v1/circles/${circleId}`,
+        `/api/v1/circles/${circleId}/members`,
+        `/api/v1/circles/${circleId}/medications`,
+        `/api/v1/circles/${circleId}/doses`,
+        `/api/v1/circles/${circleId}/timeline`,
+        `/api/v1/circles/${circleId}/emergency/info`,
+        `/api/v1/circles/${own}/medications/${med.id}`,
+        `/api/v1/circles/${own}/tasks/${task.id}`,
+        `/api/v1/circles/${own}/emergency/requests/${help.id}`,
+      ]) {
+        const res = await stranger.get(path);
+        expect([path, res.status]).toEqual([path, 404]);
+        expect(res.text).not.toContain("Metformin");
+      }
+      expect((await stranger.post(`/api/v1/circles/${own}/tasks/${task.id}/claim`, { action: "claim" })).status).toBe(404);
+    });
+
+    it("a user with two parents sees each circle separately (Scenario F)", async () => {
+      const child = await new Actor().register();
+      const mum = await circleWith(child);
+      const dad = await circleWith(child);
+      await child.post(`/api/v1/circles/${mum}/medications`, { name: "MumOnlyMed", dosage: "1", times: ["08:00"] });
+      const dadMeds = await child.get(`/api/v1/circles/${dad}/medications`);
+      expect(dadMeds.text).not.toContain("MumOnlyMed");
+      expect((await child.get("/api/v1/circles")).json.circles).toHaveLength(2);
+    });
+  });
+
+  describe("roles and privacy", () => {
+    it("family loses medicines when the parent stops sharing; caregivers keep them", async () => {
+      const owner = await new Actor("Priya").register();
+      const elder = await new Actor("Amma").register("Asia/Kolkata");
+      const family = await new Actor("Ravi").register();
+      const caregiver = await new Actor("Meena").register("Asia/Kolkata");
+      const circleId = await circleWith(owner, [[elder, "care_recipient"], [family, "family"], [caregiver, "caregiver"]]);
+      await owner.post(`/api/v1/circles/${circleId}/medications`, { name: "Metformin", dosage: "500 mg", times: ["08:00"] });
+      expect((await elder.put(`/api/v1/circles/${circleId}/consent`, { shareMedications: false, shareAppointments: true, shareHealth: true })).status).toBe(200);
+      expect((await family.get(`/api/v1/circles/${circleId}/medications`)).status).toBe(403);
+      expect((await caregiver.get(`/api/v1/circles/${circleId}/medications`)).status).toBe(200);
+      // An admin cannot override the parent's choice.
+      expect((await owner.put(`/api/v1/circles/${circleId}/consent`, { shareMedications: true, shareAppointments: true, shareHealth: true })).status).toBe(403);
+    });
+
+    it("emergency contacts see the emergency card but not medicines or members", async () => {
+      const owner = await new Actor().register();
+      const neighbour = await new Actor("Neighbour").register();
+      const circleId = await circleWith(owner, [[neighbour, "emergency_contact"]]);
+      expect((await neighbour.get(`/api/v1/circles/${circleId}/emergency/info`)).status).toBe(200);
+      expect((await neighbour.get(`/api/v1/circles/${circleId}/medications`)).status).toBe(403);
+      expect((await neighbour.get(`/api/v1/circles/${circleId}/members`)).status).toBe(403);
+    });
+  });
+
+  describe("journeys", () => {
+    it("Scenario B: today's dose can be confirmed and is attributed to who reported it", async () => {
+      const owner = await new Actor("Priya").register();
+      const circleId = await circleWith(owner);
+      // A dose 30 minutes from now in Amma's zone: inside the early-confirmation window, and after
+      // the medicine was added (doses before that are never created).
+      const due = new Date(Date.now() + 30 * 60_000);
+      const t = due.toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" });
+      const today = due.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+      await owner.post(`/api/v1/circles/${circleId}/medications`, { name: "Metformin", dosage: "500 mg", times: [t], startDate: today });
+      const doses = (await owner.get(`/api/v1/circles/${circleId}/doses?date=${today}`)).json.doses;
+      expect(doses).toHaveLength(1);
+      expect(doses[0].status).toBe("scheduled");
+      const rec = await owner.post(`/api/v1/circles/${circleId}/doses/${doses[0].id}/record`, { status: "taken" });
+      expect(rec.json.dose).toMatchObject({ status: "taken", source: "proxy" });
+      expect(JSON.stringify((await owner.get(`/api/v1/circles/${circleId}/doses?date=${today}`)).json)).not.toMatch(/missed/i);
+    });
+
+    it("Scenario E: help request alerts the family and never claims emergency services were called", async () => {
+      const owner = await new Actor("Priya").register();
+      const elder = await new Actor("Amma").register("Asia/Kolkata");
+      const family = await new Actor("Ravi").register();
+      const circleId = await circleWith(owner, [[elder, "care_recipient"], [family, "family"]]);
+      const req = await elder.post(`/api/v1/circles/${circleId}/emergency/requests`, { message: "I fell" });
+      expect(req.status).toBe(201);
+      const again = await elder.post(`/api/v1/circles/${circleId}/emergency/requests`, { message: "I fell" });
+      expect(again.json.request).toMatchObject({ id: req.json.request.id, alreadyOpen: true });
+      const alert = (await family.get("/api/v1/notifications")).json.notifications.find((n: Json) => n.kind === "assistance_alert");
+      expect(alert.priority).toBe("critical");
+      expect(alert.body).toContain("has NOT contacted emergency services");
+      const ack = await family.post(`/api/v1/circles/${circleId}/emergency/requests/${req.json.request.id}/acknowledge`);
+      expect(ack.json.request).toMatchObject({ status: "acknowledged", acknowledgedBy: "Ravi" });
+    });
+
+    it("injection-shaped input is stored and returned as plain text", async () => {
+      const owner = await new Actor().register();
+      const circleId = await circleWith(owner);
+      const payload = `'); DROP TABLE users; -- <script>alert(1)</script>`;
+      expect((await owner.post(`/api/v1/circles/${circleId}/updates`, { body: payload })).status).toBe(201);
+      expect((await owner.get(`/api/v1/circles/${circleId}/updates`)).json.updates[0].body).toBe(payload);
+      const page = await owner.get(`/app/circles/${circleId}/updates`);
+      expect(page.text).not.toContain("<script>alert(1)</script>");
+      expect((await owner.get(`/api/v1/circles/${circleId}/timeline?q=${encodeURIComponent("%' OR '1'='1")}`)).json.items).toEqual([]);
+      expect((await new Actor().get("/api/health")).status).toBe(200);
+    });
+  });
+});

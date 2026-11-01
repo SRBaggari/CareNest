@@ -45,3 +45,6 @@ next-env.d.ts
 
 # env files
 !.env.example
+
+# test coverage reports
+/coverage
