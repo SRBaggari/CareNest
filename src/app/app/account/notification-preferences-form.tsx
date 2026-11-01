@@ -13,7 +13,7 @@ export function NotificationPreferencesForm(props: {
 }) {
   const { labels: l, preferences: p } = props;
   const router = useRouter();
-  const { pending, error, fieldErrors, submit } = useApiSubmit(l);
+  const { pending, error, fieldErrors, submit } = useApiSubmit(l, { confirm: false });
   const [saved, setSaved] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {

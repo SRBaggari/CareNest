@@ -41,6 +41,22 @@ test("the full app, as a family admin", async ({ browser }) => {
   }
 });
 
+// The dark theme has its own colours; their contrast is checked separately, not assumed.
+test("the main screens in dark mode", async ({ browser }) => {
+  const page = await pageAs(browser, owner, { colorScheme: "dark" });
+  for (const path of ["/app", "/app/notifications", ...["", "/medicines", "/health", "/tasks", "/timeline", "/settings"].map((p) => `/app/circles/${circleId}${p}`)]) {
+    await page.goto(path);
+    await expect(page.locator("main")).toBeVisible();
+    await expectAccessible(page);
+  }
+  const parent = await pageAs(browser, elder, { colorScheme: "dark" });
+  await parent.goto(`/simple/${circleId}`);
+  await expectAccessible(parent);
+  const visitor = await pageAs(browser, null, { colorScheme: "dark" });
+  await visitor.goto("/");
+  await expectAccessible(visitor);
+});
+
 test("the Simple view, as the parent @phone", async ({ browser }) => {
   const page = await pageAs(browser, elder);
   await page.goto(`/simple/${circleId}`);

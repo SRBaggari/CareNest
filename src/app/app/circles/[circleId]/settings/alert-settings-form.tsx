@@ -17,7 +17,7 @@ export function AlertSettingsForm(props: {
 }) {
   const { labels: l } = props;
   const router = useRouter();
-  const { pending, error, submit } = useApiSubmit(l);
+  const { pending, error, submit } = useApiSubmit(l, { confirm: false });
   const [saved, setSaved] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {

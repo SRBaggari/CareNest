@@ -10,6 +10,7 @@ import { orForbidden, orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { DOCUMENT_CATEGORIES, getDocument, listDocuments } from "@/server/services/documents";
 import { NewVersionForm, UploadDocumentForm } from "./document-forms";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = { title: "Documents" };
 
@@ -52,10 +53,7 @@ export default async function DocumentsPage({ params }: PageProps<"/app/circles/
       )}
 
       {docs.length === 0 ? (
-        <div className="card flex items-center gap-3">
-          <IconTile icon={FolderOpen} tone="neutral" />
-          <p className="text-muted">{t("documents.none")}</p>
-        </div>
+        <EmptyState icon={FolderOpen}>{t("documents.none")}</EmptyState>
       ) : (
         <ul className="flex flex-col gap-4">
           {docs.map((d, i) => {

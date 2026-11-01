@@ -1,3 +1,4 @@
+import { CalendarDays } from "lucide-react";
 import type { Metadata } from "next";
 import { ActionButton } from "@/components/action-button";
 import { DiscussButton } from "../messages/message-forms";
@@ -10,6 +11,7 @@ import { getCircle } from "@/server/services/circles";
 import { HELPER_ROLES } from "@/server/services/members";
 import { AppointmentForm, OutcomeForm } from "./appointment-forms";
 import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = { title: "Appointments" };
 
@@ -129,7 +131,7 @@ export default async function AppointmentsPage({ params }: PageProps<"/app/circl
         <h2 id="upcoming-heading" className="text-2xl font-semibold">
           {t("appts.upcoming")}
         </h2>
-        {upcoming.length === 0 && <p className="text-muted">{t("appts.none")}</p>}
+        {upcoming.length === 0 && <EmptyState icon={CalendarDays}>{t("appts.none")}</EmptyState>}
         <ol className="flex flex-col gap-4">
           {upcoming.map((a) => (
             <li key={a.id} className="flex flex-col gap-3 card">

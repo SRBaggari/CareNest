@@ -8,6 +8,7 @@ import { getRequestTranslator } from "@/i18n/server";
 import { localDateIn } from "@/server/domain/schedule";
 import { pageContext } from "@/server/page";
 import { listNotifications } from "@/server/services/notifications";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = { title: "Notifications" };
 
@@ -61,10 +62,7 @@ export default async function NotificationsPage() {
       </div>
 
       {notifications.length === 0 ? (
-        <div className="card flex items-center gap-3">
-          <IconTile icon={Bell} tone="neutral" />
-          <p className="text-muted">{t("inbox.empty")}</p>
-        </div>
+        <EmptyState icon={Bell}>{t("inbox.empty")}</EmptyState>
       ) : (
         [...groups].map(([date, items]) => (
           <section key={date} aria-labelledby={`day-${date}`} className="flex flex-col gap-3">

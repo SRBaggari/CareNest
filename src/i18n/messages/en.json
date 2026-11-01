@@ -27,7 +27,8 @@
     "notAllowed": "You don't have permission to see this.",
     "notifications": "Notifications",
     "notificationsUnread": "Notifications ({count} unread)",
-    "notificationsShort": "Alerts"
+    "notificationsShort": "Alerts",
+    "done": "Done."
   },
   "landing": {
     "getStarted": "Get started",
@@ -38,7 +39,23 @@
     "featureFamilyTitle": "Family, coordinated",
     "featureFamilyBody": "Every task, appointment and ride has a named person, or is clearly marked as still needing one.",
     "featureDignityTitle": "Built around your parent",
-    "featureDignityBody": "A simple, large-text view for parents, with privacy choices that stay in their hands."
+    "featureDignityBody": "A simple, large-text view for parents, with privacy choices that stay in their hands.",
+    "stepsTitle": "How it works",
+    "step1Title": "Create a circle for your parent",
+    "step1Body": "Add their medicines, their doctors and what they need help with.",
+    "step2Title": "Invite family and caregivers",
+    "step2Body": "Each person sees only what your parent has chosen to share with them.",
+    "step3Title": "Share the day's work",
+    "step3Body": "Wherever you are, you can see what is done and what still needs someone.",
+    "rolesTitle": "Made for everyone around your parent",
+    "roleParentTitle": "For your parent",
+    "roleParentBody": "Large buttons, a few clear choices, and a Help button that reaches the family.",
+    "roleFamilyTitle": "For family",
+    "roleFamilyBody": "One glance shows today's medicines, the next appointment and anything that needs a hand.",
+    "roleCaregiverTitle": "For caregivers",
+    "roleCaregiverBody": "Check in and out, record doses and readings, and leave notes for whoever comes next.",
+    "ctaTitle": "Start with one parent's circle",
+    "ctaBody": "It takes a few minutes, and you can invite others whenever you are ready."
   },
   "safety": {
     "notEmergencyService": "CareNest is not an emergency service. In an emergency, call your local emergency number."

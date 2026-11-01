@@ -18,7 +18,7 @@ export function ProfileForm(props: {
 }) {
   const { labels } = props;
   const router = useRouter();
-  const { pending, error, fieldErrors, submit } = useApiSubmit(labels);
+  const { pending, error, fieldErrors, submit } = useApiSubmit(labels, { confirm: false });
   const [saved, setSaved] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {

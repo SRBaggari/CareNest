@@ -1,3 +1,4 @@
+import { DoorOpen } from "lucide-react";
 import type { Metadata } from "next";
 import { ActionButton } from "@/components/action-button";
 import { SimpleForm } from "@/components/simple-form";
@@ -9,6 +10,7 @@ import { getCircle } from "@/server/services/circles";
 import { listMembers } from "@/server/services/members";
 import { latestHandover, listVisits } from "@/server/services/visits";
 import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = { title: "Visits" };
 
@@ -161,7 +163,7 @@ export default async function VisitsPage({ params }: PageProps<"/app/circles/[ci
         <h2 id="upcoming-heading" className="text-2xl font-semibold">
           {t("visits.upcoming")}
         </h2>
-        {upcoming.length === 0 ? <p className="text-muted">{t("visits.none")}</p> : <ol className="flex flex-col gap-3">{upcoming.map(card)}</ol>}
+        {upcoming.length === 0 ? <EmptyState icon={DoorOpen}>{t("visits.none")}</EmptyState> : <ol className="flex flex-col gap-3">{upcoming.map(card)}</ol>}
       </section>
 
       <section aria-labelledby="recent-heading" className="flex flex-col gap-3">

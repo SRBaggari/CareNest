@@ -2,6 +2,9 @@
 
 import { useCallback, useState } from "react";
 
+/** Fired on window after a successful change; the Toaster shows a short confirmation. */
+export const DONE_EVENT = "carenest:done";
+
 export type ApiErrorBody = { code: string; message: string; details?: Record<string, string[]> | unknown };
 
 export type SubmitState = {
@@ -35,7 +38,8 @@ export async function callApi<T>(method: string, url: string, body?: unknown): P
  * Form submission state: pending flag, a top-level message, and per-field errors from 422
  * responses so they can be shown next to the right input.
  */
-export function useApiSubmit(messages: { network: string; generic: string; fixErrors: string }) {
+export function useApiSubmit(messages: { network: string; generic: string; fixErrors: string }, options: { confirm?: boolean } = {}) {
+  const confirm = options.confirm ?? true;
   const [state, setState] = useState<SubmitState>({ pending: false, fieldErrors: {} });
 
   const submit = useCallback(
@@ -44,6 +48,7 @@ export function useApiSubmit(messages: { network: string; generic: string; fixEr
       const result = await callApi<T>(method, url, body);
       if (result.ok) {
         setState({ pending: false, fieldErrors: {} });
+        if (confirm && method !== "GET") window.dispatchEvent(new Event(DONE_EVENT));
         return result.data;
       }
       const details = result.error.details;
@@ -58,7 +63,7 @@ export function useApiSubmit(messages: { network: string; generic: string; fixEr
       setState({ pending: false, error, fieldErrors });
       return null;
     },
-    [messages.network, messages.generic, messages.fixErrors],
+    [messages.network, messages.generic, messages.fixErrors, confirm],
   );
 
   return { ...state, submit };

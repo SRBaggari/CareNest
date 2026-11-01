@@ -1,5 +1,5 @@
 import { SkipLink } from "@/components/ui/skip-link";
-import { CalendarDays, CircleCheck, HeartHandshake, Pill, ShieldCheck, UsersRound } from "lucide-react";
+import { ArrowRight, CalendarDays, CircleCheck, DoorOpen, HeartHandshake, Pill, ShieldCheck, Smartphone, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Alert } from "@/components/ui/alert";
@@ -23,6 +23,12 @@ async function Landing({ searchParams }: { searchParams: PageProps<"/">["searchP
     { icon: Pill, title: t("landing.featureMedsTitle"), body: t("landing.featureMedsBody") },
     { icon: UsersRound, title: t("landing.featureFamilyTitle"), body: t("landing.featureFamilyBody") },
     { icon: HeartHandshake, title: t("landing.featureDignityTitle"), body: t("landing.featureDignityBody") },
+  ];
+  const steps = [1, 2, 3].map((n) => ({ title: t(`landing.step${n}Title`), body: t(`landing.step${n}Body`) }));
+  const roles = [
+    { icon: Smartphone, title: t("landing.roleParentTitle"), body: t("landing.roleParentBody") },
+    { icon: UsersRound, title: t("landing.roleFamilyTitle"), body: t("landing.roleFamilyBody") },
+    { icon: DoorOpen, title: t("landing.roleCaregiverTitle"), body: t("landing.roleCaregiverBody") },
   ];
 
   return (
@@ -72,6 +78,57 @@ async function Landing({ searchParams }: { searchParams: PageProps<"/">["searchP
             </li>
           ))}
         </ul>
+
+        <section aria-labelledby="steps-heading" className="border-y border-border bg-surface">
+          <div className="mx-auto max-w-5xl px-4 py-14">
+            <h2 id="steps-heading" className="text-3xl font-bold">
+              {t("landing.stepsTitle")}
+            </h2>
+            <ol className="mt-8 grid gap-8 sm:grid-cols-3">
+              {steps.map((step, i) => (
+                <li key={step.title} className="flex flex-col gap-3">
+                  <span aria-hidden="true" className="grid size-12 place-items-center rounded-full bg-primary text-xl font-bold text-primary-foreground">
+                    {i + 1}
+                  </span>
+                  <h3 className="text-xl font-bold">{step.title}</h3>
+                  <p className="text-muted">{step.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section aria-labelledby="roles-heading" className="mx-auto max-w-5xl px-4 py-14">
+          <h2 id="roles-heading" className="text-3xl font-bold">
+            {t("landing.rolesTitle")}
+          </h2>
+          <ul className="mt-8 grid gap-6 sm:grid-cols-3">
+            {roles.map((r) => (
+              <li key={r.title} className="flex gap-4 sm:flex-col sm:gap-3">
+                <IconTile icon={r.icon} tone="neutral" />
+                <div className="flex min-w-0 flex-col gap-1">
+                  <h3 className="text-xl font-bold">{r.title}</h3>
+                  <p className="text-muted">{r.body}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <div className="mx-auto max-w-5xl px-4 pb-16">
+          <section aria-labelledby="cta-heading" className="flex flex-col items-start gap-4 rounded-3xl bg-primary-soft p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10">
+            <div className="min-w-0">
+              <h2 id="cta-heading" className="text-2xl font-bold sm:text-3xl">
+                {t("landing.ctaTitle")}
+              </h2>
+              <p className="mt-2 max-w-xl text-muted">{t("landing.ctaBody")}</p>
+            </div>
+            <Link href="/register" className={`${buttonClass("primary", "lg")} shrink-0`}>
+              {t("landing.getStarted")}
+              <ArrowRight aria-hidden="true" className="size-5" />
+            </Link>
+          </section>
+        </div>
       </main>
 
       <footer className="border-t border-border bg-surface">

@@ -12,6 +12,7 @@ import { orForbidden, orNotFound, pageContext } from "@/server/page";
 import { getCircle } from "@/server/services/circles";
 import { listCheckins, listMeasurements } from "@/server/services/measurements";
 import { RecordReadingForm } from "./health-forms";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = { title: "Health" };
 
@@ -108,7 +109,7 @@ export default async function HealthPage({ params }: PageProps<"/app/circles/[ci
         </SectionCard>
       )}
 
-      {readings.length === 0 && <p className="text-muted">{t("health.none")}</p>}
+      {readings.length === 0 && <EmptyState icon={HeartPulse}>{t("health.none")}</EmptyState>}
       <div className="grid gap-6 lg:grid-cols-2">
         {MEASUREMENT_KINDS.map((kind) => {
           const rows = readings.filter((r) => r.kind === kind);
