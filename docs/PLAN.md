@@ -233,7 +233,7 @@ every query filters by it.
 ## 9. API (v1, JSON)
 
 `POST /api/v1/auth/{register,login,logout}` · `GET /api/v1/me`
-`GET|POST /api/v1/circles` · `GET|PATCH /api/v1/circles/:id` · `.../profile` · `.../consent`
+`GET|POST /api/v1/circles` · `GET|PATCH /api/v1/circles/:id` (circle name + recipient profile, with `version`) · `PUT .../consent` · `PUT .../self-managing`
 `GET|POST /api/v1/circles/:id/invitations` · `POST /api/v1/invitations/:token/accept`
 `GET|PATCH|DELETE /api/v1/circles/:id/members/:memberId`
 `/api/v1/circles/:id/medications[/:medId]` · `.../doses?date=` · `POST .../doses/:doseId/record`
