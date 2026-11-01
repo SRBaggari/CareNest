@@ -25,8 +25,11 @@ export type CircleTab = { href: string; label: string; icon: keyof typeof icons 
 export function CircleNav({ tabs, label }: { tabs: CircleTab[]; label: string }) {
   const pathname = usePathname();
   const current = useRef<HTMLAnchorElement>(null);
-  // Keep the current tab in view when the row is scrolled.
-  useEffect(() => current.current?.scrollIntoView({ block: "nearest", inline: "center" }), [pathname]);
+  // Keep the current tab in view when the row is scrolled. The braces matter: newer browsers
+  // return a Promise from scrollIntoView, and an effect must return nothing or a cleanup function.
+  useEffect(() => {
+    current.current?.scrollIntoView({ block: "nearest", inline: "center" });
+  }, [pathname]);
 
   return (
     <nav aria-label={label} className="-mx-4 sm:mx-0">

@@ -1,3 +1,4 @@
+import { SkipLink } from "@/components/ui/skip-link";
 import { CalendarDays, CircleCheck, HeartHandshake, Pill, ShieldCheck, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -26,12 +27,7 @@ async function Landing({ searchParams }: { searchParams: PageProps<"/">["searchP
 
   return (
     <div lang={locale} className="flex flex-1 flex-col">
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded focus:bg-surface focus:px-4 focus:py-2"
-      >
-        {t("common.skipToContent")}
-      </a>
+      <SkipLink label={t("common.skipToContent")} />
       <header className="border-b border-border bg-surface">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
           <Logo name={t("app.name")} />

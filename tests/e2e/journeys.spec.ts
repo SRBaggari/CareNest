@@ -1,0 +1,115 @@
+import { expect, test } from "@playwright/test";
+import { randomUUID } from "node:crypto";
+import { Actor, circleWith } from "../blackbox/client";
+import { localSlot, pageAs } from "./helpers";
+
+// The main scenarios, clicked through in a real browser. Setup that isn't the point of a test
+// goes through the API; everything the test is about is done on screen.
+
+test("Scenario A: sign up, create a circle and invite a sibling, who joins @phone", async ({ browser }) => {
+  const page = await pageAs(browser, null);
+  await page.goto("/register");
+  await page.getByLabel("Your name").fill("Priya");
+  await page.getByLabel("Email address").fill(`e2e-${randomUUID()}@example.test`);
+  await page.getByLabel("Password", { exact: true }).fill("correct horse battery staple");
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page.getByRole("heading", { name: "Welcome, Priya" })).toBeVisible();
+
+  await page.getByRole("link", { name: "Create a care circle" }).click();
+  await page.getByLabel("Circle name").fill("Amma's care");
+  await page.getByLabel("Their full name").fill("Lakshmi Rao");
+  await page.getByRole("button", { name: "Create circle" }).click();
+  await expect(page.getByRole("heading", { name: "Amma's care", level: 1 })).toBeVisible();
+
+  const ravi = await new Actor("Ravi").register();
+  await page.getByRole("link", { name: "Members" }).click();
+  await page.getByLabel("Their email address").fill(ravi.email);
+  await page.getByRole("button", { name: "Create invitation" }).click();
+  const link = (await page.getByText(/\/invite\//).textContent())!.trim();
+
+  const sibling = await pageAs(browser, ravi);
+  await sibling.goto(link);
+  await sibling.getByRole("button", { name: "Join this circle" }).click();
+  await expect(sibling.getByRole("heading", { name: "Amma's care", level: 1 })).toBeVisible();
+});
+
+test("Scenario B: the parent confirms a dose on the Simple view and the family sees it @phone", async ({ browser }) => {
+  const owner = await new Actor("Priya").register();
+  const elder = await new Actor("Amma").register("Asia/Kolkata");
+  const circleId = await circleWith(owner, [[elder, "care_recipient"]]);
+  const slot = localSlot(30, "Asia/Kolkata");
+  await owner.post(`/api/v1/circles/${circleId}/medications`, { name: "Metformin", dosage: "500 mg", times: [slot.time], startDate: slot.date });
+
+  const parent = await pageAs(browser, elder);
+  await parent.goto("/app");
+  await expect(parent).toHaveURL(new RegExp(`/simple/${circleId}$`));
+  await parent.getByRole("button", { name: "Yes, I took it" }).click();
+  await expect(parent.getByText(/Saved as taken/)).toBeVisible();
+  await expect(parent.getByText("Done today")).toBeVisible();
+
+  const family = await pageAs(browser, owner);
+  await family.goto(`/app/circles/${circleId}`);
+  const tally = family.getByRole("region", { name: "Medicines today" });
+  await expect(tally.getByText("Taken")).toBeVisible();
+  await expect(family.getByText(/Last recorded: a medicine by Amma/)).toBeVisible();
+});
+
+test("Scenario D: a missing driver shows on the dashboard until someone offers", async ({ browser }) => {
+  const owner = await new Actor("Priya").register();
+  const circleId = await circleWith(owner);
+  await owner.post(`/api/v1/circles/${circleId}/appointments`, { title: "Cardiology check-up", startsAt: new Date(Date.now() + 26 * 3_600_000).toISOString() });
+
+  const page = await pageAs(browser, owner);
+  await page.goto(`/app/circles/${circleId}`);
+  await page.getByRole("link", { name: /No driver yet for Cardiology check-up/ }).click();
+  await expect(page).toHaveURL(/\/appointments$/);
+  await page.getByRole("button", { name: "I'll drive" }).click();
+  await expect(page.getByText("Driving: Priya")).toBeVisible();
+
+  await page.getByRole("link", { name: "Overview" }).click();
+  await expect(page.getByText(/No driver yet/)).toHaveCount(0);
+  await expect(page.getByText("Driver: Priya")).toBeVisible();
+});
+
+test("Scenario E: the parent asks for help; the family sees it first and responds @phone", async ({ browser }) => {
+  const owner = await new Actor("Priya").register();
+  const elder = await new Actor("Amma").register("Asia/Kolkata");
+  const circleId = await circleWith(owner, [[elder, "care_recipient"]]);
+
+  const parent = await pageAs(browser, elder);
+  await parent.goto(`/simple/${circleId}`);
+  await parent.getByRole("button", { name: "I need help" }).click();
+  await parent.getByLabel("What's happening? (optional)").fill("I feel dizzy");
+  await parent.getByRole("button", { name: "Yes, alert my family" }).click();
+  await expect(parent).toHaveURL(/\/emergency\/[\w-]+$/);
+
+  const family = await pageAs(browser, owner);
+  await family.goto("/app");
+  await expect(family.getByText("Help has been requested")).toBeVisible();
+  await family.goto(`/app/circles/${circleId}`);
+  await family.getByRole("link", { name: /Help was requested at/ }).click();
+  await expect(family.getByText("I feel dizzy")).toBeVisible();
+  await family.getByRole("button", { name: "I'm responding" }).click();
+  await expect(family.getByText(/Priya is responding/)).toBeVisible();
+  // CareNest never claims to have called emergency services.
+  await expect(family.getByText(/not an emergency service/i).first()).toBeVisible();
+});
+
+test("Scenario F: one person, two parents, each circle shown separately", async ({ browser }) => {
+  const priya = await new Actor("Priya").register();
+  const amma = await circleWith(priya);
+  const created = await priya.post("/api/v1/circles", {
+    name: "Nanna's care",
+    recipient: { displayName: "Ramesh Rao", preferredName: "Nanna", timeZone: "Asia/Kolkata", country: "IN" },
+  });
+  await priya.post(`/api/v1/circles/${created.json.circle.id}/tasks`, { title: "Book a plumber" });
+
+  const page = await pageAs(browser, priya);
+  await page.goto("/app");
+  const cards = page.getByRole("list").filter({ has: page.getByRole("link", { name: /care/ }) });
+  await expect(cards.getByRole("link", { name: /Amma's care/ })).toContainText("Nothing needs attention");
+  await expect(cards.getByRole("link", { name: /Nanna's care/ })).toContainText("Needs attention: 1");
+  await page.getByRole("link", { name: /Amma's care/ }).click();
+  await expect(page).toHaveURL(new RegExp(`/app/circles/${amma}$`));
+  await expect(page.getByText("Book a plumber")).toHaveCount(0);
+});

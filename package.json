@@ -19,7 +19,8 @@
     "test:coverage": "vitest run --coverage --project unit --project integration",
     "test:blackbox": "vitest run --project blackbox",
     "demo:seed": "tsx scripts/seed-demo.ts",
-    "test:postgres": "cross-env CARENEST_PG_TESTS=true vitest run --project postgres"
+    "test:postgres": "cross-env CARENEST_PG_TESTS=true vitest run --project postgres",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.14",

@@ -1,3 +1,4 @@
+import { SkipLink } from "@/components/ui/skip-link";
 import { Bell, House, UserRound } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -32,12 +33,7 @@ async function AppHeader() {
   const unread = await unreadCount(await getDb(), session.user.id);
   return (
     <header lang={locale} className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur">
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded focus:bg-surface focus:px-4 focus:py-2"
-      >
-        {t("common.skipToContent")}
-      </a>
+      <SkipLink label={t("common.skipToContent")} />
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-2.5">
         <Link href="/app" aria-label={t("app.name")} className="rounded-xl">
           <Logo name={t("app.name")} compact />

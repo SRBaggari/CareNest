@@ -53,6 +53,7 @@ docs/               Plan, architecture, decisions
 | `npm run test:postgres` | The integration suite on a **real PostgreSQL** server (started automatically) |
 | `npm run test:coverage` | With a coverage report in `coverage/` |
 | `BLACKBOX_URL=http://localhost:3000 npm run test:blackbox` | Black-box HTTP suite against a running server |
+| `npm run build && npm run test:e2e` | Browser tests in Chromium: the main journeys on desktop and phone, and an axe WCAG 2.1 AA scan of every main screen (first run: `npx playwright install chromium`) |
 
 See [docs/TEST-REPORT.md](docs/TEST-REPORT.md) for the latest white-box and black-box results.
 

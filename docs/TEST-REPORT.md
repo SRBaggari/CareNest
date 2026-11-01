@@ -134,3 +134,24 @@ npm run test:coverage        # with coverage report in coverage/
 npm run build && npm start   # then, in another terminal:
 BLACKBOX_URL=http://localhost:3000 npm run test:blackbox
 ```
+
+## Update, 2026-11-01: browser tests
+
+Playwright now drives the production build in Chromium (`npm run test:e2e`, and a CI job on every push):
+
+| | Result |
+|---|---|
+| Journeys clicked through on screen | Scenarios A (sign up, create a circle, invite, join), B (parent confirms a dose on the Simple view; the family dashboard shows it), D (missing driver flagged until someone offers), E (parent asks for help; the family sees it first and responds) and F (two parents, two separate circles). A, B and E also run at phone size. Scenario C (visits) is covered by the API and integration suites only. |
+| Accessibility | axe finds **no WCAG 2.1 A/AA violations** on the landing, sign-in and register pages, every circle page, home, notifications, account and the Simple view (including its opened-up "No, I didn't" / "How are you" / "I need help" states). |
+| Keyboard | The skip link is the first stop on the home page, sign-in and the Simple view. |
+| Total | **13 / 13 passing** |
+
+Defects these tests found, both fixed in the same change:
+
+- **Navigation crash (high).** In browsers whose `scrollIntoView` returns a Promise (current Chromium), the
+  new circle tab bar's effect returned that Promise; React then failed with "destroy is not a function"
+  when leaving a circle page, so links such as "No driver yet…" and "Members" did nothing. The HTTP-level
+  black-box suite could not see this because it does not run JavaScript.
+- **Missing skip link (low).** The sign-in and register pages had no "Skip to main content" link. All
+  pages now share one `SkipLink` component.
+
