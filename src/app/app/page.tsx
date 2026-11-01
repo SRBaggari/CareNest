@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getRequestTranslator } from "@/i18n/server";
 import { formatLocalTime } from "@/lib/format";
+import { simpleViewTarget } from "@/lib/simple-view";
 import { pageContext } from "@/server/page";
 import { listMyCircles } from "@/server/services/circles";
 
@@ -11,6 +14,9 @@ export default async function AppHome() {
   const { session, ctx } = await pageContext("/app");
   const { locale, t } = await getRequestTranslator();
   const circles = await listMyCircles(ctx);
+  // A parent lands on their own Simple view unless they chose the full app on this device.
+  const target = simpleViewTarget(circles, (await cookies()).get("cn_view")?.value);
+  if (target) redirect(target);
 
   return (
     <div lang={locale} className="flex flex-col gap-8">
