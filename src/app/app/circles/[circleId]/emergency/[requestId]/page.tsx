@@ -1,3 +1,4 @@
+import { Phone } from "lucide-react";
 import type { Metadata } from "next";
 import { ActionButton } from "@/components/action-button";
 import { SimpleForm } from "@/components/simple-form";
@@ -36,8 +37,9 @@ export default async function AssistancePage({ params }: PageProps<"/app/circles
   return (
     <div className="flex flex-col gap-6">
       {live && <AutoRefresh seconds={15} />}
-      <a href={`tel:${number}`} className="inline-flex min-h-16 items-center self-start rounded-2xl bg-danger px-6 text-2xl font-bold text-primary-foreground">
-        📞 {t("emergency.call", { number })}
+      <a href={`tel:${number}`} className="inline-flex min-h-16 items-center gap-3 self-start rounded-3xl bg-danger px-6 text-2xl font-bold text-primary-foreground shadow-sm transition hover:brightness-110">
+        <Phone aria-hidden="true" className="size-7 shrink-0" />
+          {t("emergency.call", { number })}
       </a>
 
       <section className={`flex flex-col gap-3 rounded-2xl border-4 bg-surface p-5 ${statusClass[r.status]}`} aria-live="polite">
@@ -144,7 +146,8 @@ export default async function AssistancePage({ params }: PageProps<"/app/circles
                   {c.relationship && <span className="font-normal text-muted"> · {c.relationship}</span>}
                 </span>
                 <a href={`tel:${c.phone}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-lg font-semibold text-primary-foreground shadow-sm transition hover:brightness-110">
-                  📞 {c.phone}
+                  <Phone aria-hidden="true" className="size-5 shrink-0" />
+          {c.phone}
                 </a>
               </li>
             ))}

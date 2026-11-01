@@ -1,8 +1,10 @@
 "use client";
 
+import { LifeBuoy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Alert } from "@/components/ui/alert";
+import { buttonClass } from "@/components/ui/button";
 import { callApi } from "@/lib/api-client";
 
 type Labels = Record<
@@ -57,11 +59,12 @@ export function HelpButton({ url, circleId, practice, labels }: { url: string; c
         onClick={() => setStage("confirm")}
         className={
           practice
-            ? "min-h-12 self-start rounded-xl border-2 border-border bg-surface transition hover:border-primary px-5 font-semibold"
-            : "min-h-24 w-full rounded-2xl bg-danger px-6 text-3xl font-bold text-primary-foreground sm:w-auto sm:min-w-96"
+            ? `${buttonClass("secondary")} self-start`
+            : "inline-flex min-h-24 w-full items-center justify-center gap-4 rounded-3xl bg-danger px-6 py-3 text-2xl font-bold text-primary-foreground shadow-lg sm:text-3xl shadow-danger/25 transition hover:brightness-110 sm:w-auto sm:min-w-96"
         }
       >
-        {practice ? labels.needHelp : `⚠ ${labels.needHelp}`}
+        {!practice && <LifeBuoy aria-hidden="true" className="size-10 shrink-0" strokeWidth={2.4} />}
+        {labels.needHelp}
       </button>
     );
   }
@@ -69,7 +72,7 @@ export function HelpButton({ url, circleId, practice, labels }: { url: string; c
   return (
     <form
       action={send}
-      className="flex w-full max-w-xl flex-col gap-4 rounded-2xl border-4 border-danger bg-surface p-5"
+      className="flex w-full max-w-xl flex-col gap-4 rounded-3xl border-4 border-danger bg-surface p-5 shadow-card"
       aria-labelledby="help-confirm-title"
     >
       <h2 id="help-confirm-title" className="text-2xl font-bold">
@@ -80,9 +83,9 @@ export function HelpButton({ url, circleId, practice, labels }: { url: string; c
       {note && <Alert>{note}</Alert>}
       <label className="flex flex-col gap-1">
         <span className="font-semibold">{labels.message}</span>
-        <textarea name="message" maxLength={500} className="min-h-20 w-full rounded-xl border-2 border-border bg-surface px-4 focus:border-primary text-lg" />
+        <textarea name="message" maxLength={500} className="min-h-24 w-full rounded-xl border-2 border-border bg-surface px-4 py-3 text-lg focus:border-primary" />
       </label>
-      <label className="flex min-h-12 items-center gap-3 rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4">
+      <label className="flex min-h-14 items-center gap-3 rounded-xl border-2 border-border bg-surface px-4 transition hover:border-primary">
         <input type="checkbox" name="shareLocation" className="size-6" />
         {labels.shareLocation}
       </label>
@@ -91,11 +94,11 @@ export function HelpButton({ url, circleId, practice, labels }: { url: string; c
           type="submit"
           disabled={stage === "sending"}
           aria-busy={stage === "sending" || undefined}
-          className="min-h-16 rounded-xl bg-danger px-6 text-xl font-bold text-primary-foreground disabled:opacity-60"
+          className={`${buttonClass("dangerSolid", "lg")} min-h-16`}
         >
           {stage === "sending" ? labels.sending : labels.yesAlert}
         </button>
-        <button type="button" onClick={() => setStage("idle")} className="min-h-16 rounded-xl border-2 border-border px-6 text-xl font-semibold">
+        <button type="button" onClick={() => setStage("idle")} className={`${buttonClass("secondary", "lg")} min-h-16`}>
           {labels.cancel}
         </button>
       </div>

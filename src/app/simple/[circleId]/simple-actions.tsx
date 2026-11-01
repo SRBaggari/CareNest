@@ -1,12 +1,17 @@
 "use client";
 
+import { ArrowLeft, Check, CircleCheck, Frown, HandHelping, Smile } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { callApi } from "@/lib/api-client";
 
-const big = "inline-flex min-h-16 w-full items-center justify-center rounded-2xl px-6 text-2xl font-bold sm:w-auto";
-const primary = `${big} bg-primary text-primary-foreground`;
-const secondary = `${big} border-4 border-border bg-surface text-foreground`;
+const big = "inline-flex min-h-16 w-full items-center justify-center gap-3 rounded-3xl px-6 py-2 text-2xl font-bold transition disabled:opacity-60 sm:w-auto";
+const primary = `${big} bg-primary text-primary-foreground shadow-sm hover:brightness-110`;
+const secondary = `${big} border-4 border-border bg-surface text-foreground hover:border-primary`;
+// A big answer button: icon on the left, words beside it, the whole row tappable.
+const choice = "flex min-h-20 w-full items-center gap-4 rounded-3xl border-4 border-border bg-surface px-5 py-3 text-left text-2xl font-bold transition hover:border-primary";
+const back = "inline-flex min-h-12 items-center gap-2 self-start rounded-xl px-2 text-lg font-semibold underline";
+const done = "flex items-start gap-3 rounded-2xl bg-success-soft p-4 text-xl font-bold text-success";
 
 type Messages = { network: string; generic: string };
 
@@ -53,13 +58,19 @@ export function DoseQuestion(props: {
 
   return (
     <div className="flex flex-col gap-3" aria-live="polite">
-      {step === "done" && <p className="rounded-xl bg-background p-4 text-xl font-semibold text-success">✓ {message}</p>}
+      {step === "done" && (
+        <p className={done}>
+          <CircleCheck aria-hidden="true" className="mt-0.5 size-7 shrink-0" />
+          {message}
+        </p>
+      )}
       {step === "ask" && (
         <>
           <p className="text-xl font-semibold">{l.didYouTake}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <button type="button" disabled={busy} aria-busy={busy || undefined} onClick={() => record("taken")} className={primary}>
-              ✓ {l.tookIt}
+              <Check aria-hidden="true" className="size-7 shrink-0" strokeWidth={3} />
+              {l.tookIt}
             </button>
             <button type="button" disabled={busy} onClick={() => setStep("why")} className={secondary}>
               {l.didNotTake}
@@ -79,8 +90,9 @@ export function DoseQuestion(props: {
           <button type="button" disabled={busy} onClick={() => record("refused")} className={secondary}>
             {l.refused}
           </button>
-          <button type="button" onClick={() => setStep("ask")} className="min-h-12 self-start px-2 text-lg underline">
-            ← {l.back}
+          <button type="button" onClick={() => setStep("ask")} className={back}>
+            <ArrowLeft aria-hidden="true" className="size-5" />
+            {l.back}
           </button>
         </fieldset>
       )}
@@ -123,8 +135,9 @@ export function CheckIn(props: {
 
   if (sent) {
     return (
-      <p aria-live="polite" className="rounded-xl bg-background p-4 text-xl font-semibold text-success">
-        ✓ {sent}
+      <p aria-live="polite" className={done}>
+        <CircleCheck aria-hidden="true" className="mt-0.5 size-7 shrink-0" />
+        {sent}
       </p>
     );
   }
@@ -132,14 +145,17 @@ export function CheckIn(props: {
   if (!feeling) {
     return (
       <div className="flex flex-col gap-3">
-        <button type="button" onClick={() => setFeeling("fine")} className={secondary}>
-          🙂 {l.feelFine}
+        <button type="button" onClick={() => setFeeling("fine")} className={choice}>
+          <FeelingIcon icon="fine" />
+          {l.feelFine}
         </button>
-        <button type="button" onClick={() => setFeeling("unwell")} className={secondary}>
-          🤒 {l.feelUnwell}
+        <button type="button" onClick={() => setFeeling("unwell")} className={choice}>
+          <FeelingIcon icon="unwell" />
+          {l.feelUnwell}
         </button>
-        <button type="button" onClick={() => setFeeling("need")} className={secondary}>
-          🙋 {l.needSomething}
+        <button type="button" onClick={() => setFeeling("need")} className={choice}>
+          <FeelingIcon icon="need" />
+          {l.needSomething}
         </button>
       </div>
     );
@@ -147,16 +163,20 @@ export function CheckIn(props: {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xl font-semibold">{{ fine: l.feelFine, unwell: l.feelUnwell, need: l.needSomething }[feeling]}</p>
+      <p className="flex items-center gap-4 text-2xl font-bold">
+        <FeelingIcon icon={feeling} />
+        {{ fine: l.feelFine, unwell: l.feelUnwell, need: l.needSomething }[feeling]}
+      </p>
       <label className="flex flex-col gap-2">
         <span className="text-xl">{l.tellMore}</span>
-        <textarea value={more} onChange={(e) => setMore(e.target.value)} maxLength={500} className="min-h-28 w-full rounded-xl border-4 border-border bg-surface p-3 text-xl" />
+        <textarea value={more} onChange={(e) => setMore(e.target.value)} maxLength={500} className="min-h-28 w-full rounded-2xl border-4 border-border bg-surface p-4 text-xl focus:border-primary" />
       </label>
       <button type="button" disabled={busy} aria-busy={busy || undefined} onClick={() => submit(feeling)} className={primary}>
         {l.send}
       </button>
-      <button type="button" onClick={() => setFeeling(null)} className="min-h-12 self-start px-2 text-lg underline">
-        ← {l.back}
+      <button type="button" onClick={() => setFeeling(null)} className={back}>
+        <ArrowLeft aria-hidden="true" className="size-5" />
+        {l.back}
       </button>
       {error && (
         <p role="alert" className="text-xl font-semibold text-danger">
@@ -164,5 +184,20 @@ export function CheckIn(props: {
         </p>
       )}
     </div>
+  );
+}
+
+const feelingIcon = {
+  fine: { Icon: Smile, tone: "bg-success-soft text-success" },
+  unwell: { Icon: Frown, tone: "bg-warning-soft text-warning" },
+  need: { Icon: HandHelping, tone: "bg-primary-soft text-primary" },
+};
+
+function FeelingIcon({ icon }: { icon: Feeling }) {
+  const { Icon, tone } = feelingIcon[icon];
+  return (
+    <span aria-hidden="true" className={`inline-flex size-12 shrink-0 items-center justify-center rounded-full ${tone}`}>
+      <Icon className="size-7" strokeWidth={2.4} />
+    </span>
   );
 }

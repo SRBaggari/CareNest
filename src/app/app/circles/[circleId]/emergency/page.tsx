@@ -1,3 +1,4 @@
+import { Phone } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionButton } from "@/components/action-button";
@@ -43,8 +44,9 @@ export default async function EmergencyPage({ params }: PageProps<"/app/circles/
         <h2 id="call-heading" className="sr-only">
           {t("emergency.call", { number })}
         </h2>
-        <a href={`tel:${number}`} className="inline-flex min-h-20 items-center justify-center self-start rounded-2xl bg-danger px-8 text-3xl font-bold text-primary-foreground">
-          📞 {t("emergency.call", { number })}
+        <a href={`tel:${number}`} className="inline-flex min-h-20 items-center justify-center gap-4 self-start rounded-3xl bg-danger px-8 text-3xl font-bold text-primary-foreground shadow-lg shadow-danger/25 transition hover:brightness-110">
+          <Phone aria-hidden="true" className="size-8 shrink-0" />
+          {t("emergency.call", { number })}
         </a>
         <p className="text-lg">{t("emergency.callHint")}</p>
         <p className="font-medium">{t("emergency.notService")}</p>
@@ -135,7 +137,8 @@ export default async function EmergencyPage({ params }: PageProps<"/app/circles/
               </div>
               <div className="flex flex-wrap gap-2">
                 <a href={`tel:${c.phone}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-lg font-semibold text-primary-foreground shadow-sm transition hover:brightness-110">
-                  📞 {c.phone}
+                  <Phone aria-hidden="true" className="size-5 shrink-0" />
+                  {c.phone}
                 </a>
                 {canEdit && (
                   <ActionButton method="DELETE" url={`${base}/contacts/${c.id}`} confirm={t("emergency.removeConfirm", { name: c.name })} variant="danger" messages={messages}>
