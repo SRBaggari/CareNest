@@ -201,6 +201,17 @@ On the parent's Simple view:
   help" opens the same "Alert your family now?" confirmation as the red Help button. "I didn't take my
   medicine" is never recorded as taken.
 
+## Without a connection
+
+Two pages can be read without internet, once they have been opened on that phone or computer while
+online: the parent's **Simple view** (today's medicines and what's coming up) and a circle's **Emergency**
+page (the number to call, the emergency card and contacts). Offline, they show a yellow notice: "You're
+offline. This is what CareNest showed at …", because things may have changed since.
+
+Nothing else is kept, and nothing can be recorded offline: answering a dose or pressing Help needs a
+connection (call the emergency number shown instead). **Signing out deletes the saved pages**, so the next
+person using a shared phone sees nothing.
+
 ## Expenses
 
 Open **Expenses** (under Family) to keep track of care costs the family shares, such as medicines,

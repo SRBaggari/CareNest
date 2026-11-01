@@ -7,6 +7,7 @@ export async function POST(request: Request) {
   return publicRoute(request, async ({ db }) => {
     const token = getSessionToken(request);
     if (token) await invalidateSessionToken(db, token);
-    return new Response(null, { status: 204, headers: { "Set-Cookie": clearSessionCookie() } });
+    // "cache" also asks the browser to drop cached responses from this session.
+    return new Response(null, { status: 204, headers: { "Set-Cookie": clearSessionCookie(), "Clear-Site-Data": '"cache"' } });
   });
 }

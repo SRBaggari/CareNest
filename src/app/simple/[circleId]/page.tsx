@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { HelpButton } from "@/app/app/circles/[circleId]/emergency/help-button";
+import { OfflineSupport } from "@/components/offline-support";
 import { IconTile } from "@/components/ui/section";
 import { getRequestTranslator } from "@/i18n/server";
 import { clockTime, dayLabel, greetingFor, groupDoses } from "@/lib/simple-view";
@@ -118,6 +119,7 @@ export default async function SimpleView({ params }: PageProps<"/simple/[circleI
 
   return (
     <div lang={locale} className="flex flex-col gap-6">
+      <OfflineSupport renderedAt={now.toISOString()} locale={locale} label={t("offline.notice")} />
       <div className="rounded-3xl bg-gradient-to-br from-primary-soft to-surface px-5 py-6">
         <h1 className="text-4xl font-bold leading-tight">{greeting}</h1>
         <p className="mt-2 flex items-center gap-2 text-2xl text-muted">

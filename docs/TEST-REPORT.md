@@ -302,3 +302,12 @@ Defects these tests found, both fixed in the same change:
   voice controls pass the accessibility scan; without speech support no voice controls appear at all.
 - No new server endpoints: voice uses the existing dose and check-in APIs, whose permission, outsider,
   signed-out and two-family tests already cover it.
+
+## Update, 2026-11-01: T2-9 offline reading
+
+- 3 unit tests: only the Simple view and emergency page are kept (not other circle pages, help requests,
+  the account, the API or malformed paths), and the service worker uses the same list and cache name.
+- Integration: signing out also sends `Clear-Site-Data: "cache"` (and so does deleting the account).
+- Browser: the parent opens the Simple view once, goes offline and still reads the medicine due, with the
+  offline notice; a page that isn't kept is unavailable offline; a family member reads the emergency page
+  offline (the number to call); after signing out, no saved page remains on the device.

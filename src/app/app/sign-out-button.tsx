@@ -4,6 +4,7 @@ import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { callApi } from "@/lib/api-client";
+import { clearOfflineCopies } from "@/lib/offline";
 
 export function SignOutButton({ label, className }: { label: string; className?: string }) {
   const router = useRouter();
@@ -12,6 +13,8 @@ export function SignOutButton({ label, className }: { label: string; className?:
   async function signOut() {
     setBusy(true);
     await callApi("POST", "/api/v1/auth/logout");
+    // Pages kept for offline reading belong to this person; the next one on this phone sees nothing.
+    await clearOfflineCopies();
     router.replace("/login");
     router.refresh();
   }
