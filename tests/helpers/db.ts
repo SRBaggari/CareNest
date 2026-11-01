@@ -4,7 +4,7 @@ import { drizzle as drizzlePglite } from "drizzle-orm/pglite";
 import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { afterAll, beforeAll, inject } from "vitest";
-import { schema, setDbForTesting, type Db } from "@/server/db";
+import { createPgPool, schema, setDbForTesting, type Db } from "@/server/db";
 import { runMigrations } from "@/server/db/migrate";
 
 type TestDb = { db: Db; close: () => Promise<void> };
@@ -21,10 +21,13 @@ async function createPgliteDb(): Promise<TestDb> {
 async function createPostgresDb(serverUrl: string): Promise<TestDb> {
   const name = `carenest_test_${randomUUID().replaceAll("-", "")}`;
   const admin = new Pool({ connectionString: serverUrl, max: 1 });
+  // Dropping a test database "with (force)" terminates any connection still open on it; that
+  // surfaces as an "error" event, which must not fail the run.
+  admin.on("error", () => {});
   await admin.query(`create database ${name}`);
   const url = new URL(serverUrl);
   url.pathname = `/${name}`;
-  const pool = new Pool({ connectionString: url.toString(), max: 10 });
+  const pool = createPgPool(url.toString());
   const db = drizzlePg({ client: pool, schema }) as unknown as Db;
   await runMigrations(db);
   return {

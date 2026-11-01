@@ -20,11 +20,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
@@ -51,10 +51,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
@@ -82,16 +82,17 @@ jobs:
       TRUST_PROXY: "true"
       CRON_SECRET: ci-only-cron-secret
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
       - run: npm ci
       - name: Start the stack (db, migrate, web, worker)
-        run: docker compose up -d --build --wait web
+        # Name both long-running services: "--wait web" alone starts only web and its dependencies.
+        run: docker compose up -d --build --wait web worker
       - name: Black-box suite against the running stack
         run: BLACKBOX_URL=http://localhost:3000 npm run test:blackbox
       - name: Worker is running and ticking
