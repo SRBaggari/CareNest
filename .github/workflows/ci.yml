@@ -86,8 +86,12 @@ jobs:
         run: docker compose up -d --build --wait web
       - name: Black-box suite against the running stack
         run: BLACKBOX_URL=http://localhost:3000 npm run test:blackbox
-      - name: Worker is running
-        run: docker compose ps worker --format '{{.State}}' | grep -q running
+      - name: Worker is running and ticking
+        run: |
+          sleep 40
+          docker compose ps worker
+          test "$(docker compose ps worker --format '{{.State}}')" = "running"
+          test "$(docker inspect --format '{{.RestartCount}}' "$(docker compose ps -q worker)")" = "0"
       - name: Logs on failure
         if: failure()
         run: docker compose logs --no-color --tail 200
