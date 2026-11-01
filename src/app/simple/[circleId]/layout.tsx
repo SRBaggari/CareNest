@@ -1,3 +1,4 @@
+import { SkipLink } from "@/components/ui/skip-link";
 import { LayoutGrid } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -30,12 +31,7 @@ async function SimpleHeader({ params }: { params: LayoutProps<"/simple/[circleId
   const { locale, t } = await getRequestTranslator();
   return (
     <header lang={locale} className="border-b border-border bg-surface">
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded focus:bg-surface focus:px-4 focus:py-2"
-      >
-        {t("common.skipToContent")}
-      </a>
+      <SkipLink label={t("common.skipToContent")} />
       <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <span className="inline-flex items-center gap-3">
           <LogoMark />
