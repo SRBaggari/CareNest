@@ -44,6 +44,8 @@ const EXPECTED: Record<Capability, [boolean, boolean, boolean, boolean, boolean,
   "emergency.view":               [Y, Y, Y, Y, Y, Y],
   "emergency.raise":              [Y, Y, Y, Y, N, Y],
   "audit.view":                   [Y, Y, N, N, N, N],
+  "expense.view":                 [Y, Y, Y, N, N, N],
+  "expense.record":               [Y, Y, Y, N, N, N],
 };
 
 describe("permission matrix (self-managing recipient, everything shared)", () => {

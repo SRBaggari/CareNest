@@ -167,6 +167,8 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
       expect(uploaded.status).toBe(201);
       expect((await zed.post(z("/threads"), { title: "Zebra conversation", body: "Zebra message" })).status).toBe(201);
       expect((await zoe.post(z("/measurements"), { kind: "pulse", unit: "bpm", value: 72, note: "Zebra pulse" })).status).toBe(201);
+      const zedMember = (await zed.get(z("/members"))).json.members.find((mm: { role: string }) => mm.role === "admin").id;
+      expect((await zed.post(z("/expenses"), { description: "Zebra cost", amount: "99", currency: "INR", spentOn: day, paidBy: zedMember, split: { mode: "payer_only" } })).status).toBe(201);
       // Control: the other family does see all of it, so a clean result below means something.
       for (const [path, marker] of [
         ["/visits", "Zebra live visit"],
@@ -182,6 +184,8 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
         ["/threads", "Zebra conversation"],
         ["/reports", "Zebramycin"],
         ["/reports/measurements", "Zebra pulse"],
+        ["/expenses", "Zebra cost"],
+        ["/expenses/export", "Zebra cost"],
       ]) {
         expect([path, (await zed.get(z(path))).text.includes(marker)]).toEqual([path, true]);
       }
@@ -220,6 +224,10 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
           "/threads",
           "/reports",
           "/reports/measurements",
+          "/expenses",
+          "/expenses/balances",
+          "/expenses/export",
+          "/settlements",
         ].map((p) => [priya, m(p)] as [Actor, string]),
         [priya, "/api/v1/me/today"],
         [priya, "/api/v1/me/export"],
@@ -232,6 +240,7 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
         [priya, `/app/circles/${mine}/updates`],
         [priya, `/app/circles/${mine}/emergency`],
         [priya, `/app/circles/${mine}/reports`],
+        [priya, `/app/circles/${mine}/expenses`],
         [meena, `/app/circles/${mine}/visits`],
         [amma, `/simple/${mine}`],
       ];

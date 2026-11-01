@@ -218,7 +218,8 @@
     "health": "Health",
     "documents": "Documents",
     "messages": "Messages",
-    "reports": "Reports"
+    "reports": "Reports",
+    "expenses": "Expenses"
   },
   "invite": {
     "title": "You're invited",
@@ -289,7 +290,11 @@
     "document_version_added": "added a newer copy of {name}",
     "document_removed": "removed the health document {name}",
     "report_generated": "made a care summary report",
-    "measurement_exported": "downloaded health readings as a spreadsheet file"
+    "measurement_exported": "downloaded health readings as a spreadsheet file",
+    "expense_added": "added an expense",
+    "expense_removed": "removed an expense",
+    "expense_settlement_recorded": "recorded a payment between family members",
+    "expense_settlement_removed": "removed a recorded payment"
   },
   "meds": {
     "dayTitle": "Doses for {date}",
@@ -459,7 +464,11 @@
     "messageTitle": "{author} wrote in “{title}”",
     "messageForYouTitle": "{author} wants you to read “{title}”",
     "messageEmailSubject": "{author} sent you a message in CareNest",
-    "messageEmailBody": "{author} asked you to read a message in “{title}”. Open CareNest: {link}"
+    "messageEmailBody": "{author} asked you to read a message in “{title}”. Open CareNest: {link}",
+    "expenseTitle": "{name} added a cost: {what}",
+    "expenseBody": "{amount} in total; your share is {share}. {link}",
+    "settlementTitle": "{name} recorded a payment",
+    "settlementBody": "{from} paid {to} {amount}. {link}"
   },
   "inbox": {
     "title": "Notifications",
@@ -1067,5 +1076,55 @@
     "since": "Since {date}",
     "prescriber": "Prescribed by {name}",
     "readingCount": "Readings: {count}"
+  },
+  "expenses": {
+    "title": "Expenses",
+    "intro": "Care costs the family shares: who paid, and who owes whom. CareNest keeps the record; it doesn't move any money.",
+    "notAllowed": "Shared costs are seen only by the family and {name}.",
+    "standing": "Where everyone stands",
+    "settled": "Everyone is settled up.",
+    "pays": "{from} pays {to} {amount}",
+    "markPaid": "Mark as paid",
+    "markPaidConfirm": "Record that {from} paid {to} {amount}?",
+    "isOwed": "{name} is owed {amount}",
+    "owes": "{name} owes {amount}",
+    "formerMember": "Former member",
+    "add": "Add an expense",
+    "description": "What was it for?",
+    "descriptionHint": "For example “October physiotherapy” or “Wheelchair rental”.",
+    "amount": "Amount",
+    "currency": "Currency",
+    "category": "Kind of cost",
+    "cat_medicine": "Medicines",
+    "cat_doctor": "Doctor and tests",
+    "cat_caregiver": "Caregiver",
+    "cat_transport": "Transport",
+    "cat_household": "Household",
+    "cat_equipment": "Equipment",
+    "cat_other": "Other",
+    "spentOn": "Date",
+    "paidBy": "Who paid?",
+    "split": "How is it shared?",
+    "split_equal": "Split equally",
+    "split_custom": "Different amounts",
+    "split_payer_only": "Not shared (only the payer)",
+    "sharedBy": "Shared by",
+    "customHint": "Each person's part. The parts must add up to the total.",
+    "note": "Note (optional)",
+    "save": "Add expense",
+    "recordPayment": "Record a payment",
+    "payFrom": "Paid by",
+    "payTo": "Paid to",
+    "savePayment": "Record payment",
+    "historyTitle": "All expenses",
+    "paymentsTitle": "Payments between family",
+    "paidByOn": "Paid by {name} · {date}",
+    "paymentLine": "{from} paid {to} {amount}",
+    "notShared": "Not shared",
+    "remove": "Remove",
+    "removeConfirm": "Remove this expense? It stays in the activity log.",
+    "removePaymentConfirm": "Remove this payment? It stays in the activity log.",
+    "none": "No expenses yet. Add the first one when someone pays for something.",
+    "download": "Download all (CSV)"
   }
 }

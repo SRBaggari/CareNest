@@ -787,3 +787,67 @@ export const assistanceRequests = pgTable(
   },
   (t) => [index("assistance_requests_circle_idx").on(t.circleId, t.createdAt)],
 );
+
+/**
+ * A shared care cost. Amounts are whole minor units (paise, pence). People are referenced by
+ * membership, so a removed member's history stays; if their account is deleted the reference becomes
+ * null and they show as a former member. Removing an expense hides it (kept for the activity log).
+ */
+export const expenses = pgTable(
+  "expenses",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    description: text("description").notNull(),
+    category: text("category", { enum: ["medicine", "doctor", "caregiver", "transport", "household", "equipment", "other"] }).notNull(),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    spentOn: date("spent_on").notNull(),
+    paidBy: uuid("paid_by").references(() => memberships.id, { onDelete: "set null" }),
+    splitMode: text("split_mode", { enum: ["equal", "custom", "payer_only"] }).notNull(),
+    note: text("note"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+    removedAt: timestamp("removed_at", { withTimezone: true }),
+    removedBy: uuid("removed_by").references(() => users.id, { onDelete: "set null" }),
+  },
+  (t) => [index("expenses_circle_spent_idx").on(t.circleId, t.spentOn)],
+);
+
+/** Each person's part of an expense; the parts always add up to the expense's amount. */
+export const expenseShares = pgTable(
+  "expense_shares",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    expenseId: uuid("expense_id")
+      .notNull()
+      .references(() => expenses.id, { onDelete: "cascade" }),
+    memberId: uuid("member_id").references(() => memberships.id, { onDelete: "set null" }),
+    amountMinor: integer("amount_minor").notNull(),
+  },
+  (t) => [index("expense_shares_expense_idx").on(t.expenseId)],
+);
+
+/** Money paid back between two people ("Ravi paid Priya ₹700"). */
+export const settlements = pgTable(
+  "settlements",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    fromMember: uuid("from_member").references(() => memberships.id, { onDelete: "set null" }),
+    toMember: uuid("to_member").references(() => memberships.id, { onDelete: "set null" }),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    paidOn: date("paid_on").notNull(),
+    note: text("note"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+    removedAt: timestamp("removed_at", { withTimezone: true }),
+    removedBy: uuid("removed_by").references(() => users.id, { onDelete: "set null" }),
+  },
+  (t) => [index("settlements_circle_idx").on(t.circleId)],
+);

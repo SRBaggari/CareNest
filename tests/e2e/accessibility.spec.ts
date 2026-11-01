@@ -30,7 +30,7 @@ test("signed-out pages", async ({ browser }) => {
   }
 });
 
-const circlePages = ["", "/medicines", "/health", "/documents", "/appointments", "/tasks", "/visits", "/updates", "/messages", "/timeline", "/members", "/settings", "/emergency", "/activity", "/reports"];
+const circlePages = ["", "/medicines", "/health", "/documents", "/appointments", "/tasks", "/visits", "/updates", "/messages", "/timeline", "/members", "/settings", "/emergency", "/activity", "/reports", "/expenses"];
 
 test("the full app, as a family admin", async ({ browser }) => {
   test.slow(); // scans every page of the app
@@ -45,7 +45,7 @@ test("the full app, as a family admin", async ({ browser }) => {
 // The dark theme has its own colours; their contrast is checked separately, not assumed.
 test("the main screens in dark mode", async ({ browser }) => {
   const page = await pageAs(browser, owner, { colorScheme: "dark" });
-  for (const path of ["/app", "/app/notifications", ...["", "/medicines", "/health", "/tasks", "/timeline", "/settings", "/reports"].map((p) => `/app/circles/${circleId}${p}`)]) {
+  for (const path of ["/app", "/app/notifications", ...["", "/medicines", "/health", "/tasks", "/timeline", "/settings", "/reports", "/expenses"].map((p) => `/app/circles/${circleId}${p}`)]) {
     await page.goto(path);
     await expect(page.locator("main")).toBeVisible();
     await expectAccessible(page);

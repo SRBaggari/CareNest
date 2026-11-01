@@ -154,6 +154,16 @@ async function main() {
   await priya.call("POST", `${c}/updates`, { body: "I'll be in Hyderabad from the 20th for two weeks.", important: true });
   console.log("  updates");
 
+  // Shared costs (T2-7): two siblings and Amma, one cost in pounds from London, one payment back.
+  const family3 = { mode: "equal", members: [priya.memberId, ravi.memberId, amma.memberId] };
+  const daysAgo = (n: number) => inIndia(-n * 24 * 60).date;
+  await ravi.call("POST", `${c}/expenses`, { description: "October physiotherapy (8 sessions)", category: "doctor", amount: "4800", currency: "INR", spentOn: daysAgo(12), paidBy: ravi.memberId, split: { mode: "equal", members: [priya.memberId, ravi.memberId] } });
+  await ravi.call("POST", `${c}/expenses`, { description: "Medicines from Apollo Pharmacy", category: "medicine", amount: "1265.50", currency: "INR", spentOn: daysAgo(5), paidBy: ravi.memberId, split: family3 });
+  await priya.call("POST", `${c}/expenses`, { description: "Meena's November wages", category: "caregiver", amount: "12000", currency: "INR", spentOn: daysAgo(1), paidBy: priya.memberId, split: { mode: "equal", members: [priya.memberId, ravi.memberId] } });
+  await priya.call("POST", `${c}/expenses`, { description: "Flight to Hyderabad", category: "transport", amount: "420", currency: "GBP", spentOn: daysAgo(3), paidBy: priya.memberId, split: { mode: "payer_only" } });
+  await ravi.call("POST", `${c}/settlements`, { fromMember: priya.memberId, toMember: ravi.memberId, amount: "2400", currency: "INR", paidOn: daysAgo(4), note: "For the physio" });
+  console.log("  expenses");
+
   // A clearly labelled practice emergency drill, responded to and resolved (Scenario E).
   const drill = (await amma.call("POST", `${c}/emergency/requests`, { practice: true, message: "Practice drill — testing the help button" })).request;
   await ravi.call("POST", `${c}/emergency/requests/${drill.id}/acknowledge`);

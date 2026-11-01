@@ -135,7 +135,7 @@ async function CircleNavigation({ params }: { params: LayoutProps<"/app/circles/
       {
         id: "family",
         label: t("nav.family"),
-        items: [...item("updates", "updates", "updates", can("update.view")), ...item("messages", "messages", "messages", can("update.view"), unread), ...item("timeline", "timeline", "timeline", can("update.view"))],
+        items: [...item("updates", "updates", "updates", can("update.view")), ...item("messages", "messages", "messages", can("update.view"), unread), ...item("timeline", "timeline", "timeline", can("update.view")), ...item("expenses", "expenses", "expenses", can("expense.view"))],
       },
       {
         id: "circle",

@@ -218,7 +218,8 @@
     "health": "ఆరోగ్యం",
     "documents": "పత్రాలు",
     "messages": "సందేశాలు",
-    "reports": "నివేదికలు"
+    "reports": "నివేదికలు",
+    "expenses": "ఖర్చులు"
   },
   "invite": {
     "title": "మీకు ఆహ్వానం వచ్చింది",
@@ -289,7 +290,11 @@
     "document_version_added": "{name} కొత్త కాపీని జోడించారు",
     "document_removed": "{name} ఆరోగ్య పత్రాన్ని తీసివేశారు",
     "report_generated": "సంరక్షణ సారాంశ నివేదికను తయారు చేశారు",
-    "measurement_exported": "ఆరోగ్య రీడింగ్‌లను స్ప్రెడ్‌షీట్ ఫైల్‌గా డౌన్‌లోడ్ చేశారు"
+    "measurement_exported": "ఆరోగ్య రీడింగ్‌లను స్ప్రెడ్‌షీట్ ఫైల్‌గా డౌన్‌లోడ్ చేశారు",
+    "expense_added": "ఒక ఖర్చును జోడించారు",
+    "expense_removed": "ఒక ఖర్చును తీసివేశారు",
+    "expense_settlement_recorded": "కుటుంబ సభ్యుల మధ్య ఒక చెల్లింపును నమోదు చేశారు",
+    "expense_settlement_removed": "నమోదు చేసిన ఒక చెల్లింపును తీసివేశారు"
   },
   "meds": {
     "dayTitle": "{date} నాటి మోతాదులు",
@@ -459,7 +464,11 @@
     "messageTitle": "{author} “{title}”లో రాశారు",
     "messageForYouTitle": "{author} మీరు “{title}” చదవాలని కోరుతున్నారు",
     "messageEmailSubject": "{author} CareNestలో మీకు సందేశం పంపారు",
-    "messageEmailBody": "{author} “{title}”లో ఒక సందేశం చదవమని మిమ్మల్ని కోరారు. CareNest తెరవండి: {link}"
+    "messageEmailBody": "{author} “{title}”లో ఒక సందేశం చదవమని మిమ్మల్ని కోరారు. CareNest తెరవండి: {link}",
+    "expenseTitle": "{name} ఒక ఖర్చును జోడించారు: {what}",
+    "expenseBody": "మొత్తం {amount}; మీ భాగం {share}. {link}",
+    "settlementTitle": "{name} ఒక చెల్లింపును నమోదు చేశారు",
+    "settlementBody": "{from} {to}కి {amount} చెల్లించారు. {link}"
   },
   "inbox": {
     "title": "నోటిఫికేషన్లు",
@@ -1067,5 +1076,55 @@
     "since": "{date} నుండి",
     "prescriber": "{name} సూచించారు",
     "readingCount": "రీడింగ్‌లు: {count}"
+  },
+  "expenses": {
+    "title": "ఖర్చులు",
+    "intro": "కుటుంబం పంచుకునే సంరక్షణ ఖర్చులు: ఎవరు చెల్లించారు, ఎవరు ఎవరికి ఇవ్వాలి. CareNest లెక్క మాత్రమే ఉంచుతుంది; డబ్బు పంపదు.",
+    "notAllowed": "పంచుకున్న ఖర్చులను కుటుంబం, {name} మాత్రమే చూడగలరు.",
+    "standing": "ఎవరి లెక్క ఎంత",
+    "settled": "అందరి లెక్క సరిపోయింది.",
+    "pays": "{from} {to}కి {amount} ఇవ్వాలి",
+    "markPaid": "చెల్లించినట్లు గుర్తించు",
+    "markPaidConfirm": "{from} {to}కి {amount} చెల్లించారని నమోదు చేయాలా?",
+    "isOwed": "{name}కి {amount} రావాలి",
+    "owes": "{name} {amount} ఇవ్వాలి",
+    "formerMember": "మాజీ సభ్యులు",
+    "add": "ఖర్చును జోడించండి",
+    "description": "ఇది దేని కోసం?",
+    "descriptionHint": "ఉదాహరణకు “అక్టోబర్ ఫిజియోథెరపీ” లేదా “వీల్‌చైర్ అద్దె”.",
+    "amount": "మొత్తం",
+    "currency": "కరెన్సీ",
+    "category": "ఖర్చు రకం",
+    "cat_medicine": "మందులు",
+    "cat_doctor": "వైద్యుడు, పరీక్షలు",
+    "cat_caregiver": "సంరక్షకులు",
+    "cat_transport": "రవాణా",
+    "cat_household": "ఇంటి ఖర్చులు",
+    "cat_equipment": "పరికరాలు",
+    "cat_other": "ఇతర",
+    "spentOn": "తేదీ",
+    "paidBy": "ఎవరు చెల్లించారు?",
+    "split": "దీన్ని ఎలా పంచుకుంటారు?",
+    "split_equal": "సమానంగా పంచండి",
+    "split_custom": "వేర్వేరు మొత్తాలు",
+    "split_payer_only": "పంచుకోలేదు (చెల్లించినవారే)",
+    "sharedBy": "ఎవరి మధ్య",
+    "customHint": "ప్రతి ఒక్కరి భాగం. భాగాలన్నీ కలిపి మొత్తానికి సమానం కావాలి.",
+    "note": "నోట్ (ఐచ్ఛికం)",
+    "save": "ఖర్చును జోడించు",
+    "recordPayment": "చెల్లింపును నమోదు చేయండి",
+    "payFrom": "చెల్లించినవారు",
+    "payTo": "ఎవరికి",
+    "savePayment": "చెల్లింపును నమోదు చేయి",
+    "historyTitle": "అన్ని ఖర్చులు",
+    "paymentsTitle": "కుటుంబంలో చెల్లింపులు",
+    "paidByOn": "{name} చెల్లించారు · {date}",
+    "paymentLine": "{from} {to}కి {amount} చెల్లించారు",
+    "notShared": "పంచుకోలేదు",
+    "remove": "తీసివేయి",
+    "removeConfirm": "ఈ ఖర్చును తీసివేయాలా? ఇది కార్యకలాపాల లాగ్‌లో ఉంటుంది.",
+    "removePaymentConfirm": "ఈ చెల్లింపును తీసివేయాలా? ఇది కార్యకలాపాల లాగ్‌లో ఉంటుంది.",
+    "none": "ఇంకా ఖర్చులు లేవు. ఎవరైనా దేనికైనా చెల్లించినప్పుడు మొదటిది జోడించండి.",
+    "download": "అన్నీ డౌన్‌లోడ్ చేయండి (CSV)"
   }
 }

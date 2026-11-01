@@ -40,6 +40,7 @@ import { AppError } from "@/server/http";
 import { authorize, type ServiceContext } from "./access";
 import { listAuditEvents, recordAudit } from "./audit";
 import { documentIndex } from "./documents";
+import { listExpenses, listSettlements } from "./expenses";
 
 export const EXPORT_FORMAT = "carenest-export/1";
 
@@ -150,6 +151,8 @@ export async function exportCircle(ctx: ServiceContext, circleId: string) {
     conversations: await circleConversations(ctx, circleId, appts),
     /** The list only; the files themselves can be downloaded one by one in CareNest. */
     healthDocuments: health ? await documentIndex(ctx, circleId) : [],
+    expenses: access.can("expense.view") ? await listExpenses(ctx, circleId, { limit: 500 }) : [],
+    expensePayments: access.can("expense.view") ? await listSettlements(ctx, circleId) : [],
     emergencyInfo: card[0]?.info ?? {},
     emergencyContacts: contacts,
     helpRequests: requests,

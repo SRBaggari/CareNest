@@ -17,6 +17,7 @@ import {
   Sun,
   Users,
   UsersRound,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -38,6 +39,7 @@ const icons = {
   settings: Settings,
   activity: ClipboardList,
   reports: FileChartColumn,
+  expenses: Wallet,
 };
 const groupIcons: Record<GroupId, LucideIcon> = { today: Sun, care: Pill, plans: CalendarDays, family: UsersRound, circle: Settings };
 
