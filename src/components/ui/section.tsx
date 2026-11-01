@@ -83,7 +83,7 @@ export function Avatar({ name, size = "md" }: { name: string; size?: "md" | "lg"
   return (
     <span
       aria-hidden="true"
-      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-primary-soft font-bold text-primary ${size === "lg" ? "size-16 text-2xl" : "size-12 text-lg"}`}
+      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-primary-soft font-bold text-primary ${size === "lg" ? "size-12 text-lg sm:size-16 sm:text-2xl" : "size-12 text-lg"}`}
     >
       {initials || "•"}
     </span>

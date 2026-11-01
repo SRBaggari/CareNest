@@ -45,9 +45,11 @@ export default async function CircleLayout({ children, params }: LayoutProps<"/a
           <Avatar name={name} size="lg" />
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-bold sm:text-3xl">{circle.name}</h1>
-            <p className="mt-1 inline-flex flex-wrap items-center gap-x-2 text-muted">
+            <p className="mt-1 flex flex-col text-muted sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2">
               <span className="font-semibold text-foreground">{name}</span>
-              <span aria-hidden="true">·</span>
+              <span aria-hidden="true" className="max-sm:hidden">
+                ·
+              </span>
               <span className="inline-flex items-center gap-2">
                 <Clock aria-hidden="true" className="size-4 shrink-0" />
                 {t("home.localTime", { time: formatLocalTime(ctx.now, locale, circle.profile.timeZone) })}
