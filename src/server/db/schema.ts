@@ -90,6 +90,11 @@ export const careProfiles = pgTable("care_profiles", {
   emergencyNumber: text("emergency_number").notNull(),
   /** Minutes after a scheduled dose before an unanswered one is shown as unconfirmed. */
   doseGraceMinutes: integer("dose_grace_minutes").notNull().default(60),
+  /**
+   * Fingerprint of the dose schedule the worker last materialised (local date, zone, each scheduled
+   * medicine's id/version/status). The worker regenerates doses only when it changes.
+   */
+  dosesPreparedKey: text("doses_prepared_key"),
   consent: jsonb("consent").$type<Consent>().notNull(),
   /** Optimistic concurrency: incremented on every update. */
   version: integer("version").notNull().default(1),

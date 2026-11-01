@@ -13,7 +13,7 @@ import { escalateAssistance } from "@/server/services/assistance";
 import { purgeExpiredData } from "@/server/services/data-rights";
 import { runCoordinationSteps } from "./coordination";
 import { sendDailyDigests } from "./digest";
-import { ensureDoses, markUnconfirmed } from "@/server/services/doses";
+import { ensureDoses } from "@/server/services/doses";
 import { acknowledgementsFor, notifyUsers, type NewNotification } from "@/server/services/notifications";
 
 /** Reminders are only sent close to the dose time; after downtime we don't send stale reminders. */
@@ -46,19 +46,52 @@ function subscribers(audience: Awaited<ReturnType<typeof medicationAudience>>, k
 
 const tFor = translatorFor;
 
-/** 1. Keep two days of doses materialised and mark overdue ones unconfirmed, for every active circle. */
+/**
+ * 1. Keep two days of doses materialised and mark overdue ones unconfirmed.
+ *
+ * Built to scale with the number of circles: one query finds the circles whose dose schedule
+ * changed since the worker last materialised it (a new local day, a different time zone, or a
+ * scheduled medicine added, edited, stopped or restarted, which bumps its version), and only those
+ * are regenerated. Overdue doses are marked for all circles in one statement.
+ * Returns how many circles needed new doses.
+ */
 export async function prepareDoses(db: Db, now: Date) {
+  const schedule = sql<string | null>`(
+    select md5(string_agg(${medications.id}::text || ':' || ${medications.version} || ':' || ${medications.status}, ',' order by ${medications.id}))
+    from ${medications}
+    where ${medications.circleId} = ${careCircles.id} and ${medications.asNeeded} = false
+  )`;
   const circles = await db
-    .select({ id: careCircles.id, timeZone: careProfiles.timeZone, grace: careProfiles.doseGraceMinutes })
+    .select({ id: careCircles.id, timeZone: careProfiles.timeZone, prepared: careProfiles.dosesPreparedKey, schedule })
     .from(careCircles)
     .innerJoin(careProfiles, eq(careProfiles.circleId, careCircles.id))
     .where(eq(careCircles.status, "active"));
+  let prepared = 0;
   for (const c of circles) {
+    if (!c.schedule) continue; // no scheduled medicines: nothing to generate
     const today = localDateIn(c.timeZone, now);
+    const key = `${today}|${c.timeZone}|${c.schedule}`;
+    if (key === c.prepared) continue;
     await ensureDoses(db, c.id, c.timeZone, today, addDays(today, 1));
-    await markUnconfirmed(db, c.id, now, c.grace);
+    await db.update(careProfiles).set({ dosesPreparedKey: key }).where(eq(careProfiles.circleId, c.id));
+    prepared++;
   }
-  return circles.length;
+  await markAllUnconfirmed(db, now);
+  return prepared;
+}
+
+/** Scheduled doses past each circle's grace period become "unconfirmed", across all active circles at once. */
+async function markAllUnconfirmed(db: Db, now: Date) {
+  await db
+    .update(doseEvents)
+    .set({ status: "unconfirmed" })
+    .where(
+      and(
+        eq(doseEvents.status, "scheduled"),
+        sql`${doseEvents.scheduledFor} < ${now.toISOString()}::timestamptz - make_interval(mins => (select ${careProfiles.doseGraceMinutes} from ${careProfiles} where ${careProfiles.circleId} = ${doseEvents.circleId}))`,
+        sql`${doseEvents.circleId} in (select id from care_circles where status = 'active')`,
+      ),
+    );
 }
 
 async function claimDoses(db: Db, set: Partial<typeof doseEvents.$inferInsert>, where: ReturnType<typeof and>) {
