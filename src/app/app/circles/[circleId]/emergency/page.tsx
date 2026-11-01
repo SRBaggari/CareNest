@@ -44,7 +44,7 @@ export default async function EmergencyPage({ params }: PageProps<"/app/circles/
         <h2 id="call-heading" className="sr-only">
           {t("emergency.call", { number })}
         </h2>
-        <a href={`tel:${number}`} className="inline-flex min-h-20 items-center justify-center gap-4 self-start rounded-3xl bg-danger px-8 text-3xl font-bold text-primary-foreground shadow-lg shadow-danger/25 transition hover:brightness-110">
+        <a href={`tel:${number}`} className="inline-flex min-h-20 max-w-full items-center justify-center gap-4 self-start rounded-3xl bg-danger px-6 text-2xl font-bold sm:px-8 sm:text-3xl text-primary-foreground shadow-lg shadow-danger/25 transition hover:brightness-110">
           <Phone aria-hidden="true" className="size-8 shrink-0" />
           {t("emergency.call", { number })}
         </a>

@@ -10,6 +10,7 @@ import { getPreferences } from "@/server/services/notifications";
 import { DeviceList, PasswordForm, ProfileForm } from "./account-forms";
 import { DeleteAccountForm } from "./delete-account-form";
 import { NotificationPreferencesForm } from "./notification-preferences-form";
+import { SignOutButton } from "../sign-out-button";
 
 export const metadata: Metadata = { title: "Account" };
 
@@ -36,7 +37,11 @@ export default async function AccountPage() {
 
   return (
     <div lang={locale} className="flex flex-col gap-10">
-      <h1 className="text-3xl font-bold">{t("account.title")}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-3xl font-bold">{t("account.title")}</h1>
+        {/* On phones the header has no room for it, so signing out lives here. */}
+        <SignOutButton label={t("common.signOut")} />
+      </div>
 
       <section aria-labelledby="profile-heading" className="card">
         <h2 id="profile-heading" className="text-2xl font-semibold">

@@ -14,7 +14,7 @@ function FieldShell({ label, hint, errors, children }: FieldShellProps) {
   const errorId = errors?.length ? `${id}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex min-w-0 flex-col gap-1">
       <label htmlFor={id} className="font-semibold">
         {label}
       </label>
@@ -34,7 +34,7 @@ function FieldShell({ label, hint, errors, children }: FieldShellProps) {
 }
 
 const controlClass =
-  "min-h-12 w-full rounded-xl border-2 border-border bg-surface px-4 text-lg transition hover:border-muted focus:border-primary aria-[invalid=true]:border-danger";
+  "min-h-12 w-full min-w-0 rounded-xl border-2 border-border bg-surface px-4 text-lg transition hover:border-muted focus:border-primary aria-[invalid=true]:border-danger";
 
 export function TextField({
   label,

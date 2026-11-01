@@ -58,6 +58,11 @@ test("keyboard users can skip straight to the content", async ({ browser }) => {
   ] as const) {
     const page = await pageAs(browser, actor);
     await page.goto(path, { waitUntil: "networkidle" });
+    // React reveals streamed sections in short batches; wait until the header is really shown.
+    await page.waitForFunction(() => {
+      const link = document.querySelector('a[href="#main"]');
+      return link !== null && link.closest("[hidden]") === null;
+    });
     await page.keyboard.press("Tab");
     await expect(page.getByRole("link", { name: "Skip to main content" }), path).toBeFocused();
     await page.keyboard.press("Enter");

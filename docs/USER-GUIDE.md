@@ -117,8 +117,10 @@ Admins can send a clearly labelled **practice alert** to check the setup; it nev
 
 ## 10. Languages
 
-CareNest is available in English, with Hindi, Telugu and Tamil in progress. Anything not yet
-translated appears in English. Each person chooses their own language under Account.
+CareNest is available in English, Hindi (हिन्दी), Telugu (తెలుగు) and Tamil (தமிழ்). Each person chooses
+their own language under Account, so a parent can use Telugu while their children use English.
+The Hindi, Telugu and Tamil wording has not yet been reviewed by native speakers; if something reads
+oddly, please tell us.
 
 ## Getting help with CareNest
 

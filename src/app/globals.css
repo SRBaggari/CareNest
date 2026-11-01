@@ -79,6 +79,8 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   line-height: 1.6;
+  /* Long Telugu and Tamil words wrap rather than push the page wider than a phone. */
+  overflow-wrap: break-word;
 }
 
 h1,

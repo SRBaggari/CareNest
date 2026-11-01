@@ -9,10 +9,11 @@ import { getDb } from "@/server/db";
 import { unreadCount } from "@/server/services/notifications";
 import { SignOutButton } from "./sign-out-button";
 
-// On phones each item stacks a small label under its icon so four fit beside the logo; labels
-// are never dropped, because an icon alone is not enough for everyone.
+// On phones each item stacks a small label under its icon so they fit beside the logo; labels
+// are never dropped, because an icon alone is not enough for everyone. Signing out moves to
+// the Account page there, as long words (Tamil "வெளியேறு") leave no room for a fourth item.
 const navItem =
-  "relative inline-flex min-h-12 min-w-14 flex-col items-center justify-center gap-0.5 rounded-xl px-2 text-sm font-semibold text-muted hover:bg-sunken hover:text-foreground sm:flex-row sm:gap-2 sm:px-3 sm:text-base";
+  "relative inline-flex min-h-12 min-w-14 max-w-[4.75rem] flex-col items-center justify-center gap-0.5 rounded-xl px-1.5 text-center text-sm leading-tight font-semibold break-words text-muted hover:bg-sunken hover:text-foreground sm:max-w-none sm:flex-row sm:gap-2 sm:px-3 sm:text-base";
 
 export default function AppLayout({ children }: LayoutProps<"/app">) {
   return (
@@ -34,11 +35,11 @@ async function AppHeader() {
   return (
     <header lang={locale} className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur">
       <SkipLink label={t("common.skipToContent")} />
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-2.5">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-2 sm:px-4">
         <Link href="/app" aria-label={t("app.name")} className="rounded-xl">
           <Logo name={t("app.name")} compact />
         </Link>
-        <nav aria-label={t("common.mainNav")} className="flex items-center gap-1">
+        <nav aria-label={t("common.mainNav")} className="flex min-w-0 items-center gap-0.5 sm:gap-1">
           <Link href="/app" className={navItem}>
             <House aria-hidden="true" className="size-5" />
             {t("common.home")}
@@ -66,7 +67,7 @@ async function AppHeader() {
             <UserRound aria-hidden="true" className="size-5" />
             {t("common.account")}
           </Link>
-          <SignOutButton label={t("common.signOut")} className={navItem} />
+          <SignOutButton label={t("common.signOut")} className={`${navItem} max-sm:hidden`} />
         </nav>
       </div>
     </header>

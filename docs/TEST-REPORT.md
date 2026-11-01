@@ -155,3 +155,16 @@ Defects these tests found, both fixed in the same change:
 - **Missing skip link (low).** The sign-in and register pages had no "Skip to main content" link. All
   pages now share one `SkipLink` component.
 
+### Translations and phone layout (same day)
+
+- Hindi, Telugu and Tamil now translate every one of the 791 strings. Unit tests require this for every
+  language, check that every `{placeholder}` survives, and that the account-deletion prompt keeps the
+  literal word DELETE that must be typed.
+- A new browser test opens every main page at 360 px wide in English, Hindi, Telugu and Tamil and fails if
+  anything makes the page scroll sideways. It found four problems, all fixed: the phone header could not fit
+  long words (Tamil "வெளியேறு", *sign out*, now lives on the Account page on phones), the medicine count
+  tiles and card headings did not wrap, the large "Call 112" button was wider than a phone in Tamil, and
+  drop-down fields could not shrink below their longest option.
+- **Total browser tests: 21 / 21 passing**, run twice in a row to rule out flakiness.
+- Not verified: the quality of the translations themselves. They need a native-speaker review before launch.
+

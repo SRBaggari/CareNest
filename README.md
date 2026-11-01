@@ -39,7 +39,7 @@ Check it is up: `http://localhost:3000/api/health` → `{"status":"ok","database
 ```
 src/app/            Next.js routes (pages + /api/v1 route handlers — thin)
 src/server/         Business logic: services, auth, db (all authorization lives here)
-src/i18n/           Translations (en complete; hi/te/ta partial, fall back to English)
+src/i18n/           Translations (en, hi, te, ta complete; hi/te/ta awaiting native-speaker review)
 drizzle/            Generated SQL migrations (committed)
 tests/integration/  Route-handler + database tests (each file gets its own fresh database)
 docs/               Plan, architecture, decisions
