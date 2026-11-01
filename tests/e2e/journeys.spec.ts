@@ -107,6 +107,40 @@ test("a caregiver records blood pressure; the family sees the latest reading and
   await expect(family.getByText(/doesn't judge readings/)).toBeVisible();
 });
 
+test("the family prepares a summary for the doctor and downloads the readings @phone", async ({ browser }) => {
+  const owner = await new Actor("Priya").register();
+  const caregiver = await new Actor("Meena").register("Asia/Kolkata");
+  const circleId = await circleWith(owner, [[caregiver, "caregiver"]]);
+  const slot = localSlot(-120, "Asia/Kolkata");
+  await owner.post(`/api/v1/circles/${circleId}/medications`, { name: "Metformin", dosage: "500 mg", times: [slot.time], startDate: slot.date });
+  await caregiver.post(`/api/v1/circles/${circleId}/measurements`, { kind: "blood_pressure", unit: "mmHg", value: 140, value2: 90, measuredAt: new Date(Date.now() - 2 * 86_400_000).toISOString() });
+  await caregiver.post(`/api/v1/circles/${circleId}/measurements`, { kind: "blood_pressure", unit: "mmHg", value: 128, value2: 82, note: "After the morning walk" });
+  await caregiver.post(`/api/v1/circles/${circleId}/updates`, { body: "Slept well, ate a full lunch." });
+
+  const page = await pageAs(browser, owner);
+  await page.goto(`/app/circles/${circleId}`);
+  await page.getByRole("link", { name: /^(Reports|Care)$/ }).filter({ visible: true }).first().click();
+  await page.getByRole("link", { name: "Reports" }).filter({ visible: true }).first().click();
+  await expect(page).toHaveURL(/\/reports$/);
+
+  const report = page.getByRole("article");
+  await expect(report.getByRole("heading", { name: /Care summary for/ })).toBeVisible();
+  await expect(report.getByRole("heading", { name: "Metformin" })).toBeVisible();
+  await expect(report.getByRole("listitem").filter({ hasText: "128/82 mmHg" }).getByText("After the morning walk")).toBeVisible();
+  await expect(report.getByText("Slept well, ate a full lunch.")).toBeVisible();
+  await expect(report.getByText(/This is not a medical record/)).toBeVisible();
+
+  // A shorter period leaves out the older reading.
+  await page.getByRole("link", { name: "Last 7 days" }).click();
+  await expect(report.getByText("Readings: 2")).toBeVisible();
+
+  const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("link", { name: "Download readings (CSV)" }).click()]);
+  expect(download.suggestedFilename()).toMatch(/^carenest-readings-\d{4}-\d{2}-\d{2}-to-\d{4}-\d{2}-\d{2}\.csv$/);
+  const csv = (await import("node:fs")).readFileSync(await download.path(), "utf8");
+  expect(csv).toContain("measured_at_local,kind,value,value2,unit,context,source,recorded_by,note");
+  expect(csv).toContain(",blood_pressure,128,82,mmHg,,proxy,Meena,After the morning walk");
+});
+
 test("a caregiver photographs a prescription; the family opens it and the document shows who looked @phone", async ({ browser }) => {
   const owner = await new Actor("Priya").register();
   const caregiver = await new Actor("Meena").register("Asia/Kolkata");

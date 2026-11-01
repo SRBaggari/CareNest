@@ -19,7 +19,7 @@ const navItem =
 export default function AppLayout({ children }: LayoutProps<"/app">) {
   return (
     <div className="flex flex-1 flex-col">
-      <Suspense fallback={<header className="h-[69px] border-b border-border bg-surface" />}>
+      <Suspense fallback={<header className="h-[69px] border-b border-border bg-surface print:hidden" />}>
         <AppHeader />
       </Suspense>
       <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:py-8">
@@ -42,7 +42,7 @@ async function AppHeader() {
   const { locale, t } = await getRequestTranslator();
   const unread = await unreadCount(await getDb(), session.user.id);
   return (
-    <header lang={locale} className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur">
+    <header lang={locale} className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur print:hidden">
       <SkipLink label={t("common.skipToContent")} />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2 sm:px-4">
         <Link href="/app" aria-label={t("app.name")} className="rounded-xl">

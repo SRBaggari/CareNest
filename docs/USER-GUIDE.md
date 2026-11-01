@@ -166,6 +166,26 @@ CareNest and in the evening summary, so nobody's phone buzzes for every message.
 Messages are read by the people who see care updates (not emergency contacts). Conversations about an
 appointment follow the parent's choice to share appointments.
 
+## Reports
+
+Open **Reports** (under Care) before a doctor's appointment. It summarises a period you choose (the last
+7, 30 or 90 days, or any dates up to 92 days that have already happened):
+
+- **Medicines**: each medicine taken in that period, its dose and times, and how many doses were taken or
+  given, skipped, refused or **not confirmed**. "Not confirmed" means nobody answered the reminder; it
+  doesn't mean the dose was missed. Medicines taken only when needed show how many times they were taken.
+- **Health readings**: every reading in the period, with a chart when there are two or more.
+- **Notes** from the family and caregivers. A note that was corrected is replaced by its correction.
+
+Press **Print or save as PDF** to print it or keep it as a PDF; only the report is printed, not the menus.
+**Download readings (CSV)** gives the readings as a spreadsheet file (it opens in Excel or Google Sheets,
+including notes written in Hindi, Telugu or Tamil).
+
+The report lists what people recorded; it doesn't judge whether anything is good or bad, and it is not a
+medical record. You see only the parts you're allowed to see: if the parent doesn't share medicines or
+health details with you, those sections are left out. Making a report or downloading readings is noted in
+the circle's activity log.
+
 ## Calendar
 
 To see appointments, visits and your own tasks in Google Calendar, Apple Calendar or Outlook, open the

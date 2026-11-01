@@ -18,14 +18,16 @@ import { CircleNav, type NavGroup, type NavItem } from "./circle-nav";
 export default function CircleLayout({ children, params }: LayoutProps<"/app/circles/[circleId]">) {
   return (
     // Room at the bottom on phones for the fixed section bar.
-    <div className="flex flex-col gap-5 pb-24 lg:pb-0">
+    <div className="flex flex-col gap-5 pb-24 lg:pb-0 print:pb-0">
       <Suspense fallback={<HeaderSkeleton />}>
         <CircleHeader params={params} />
       </Suspense>
-      <div className="lg:grid lg:grid-cols-[13.5rem_minmax(0,1fr)] lg:gap-8">
-        <Suspense fallback={<div className="hidden lg:block" />}>
-          <CircleNavigation params={params} />
-        </Suspense>
+      <div className="lg:grid lg:grid-cols-[13.5rem_minmax(0,1fr)] lg:gap-8 print:block">
+        <div className="print:hidden">
+          <Suspense fallback={<div className="hidden lg:block" />}>
+            <CircleNavigation params={params} />
+          </Suspense>
+        </div>
         <Suspense fallback={<PageSkeleton />}>
           <InLanguage>{children}</InLanguage>
         </Suspense>
@@ -65,7 +67,7 @@ async function CircleHeader({ params }: { params: LayoutProps<"/app/circles/[cir
   const base = `/app/circles/${circleId}`;
 
   return (
-    <div lang={locale} className="flex flex-col gap-2">
+    <div lang={locale} className="flex flex-col gap-2 print:hidden">
       <Link href="/app" className="-ml-1 inline-flex min-h-11 items-center gap-1 self-start text-base font-semibold text-primary hover:underline">
         <ChevronLeft aria-hidden="true" className="size-5" />
         {t("circle.switch")}
@@ -123,7 +125,7 @@ async function CircleNavigation({ params }: { params: LayoutProps<"/app/circles/
       {
         id: "care",
         label: t("nav.care"),
-        items: [...item("medicines", "medicines", "medicines", can("medication.view")), ...item("health", "health", "health", can("health.view")), ...item("documents", "documents", "documents", can("health.view"))],
+        items: [...item("medicines", "medicines", "medicines", can("medication.view")), ...item("health", "health", "health", can("health.view")), ...item("documents", "documents", "documents", can("health.view")), ...item("reports", "reports", "reports", can("medication.view") || can("health.view"))],
       },
       {
         id: "plans",

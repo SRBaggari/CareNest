@@ -217,7 +217,8 @@
     "help": "Help",
     "health": "Health",
     "documents": "Documents",
-    "messages": "Messages"
+    "messages": "Messages",
+    "reports": "Reports"
   },
   "invite": {
     "title": "You're invited",
@@ -286,7 +287,9 @@
     "measurement_removed": "removed a health reading",
     "document_uploaded": "added the health document {name}",
     "document_version_added": "added a newer copy of {name}",
-    "document_removed": "removed the health document {name}"
+    "document_removed": "removed the health document {name}",
+    "report_generated": "made a care summary report",
+    "measurement_exported": "downloaded health readings as a spreadsheet file"
   },
   "meds": {
     "dayTitle": "Doses for {date}",
@@ -1034,5 +1037,35 @@
     "circle": "Circle",
     "sections": "Sections of this circle",
     "newMessages": "{count} conversations with new messages"
+  },
+  "reports": {
+    "title": "Reports",
+    "intro": "A summary of what was recorded for {name}, to take to the doctor or share with the family. It lists what happened; it doesn't interpret it.",
+    "from": "From",
+    "to": "To",
+    "show": "Show",
+    "last7": "Last 7 days",
+    "last30": "Last 30 days",
+    "last90": "Last 90 days",
+    "period": "Period",
+    "invalidPeriod": "Choose a period of up to {max} days that has already happened, starting on or before its end.",
+    "print": "Print or save as PDF",
+    "downloadCsv": "Download readings (CSV)",
+    "notShared": "Reports show medicines and health details, and {name} hasn't shared these with you.",
+    "summaryFor": "Care summary for {name}",
+    "periodLine": "{from} to {to}",
+    "born": "Date of birth: {date}",
+    "prepared": "Prepared by {name} on {date} from what family and caregivers recorded in CareNest. This is not a medical record.",
+    "medicinesTitle": "Medicines",
+    "readingsTitle": "Health readings",
+    "notesTitle": "Notes from family and caregivers",
+    "nothing": "Nothing was recorded in this period.",
+    "scheduled": "Scheduled",
+    "takenOrGiven": "Taken or given",
+    "asNeededCount": "Taken when needed: {count}",
+    "unconfirmedNote": "“Not confirmed” means nobody answered the reminder. It doesn't mean the dose was missed.",
+    "since": "Since {date}",
+    "prescriber": "Prescribed by {name}",
+    "readingCount": "Readings: {count}"
   }
 }

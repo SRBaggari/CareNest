@@ -248,3 +248,28 @@ Defects these tests found, both fixed in the same change:
   new, opens it and replies; the family member sees the reply. Messages is in the accessibility scan and
   the phone-layout check in four languages; the black-box isolation sweep now includes a conversation.
 
+## Update, 2026-11-01: UI pass (tag `ui-v2`)
+
+- Grouped navigation (Today, Care, Plans, Family, Circle), consistent page headers, calmer destructive
+  actions, redesigned notifications and timeline, home cards with today's medicines and the next
+  appointment, a fuller landing page, empty states, and a short "Done." confirmation after every change.
+- 1 integration test: home-card details follow the reader's permissions and the parent's sharing choices.
+- Browser: the "Done." confirmation is shown, announced (role=status) and goes away; a new accessibility
+  scan runs the main screens in **dark mode**. The two whole-app walks (phone layout, accessibility) are
+  marked slow, as they open every page.
+
+## Update, 2026-11-01: T2-6 reports and exports
+
+- 10 unit tests: the report period (default last 30 days, never the future, never backwards, at most
+  92 days, real dates only), dose tallies (unconfirmed kept apart from not-yet-due; as-needed counted
+  separately; no percentages), and CSV output (quoting, CRLF, numbers as numbers, Indian scripts, and notes
+  that can never run as spreadsheet formulas).
+- 8 integration tests: the summary's medicines, dose counts, readings and notes for the default and a
+  chosen period; a corrected note replaced by its correction; invalid periods refused (422 over HTTP);
+  sections following the reader's permissions and the parent's sharing choices (an emergency contact gets
+  403, family without health sharing gets no readings or health notes, the caregiver still sees them);
+  another family's records never included; 404 for outsiders and 401 when signed out; the CSV in the
+  parent's local time with a UTF-8 byte-order mark; both actions in the activity log.
+- Browser: the family opens Reports from the navigation, sees medicines, readings and notes, narrows the
+  period, and downloads the CSV. Reports is in the accessibility scan (light and dark) and the phone-layout
+  check in four languages; the black-box two-family sweep now includes the summary and the CSV.
