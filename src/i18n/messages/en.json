@@ -196,7 +196,8 @@
     "updates": "Updates",
     "timeline": "Timeline",
     "help": "Help",
-    "health": "Health"
+    "health": "Health",
+    "documents": "Documents"
   },
   "invite": {
     "title": "You're invited",
@@ -262,7 +263,10 @@
     "assistance_cancelled": "cancelled a request for help",
     "circle_exported": "downloaded a full copy of the circle's records",
     "member_account_deleted": "{name} deleted their CareNest account",
-    "measurement_removed": "removed a health reading"
+    "measurement_removed": "removed a health reading",
+    "document_uploaded": "added the health document {name}",
+    "document_version_added": "added a newer copy of {name}",
+    "document_removed": "removed the health document {name}"
   },
   "meds": {
     "dayTitle": "Doses for {date}",
@@ -944,5 +948,35 @@
     "recent": "Recent readings",
     "remove": "Remove (entered by mistake)",
     "removeConfirm": "Remove this reading? It disappears from the charts; the activity log keeps a note that it was removed."
+  },
+  "documents": {
+    "title": "Health documents",
+    "intro": "Prescriptions, test reports, discharge summaries and insurance papers, in one place for everyone caring for {name}.",
+    "privacyNote": "Only people {name} shares health details with can see these. Each document shows who has opened it.",
+    "upload": "Add a document",
+    "file": "File (a PDF or a photo, up to 10 MB)",
+    "name": "Name",
+    "nameHint": "For example “Blood test, March” or “Dr Rao’s prescription”.",
+    "category": "Type",
+    "cat_prescription": "Prescription",
+    "cat_report": "Test report",
+    "cat_discharge": "Discharge summary",
+    "cat_insurance": "Insurance",
+    "cat_other": "Other",
+    "note": "Note (optional)",
+    "save": "Upload",
+    "uploaded": "Document added.",
+    "none": "No documents yet.",
+    "open": "Open",
+    "download": "Download",
+    "addedBy": "Added by {name}, {date}",
+    "versions": "Versions: {count}",
+    "newVersion": "Upload a newer copy",
+    "versionSaved": "Newer copy added.",
+    "history": "Versions and who opened it",
+    "openedBy": "{name} opened it, {date}",
+    "neverOpened": "Nobody has opened it yet.",
+    "remove": "Remove (deletes the files)",
+    "removeConfirm": "Remove “{title}” and delete all its files? This can't be undone."
   }
 }

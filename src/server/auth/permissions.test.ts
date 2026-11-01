@@ -40,6 +40,7 @@ const EXPECTED: Record<Capability, [boolean, boolean, boolean, boolean, boolean,
   "update.post":                  [Y, Y, Y, Y, Y, N],
   "health.view":                  [Y, Y, Y, Y, Y, N],
   "measurement.record":           [Y, Y, Y, Y, Y, N],
+  "document.upload":              [Y, Y, Y, Y, Y, N],
   "emergency.view":               [Y, Y, Y, Y, Y, Y],
   "emergency.raise":              [Y, Y, Y, Y, N, Y],
   "audit.view":                   [Y, Y, N, N, N, N],
@@ -98,6 +99,7 @@ describe("consent restrictions", () => {
     expect(can(member("family"), p, "health.view")).toBe(false);
     expect(can(member("admin"), p, "measurement.record")).toBe(false);
     expect(can(member("caregiver"), p, "measurement.record")).toBe(true);
+    expect(can(member("family"), p, "document.upload")).toBe(false);
     expect(can(member("family"), p, "medication.view")).toBe(true);
     expect(can(member("family"), p, "task.view")).toBe(true);
   });

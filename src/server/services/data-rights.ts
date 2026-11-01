@@ -37,6 +37,7 @@ import { verifyPassword } from "@/server/auth/password";
 import { AppError } from "@/server/http";
 import { authorize, type ServiceContext } from "./access";
 import { listAuditEvents, recordAudit } from "./audit";
+import { documentIndex } from "./documents";
 
 export const EXPORT_FORMAT = "carenest-export/1";
 
@@ -129,7 +130,7 @@ export async function exportCircle(ctx: ServiceContext, circleId: string) {
     profile,
     members,
     /** Sections left out because the person receiving care doesn't share them with this admin. */
-    withheld: [...(meds ? [] : ["medications", "doses"]), ...(appts ? [] : ["appointments"]), ...(health ? [] : ["health and mood notes", "visit notes", "health readings"])],
+    withheld: [...(meds ? [] : ["medications", "doses"]), ...(appts ? [] : ["appointments"]), ...(health ? [] : ["health and mood notes", "visit notes", "health readings", "health documents"])],
     medications: medRows,
     doses: doseRows,
     doseHistory: history,
@@ -138,6 +139,8 @@ export async function exportCircle(ctx: ServiceContext, circleId: string) {
     visits: health ? visitRows : visitRows.map((v) => ({ ...v, observations: null, handoverNote: null, unresolvedIssues: null })),
     updates,
     healthReadings: readings,
+    /** The list only; the files themselves can be downloaded one by one in CareNest. */
+    healthDocuments: health ? await documentIndex(ctx, circleId) : [],
     emergencyInfo: card[0]?.info ?? {},
     emergencyContacts: contacts,
     helpRequests: requests,

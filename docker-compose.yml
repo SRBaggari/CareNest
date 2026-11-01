@@ -49,6 +49,9 @@ services:
     <<: *app
     ports:
       - "${WEB_PORT:-3000}:3000"
+    # Uploaded health documents (back this up together with the database).
+    volumes:
+      - documents:/data/documents
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -64,3 +67,4 @@ services:
 
 volumes:
   pgdata:
+  documents:
