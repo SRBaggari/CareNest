@@ -1,4 +1,4 @@
-import { Archive, Bell, ChevronRight, CircleCheck, Clock, LifeBuoy, Plus, TriangleAlert, UsersRound } from "lucide-react";
+import { Archive, Bell, CalendarDays, ChevronRight, CircleCheck, Clock, LifeBuoy, Pill, Plus, TriangleAlert, UsersRound } from "lucide-react";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -7,7 +7,7 @@ import { buttonClass } from "@/components/ui/button";
 import { Avatar, Badge, IconTile } from "@/components/ui/section";
 import type { Translate } from "@/i18n";
 import { getRequestTranslator } from "@/i18n/server";
-import { formatLocalTime } from "@/lib/format";
+import { formatDateTime, formatLocalTime } from "@/lib/format";
 import { simpleViewTarget } from "@/lib/simple-view";
 import { pageContext } from "@/server/page";
 import { listMyCircles } from "@/server/services/circles";
@@ -78,6 +78,7 @@ export default async function AppHome() {
                       {t("home.localTime", { time: formatLocalTime(ctx.now, locale, c.timeZone) })}
                     </span>
                   </div>
+                  {status.get(c.id) && <CircleGlance today={status.get(c.id)!} t={t} locale={locale} timeZone={session.user.timeZone} />}
                   <div className="mt-auto">
                     {c.status === "archived" ? (
                       <Badge tone="warning">
@@ -98,8 +99,40 @@ export default async function AppHome() {
   );
 }
 
+type CircleSummary = Awaited<ReturnType<typeof getMyToday>>["circles"][number];
+
+/** Today's medicines as a small progress bar, and the next appointment, where the reader may see them. */
+function CircleGlance({ today, t, locale, timeZone }: { today: CircleSummary; t: Translate; locale: string; timeZone: string }) {
+  const d = today.doses;
+  const total = d ? Object.values(d).reduce((a, b) => a + b, 0) : 0;
+  const done = d ? d.taken + d.administered + d.skipped + d.refused : 0;
+  if (total === 0 && !today.nextAppointment) return null;
+  return (
+    <div className="flex flex-col gap-3 rounded-xl bg-sunken/60 p-3">
+      {d && total > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <span className="inline-flex items-center gap-2 font-semibold">
+            <Pill aria-hidden="true" className="size-4 shrink-0 text-primary" />
+            {t("home.dosesToday", { done, total })}
+          </span>
+          <span aria-hidden="true" className="flex h-2 overflow-hidden rounded-full bg-surface ring-1 ring-border">
+            <span className="h-full rounded-full bg-success" style={{ width: `${(done / total) * 100}%` }} />
+            {d.unconfirmed > 0 && <span className="h-full bg-warning" style={{ width: `${(d.unconfirmed / total) * 100}%` }} />}
+          </span>
+        </div>
+      )}
+      {today.nextAppointment && (
+        <span className="inline-flex items-start gap-2">
+          <CalendarDays aria-hidden="true" className="mt-1 size-4 shrink-0 text-primary" />
+          {t("home.nextAppointment", { title: today.nextAppointment.title, when: formatDateTime(today.nextAppointment.startsAt, locale, timeZone) })}
+        </span>
+      )}
+    </div>
+  );
+}
+
 /** One line per circle: a request for help outranks everything; otherwise how many things wait. */
-function CircleStatus({ today, t }: { today?: Awaited<ReturnType<typeof getMyToday>>["circles"][number]; t: Translate }) {
+function CircleStatus({ today, t }: { today?: CircleSummary; t: Translate }) {
   if (!today) return null;
   if (today.openHelpRequest) {
     return (

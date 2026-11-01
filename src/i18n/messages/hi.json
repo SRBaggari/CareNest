@@ -74,7 +74,9 @@
     "attentionCount": "ध्यान देने की ज़रूरत: {count}",
     "helpOpen": "मदद माँगी गई है",
     "allClear": "किसी चीज़ पर ध्यान देने की ज़रूरत नहीं है",
-    "unread": "न पढ़ी गई सूचनाएँ: {count}"
+    "unread": "न पढ़ी गई सूचनाएँ: {count}",
+    "dosesToday": "आज की दवाइयाँ: {total} में से {done} का जवाब मिला",
+    "nextAppointment": "अगला: {title}, {when}"
   },
   "account": {
     "title": "आपका खाता",

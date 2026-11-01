@@ -74,7 +74,9 @@
     "attentionCount": "கவனம் தேவை: {count}",
     "helpOpen": "உதவி கோரப்பட்டுள்ளது",
     "allClear": "கவனம் தேவைப்படுவது எதுவும் இல்லை",
-    "unread": "படிக்காத அறிவிப்புகள்: {count}"
+    "unread": "படிக்காத அறிவிப்புகள்: {count}",
+    "dosesToday": "இன்றைய மருந்துகள்: {total}-இல் {done}-க்கு பதில் வந்தது",
+    "nextAppointment": "அடுத்தது: {title}, {when}"
   },
   "account": {
     "title": "உங்கள் கணக்கு",
