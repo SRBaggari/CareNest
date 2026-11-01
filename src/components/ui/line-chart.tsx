@@ -161,7 +161,7 @@ export function LineChart({ points, series, title, labels }: Props) {
           </div>
         )}
       </div>
-      <details className="text-base">
+      <details className="text-base print:hidden">
         <summary className="inline-flex min-h-12 cursor-pointer items-center font-semibold text-primary">{labels.showTable}</summary>
         <table id={`${id}-table`} className="mt-2 w-full border-collapse text-left">
           <caption className="sr-only">{title}</caption>

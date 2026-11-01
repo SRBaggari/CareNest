@@ -294,7 +294,7 @@ browser + axe tests, its own branch merged with `--no-ff`, pushed to both repos,
 | T2-3 Well-being & measurements | Daily check-in history; blood pressure, blood sugar, weight, temperature, pulse with units, who recorded, charts over time; consent follows "health details" | Most-asked-for after medicines; no medical interpretation, only trends | ✅ (tag `t2-3`) |
 | T2-4 Health documents | Upload prescriptions, reports, discharge summaries; versions; who viewed it; storage adapter (local disk now, S3-compatible later); size/type limits | Needs a storage decision and careful access control | ✅ (tag `t2-4`) |
 | T2-5 Circle messages | Threads per circle (and per appointment/task), mentions, read state, notifications | Replaces the family WhatsApp thread for care matters | ✅ (tag `t2-5`) |
-| T2-6 Reports & exports | Printable "for the doctor" summary (medicines, adherence, measurements, recent notes) for a chosen period; CSV of measurements | Builds on T2-3 and T2-4 | ⏳ |
+| T2-6 Reports & exports | Printable "for the doctor" summary (medicines, adherence, measurements, recent notes) for a chosen period; CSV of measurements | Builds on T2-3 and T2-4 | ✅ (tag `t2-6`) |
 | T2-7 Expenses | Record care expenses, who paid, split between family, settle-up summary | Independent; common source of family friction | ⏳ |
 | T2-8 Voice for parents | Simple view: tap-to-speak "I took my medicine", "I need help", read-aloud of today's plan (Web Speech API, on-device where available) | Builds on the Simple view; falls back gracefully where unsupported | ⏳ |
 | T2-9 Offline reading | Service worker caches today's plan, emergency card and contacts for reading without a connection | Reuses T2-1's service worker | ⏳ |

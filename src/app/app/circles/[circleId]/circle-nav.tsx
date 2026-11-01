@@ -4,6 +4,7 @@ import {
   CalendarDays,
   ClipboardList,
   DoorOpen,
+  FileChartColumn,
   FileText,
   HeartPulse,
   History,
@@ -36,6 +37,7 @@ const icons = {
   members: Users,
   settings: Settings,
   activity: ClipboardList,
+  reports: FileChartColumn,
 };
 const groupIcons: Record<GroupId, LucideIcon> = { today: Sun, care: Pill, plans: CalendarDays, family: UsersRound, circle: Settings };
 

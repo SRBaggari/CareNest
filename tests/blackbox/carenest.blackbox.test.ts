@@ -166,6 +166,7 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
       const uploaded = await fetch(`${BASE}${z("/documents")}`, { method: "POST", headers: { cookie: zoe.cookie, origin: BASE, "x-forwarded-for": zoe.ip }, body: form });
       expect(uploaded.status).toBe(201);
       expect((await zed.post(z("/threads"), { title: "Zebra conversation", body: "Zebra message" })).status).toBe(201);
+      expect((await zoe.post(z("/measurements"), { kind: "pulse", unit: "bpm", value: 72, note: "Zebra pulse" })).status).toBe(201);
       // Control: the other family does see all of it, so a clean result below means something.
       for (const [path, marker] of [
         ["/visits", "Zebra live visit"],
@@ -179,6 +180,8 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
         ["/export", "Zebramycin"],
         ["/documents", "Zebra scan"],
         ["/threads", "Zebra conversation"],
+        ["/reports", "Zebramycin"],
+        ["/reports/measurements", "Zebra pulse"],
       ]) {
         expect([path, (await zed.get(z(path))).text.includes(marker)]).toEqual([path, true]);
       }
@@ -215,6 +218,8 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
           "/export",
           "/documents",
           "/threads",
+          "/reports",
+          "/reports/measurements",
         ].map((p) => [priya, m(p)] as [Actor, string]),
         [priya, "/api/v1/me/today"],
         [priya, "/api/v1/me/export"],
@@ -226,6 +231,7 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
         [priya, `/app/circles/${mine}/timeline`],
         [priya, `/app/circles/${mine}/updates`],
         [priya, `/app/circles/${mine}/emergency`],
+        [priya, `/app/circles/${mine}/reports`],
         [meena, `/app/circles/${mine}/visits`],
         [amma, `/simple/${mine}`],
       ];

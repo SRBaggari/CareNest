@@ -25,7 +25,7 @@ export function Toaster({ label }: { label: string }) {
   }, [shown]);
 
   return (
-    <div role="status" className="pointer-events-none fixed inset-x-0 bottom-28 z-40 flex justify-center px-4 lg:bottom-8">
+    <div role="status" className="pointer-events-none fixed inset-x-0 bottom-28 z-40 flex justify-center px-4 lg:bottom-8 print:hidden">
       {shown > 0 && (
         <span key={shown} className="animate-rise inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-3 font-semibold text-background shadow-lg">
           <CircleCheck aria-hidden="true" className="size-5 shrink-0" />
