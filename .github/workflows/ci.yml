@@ -69,6 +69,35 @@ jobs:
           # Annotations are readable without signing in, unlike raw logs.
           echo "::error title=test:postgres output::$(grep -vE '^\s*$' pg.log | tail -60 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')"
 
+  e2e:
+    name: Browser tests (Playwright + axe)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build
+        run: npm run build
+      - name: Journeys and accessibility scans in a real browser
+        run: npm run test:e2e
+      - name: Keep the report and traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
   deploy-smoke:
     name: Docker image + compose stack, black-box tested
     runs-on: ubuntu-latest
