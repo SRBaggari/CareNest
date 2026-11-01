@@ -20,7 +20,9 @@ for (const locale of ["en", "hi", "te", "ta"]) {
     const paths = ["/app", "/app/notifications", "/app/account", base, ...["medicines", "appointments", "tasks", "visits", "updates", "timeline", "members", "settings", "emergency", "activity"].map((p) => `${base}/${p}`)];
     const wide: string[] = [];
     for (const path of paths) {
-      await page.goto(path);
+      // Measure the settled page: before the web font loads, text briefly lays out in a fallback font.
+      await page.goto(path, { waitUntil: "networkidle" });
+      await page.evaluate(() => document.fonts.ready);
       const { scroll, width, culprits } = await page.evaluate(() => {
         const width = document.documentElement.clientWidth;
         // The outermost elements that poke past the right edge (ignoring rows meant to scroll), to say what to fix.
@@ -29,7 +31,12 @@ for (const locale of ["en", "hi", "te", "ta"]) {
           .filter((el) => past(el) && !past(el.parentElement) && !el.closest(".overflow-x-auto"))
           .slice(0, 3)
           .map((el) => `<${el.tagName.toLowerCase()} class="${String(el.getAttribute("class")).slice(0, 60)}"> "${(el.textContent ?? "").trim().slice(0, 40)}"`);
-        return { scroll: document.documentElement.scrollWidth, width, culprits };
+        // Elements whose content spills past their own box (often a long word in a flex label).
+        const spilling = [...document.querySelectorAll("main *")]
+          .filter((el) => el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflowX === "visible")
+          .slice(-2)
+          .map((el) => `spills: <${el.tagName.toLowerCase()}> "${(el.textContent ?? "").trim().slice(0, 40)}"`);
+        return { scroll: document.documentElement.scrollWidth, width, culprits: [...culprits, ...spilling] };
       });
       if (scroll > width) wide.push(`${path.replace(circleId, ":id")} (${scroll}px): ${culprits.join(", ")}`);
     }
