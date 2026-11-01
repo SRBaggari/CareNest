@@ -30,7 +30,7 @@ test("signed-out pages", async ({ browser }) => {
   }
 });
 
-const circlePages = ["", "/medicines", "/health", "/documents", "/appointments", "/tasks", "/visits", "/updates", "/timeline", "/members", "/settings", "/emergency", "/activity"];
+const circlePages = ["", "/medicines", "/health", "/documents", "/appointments", "/tasks", "/visits", "/updates", "/messages", "/timeline", "/members", "/settings", "/emergency", "/activity"];
 
 test("the full app, as a family admin", async ({ browser }) => {
   const page = await pageAs(browser, owner);

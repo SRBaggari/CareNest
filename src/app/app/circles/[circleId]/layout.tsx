@@ -73,6 +73,7 @@ async function CircleHeader({ params }: { params: LayoutProps<"/app/circles/[cir
       ? ([
           { href: `${base}/visits`, label: t("circle.visits"), icon: "visits" },
           { href: `${base}/updates`, label: t("circle.updates"), icon: "updates" },
+          { href: `${base}/messages`, label: t("circle.messages"), icon: "messages" },
           { href: `${base}/timeline`, label: t("circle.timeline"), icon: "timeline" },
         ] as const)
       : []),

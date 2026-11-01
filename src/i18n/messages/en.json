@@ -197,7 +197,8 @@
     "timeline": "Timeline",
     "help": "Help",
     "health": "Health",
-    "documents": "Documents"
+    "documents": "Documents",
+    "messages": "Messages"
   },
   "invite": {
     "title": "You're invited",
@@ -432,7 +433,11 @@
     "digestFooter": "See everything: {link}\nYou can turn this daily summary off under Account → Notifications.",
     "pushOpenForDetails": "Open CareNest to see details.",
     "pushTestTitle": "CareNest test alert",
-    "pushTestBody": "Alerts are working on this device."
+    "pushTestBody": "Alerts are working on this device.",
+    "messageTitle": "{author} wrote in “{title}”",
+    "messageForYouTitle": "{author} wants you to read “{title}”",
+    "messageEmailSubject": "{author} sent you a message in CareNest",
+    "messageEmailBody": "{author} asked you to read a message in “{title}”. Open CareNest: {link}"
   },
   "inbox": {
     "title": "Notifications",
@@ -978,5 +983,28 @@
     "neverOpened": "Nobody has opened it yet.",
     "remove": "Remove (deletes the files)",
     "removeConfirm": "Remove “{title}” and delete all its files? This can't be undone."
+  },
+  "messages": {
+    "title": "Messages",
+    "intro": "Talk about {name}'s care in one place, so everyone sees the same thing.",
+    "start": "Start a conversation",
+    "subject": "Subject",
+    "subjectHint": "For example “Diwali visit plans”.",
+    "message": "Message",
+    "notify": "Let these people know (they get an alert)",
+    "notifyHint": "Everyone else in the conversation sees it in CareNest and in the evening summary.",
+    "send": "Send",
+    "sent": "Sent.",
+    "none": "No conversations yet.",
+    "unread": "New: {count}",
+    "removed": "Message removed",
+    "remove": "Remove",
+    "removeConfirm": "Remove your message? Others will see “Message removed”.",
+    "back": "All conversations",
+    "about_appointment": "About an appointment",
+    "about_task": "About a task",
+    "discuss": "Discuss",
+    "reply": "Reply",
+    "noMessages": "No messages yet. Write the first one below."
   }
 }

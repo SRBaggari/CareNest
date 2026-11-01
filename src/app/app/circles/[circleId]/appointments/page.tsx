@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ActionButton } from "@/components/action-button";
+import { DiscussButton } from "../messages/message-forms";
 import { Alert } from "@/components/ui/alert";
 import { getRequestTranslator } from "@/i18n/server";
 import { formatDateTime } from "@/lib/format";
@@ -146,6 +147,10 @@ export default async function AppointmentsPage({ params }: PageProps<"/app/circl
               {a.status === "scheduled" && helperRow(a, "companion")}
               {outcome(a)}
               <div className="flex flex-wrap items-start gap-3">
+                {/* Talk it over: who drives, what to ask the doctor. */}
+                {caps.has("update.view") && (
+                  <DiscussButton url={`/api/v1/circles/${circleId}/threads/for-subject`} circleId={circleId} subjectType="appointment" subjectId={a.id} label={t("messages.discuss")} messages={messages} />
+                )}
                 {canRecord(a) && a.status === "scheduled" && <OutcomeForm url={`${base}/${a.id}/complete`} labels={outcomeLabels} />}
                 {canManage && a.status === "scheduled" && (
                   <>

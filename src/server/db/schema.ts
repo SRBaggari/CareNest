@@ -1,7 +1,7 @@
 // Database schema. Tables are added milestone by milestone; each change ships with a
 // generated SQL migration in `drizzle/` (npm run db:generate).
 
-import { boolean, date, doublePrecision, index, integer, jsonb, pgEnum, pgTable, text, timestamp, unique, uuid, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { boolean, date, doublePrecision, index, integer, jsonb, pgEnum, pgTable, primaryKey, text, timestamp, unique, uuid, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { CIRCLE_ROLES, type Consent } from "@/server/auth/permissions";
 import { DOSE_STATUSES } from "@/server/domain/doses";
@@ -480,6 +480,60 @@ export const documentAccess = pgTable(
     at: timestamp("at", { withTimezone: true }).notNull(),
   },
   (t) => [index("document_access_document_idx").on(t.documentId, t.at)],
+);
+
+// ── Circle messages (Tier 2) ─────────────────────────────────────────────────────────────────
+
+/** A conversation in a circle: general, or about one appointment or task (one thread per subject). */
+export const messageThreads = pgTable(
+  "message_threads",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    subjectType: text("subject_type", { enum: ["general", "appointment", "task"] }).notNull().default("general"),
+    subjectId: uuid("subject_id"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+    lastMessageAt: timestamp("last_message_at", { withTimezone: true }).notNull(),
+  },
+  (t) => [index("message_threads_circle_last_idx").on(t.circleId, t.lastMessageAt), unique("message_threads_subject_unique").on(t.circleId, t.subjectType, t.subjectId)],
+);
+
+export const messages = pgTable(
+  "messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    threadId: uuid("thread_id")
+      .notNull()
+      .references(() => messageThreads.id, { onDelete: "cascade" }),
+    circleId: uuid("circle_id")
+      .notNull()
+      .references(() => careCircles.id, { onDelete: "cascade" }),
+    authorUserId: uuid("author_user_id").references(() => users.id, { onDelete: "set null" }),
+    /** Erased when the author removes the message; the row stays so replies still make sense. */
+    body: text("body"),
+    createdAt: createdAt(),
+    removedAt: timestamp("removed_at", { withTimezone: true }),
+  },
+  (t) => [index("messages_thread_created_idx").on(t.threadId, t.createdAt)],
+);
+
+/** How far each person has read a thread, for unread markers. */
+export const threadReads = pgTable(
+  "thread_reads",
+  {
+    threadId: uuid("thread_id")
+      .notNull()
+      .references(() => messageThreads.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    lastReadAt: timestamp("last_read_at", { withTimezone: true }).notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.threadId, t.userId] })],
 );
 
 // ── Appointments (M5) ────────────────────────────────────────────────────────────────────────

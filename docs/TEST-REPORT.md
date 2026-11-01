@@ -236,3 +236,15 @@ Defects these tests found, both fixed in the same change:
 - Checked in full Chromium: an uploaded PDF still displays inline in the browser's PDF viewer with the
   sandbox header in place.
 
+## Update, 2026-11-01: T2-5 circle messages
+
+- 7 integration tests: starting and replying, unread markers (never for your own messages), alerts for the
+  people chosen and quiet news for others in the conversation (email never contains the message),
+  refusing to alert people who can't read the conversation without leaving an empty conversation behind,
+  one conversation per appointment that follows the appointment-sharing choice, closed to emergency
+  contacts, outsiders and signed-out visitors, two families on one server, authors removing only their
+  own messages, and conversations in both data exports.
+- Browser: a family member asks the caregiver something and ticks her name; on her phone she sees it as
+  new, opens it and replies; the family member sees the reply. Messages is in the accessibility scan and
+  the phone-layout check in four languages; the black-box isolation sweep now includes a conversation.
+

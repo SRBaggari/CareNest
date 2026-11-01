@@ -155,6 +155,17 @@ Documents are health details: only people the parent shares health details with 
 Each document lists who opened it and when. Whoever added a document, or an admin, can remove it; that
 deletes its files for good, and the activity log keeps a note.
 
+## Messages
+
+Use the **Messages** tab to talk about care in one place instead of scattered chats. Start a conversation
+with a subject ("Diwali visit plans"), or press **Discuss** on an appointment or task to talk about that one.
+Tick **Let these people know** to send them an alert; everyone else already in the conversation sees it in
+CareNest and in the evening summary, so nobody's phone buzzes for every message. New messages are marked
+"New". You can remove your own message; others then see "Message removed".
+
+Messages are read by the people who see care updates (not emergency contacts). Conversations about an
+appointment follow the parent's choice to share appointments.
+
 ## Calendar
 
 To see appointments, visits and your own tasks in Google Calendar, Apple Calendar or Outlook, open the

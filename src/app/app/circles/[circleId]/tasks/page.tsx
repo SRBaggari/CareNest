@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionButton } from "@/components/action-button";
+import { DiscussButton } from "../messages/message-forms";
 import { Alert } from "@/components/ui/alert";
 import { getRequestTranslator } from "@/i18n/server";
 import { formatDateTime } from "@/lib/format";
@@ -117,6 +118,9 @@ export default async function TasksPage({ params, searchParams }: PageProps<"/ap
                 </p>
               )}
               <div className="flex flex-wrap items-start gap-3">
+                {caps.has("update.view") && (
+                  <DiscussButton url={`/api/v1/circles/${circleId}/threads/for-subject`} circleId={circleId} subjectType="task" subjectId={task.id} label={t("messages.discuss")} messages={messages} />
+                )}
                 {canDo && task.status === "open" && !task.assignee && (
                   <ActionButton method="POST" url={`${base}/${task.id}/claim`} body={{ action: "claim" }} variant="primary" messages={messages}>
                     {t("tasks.illDoIt")}
