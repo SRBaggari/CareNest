@@ -11,6 +11,8 @@ import { DeviceList, PasswordForm, ProfileForm } from "./account-forms";
 import { DeleteAccountForm } from "./delete-account-form";
 import { NotificationPreferencesForm } from "./notification-preferences-form";
 import { SignOutButton } from "../sign-out-button";
+import { listPushDevices, pushConfig } from "@/server/services/push-devices";
+import { PushDeviceControls, RemovePushDevice } from "./push-device-controls";
 
 export const metadata: Metadata = { title: "Account" };
 
@@ -21,6 +23,8 @@ export default async function AccountPage() {
   const db = await getDb();
   const devices = await listUserSessions(db, session.user.id, now);
   const preferences = await getPreferences(db, session.user.id);
+  const push = pushConfig();
+  const pushDevices = await listPushDevices({ db, now, userId: session.user.id });
   const formatter = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
@@ -53,6 +57,41 @@ export default async function AccountPage() {
           locales={LOCALES.map((l) => ({ value: l, label: LOCALE_NAMES[l] }))}
           labels={{ ...common, name: t("auth.name"), timeZone: t("auth.timeZone"), language: t("auth.language") }}
         />
+      </section>
+
+      <section aria-labelledby="push-heading" className="card flex flex-col gap-3">
+        <h2 id="push-heading" className="text-2xl font-semibold">
+          {t("push.title")}
+        </h2>
+        <p className="text-muted">{t("push.intro")}</p>
+        <PushDeviceControls
+          enabled={push.enabled}
+          publicKey={push.publicKey}
+          labels={{
+            network: t("common.errorNetwork"),
+            generic: t("common.errorGeneric"),
+            ...Object.fromEntries(
+              (["turnOn", "turnOff", "on", "test", "testSent", "blocked", "unsupported", "subscribeFailed", "iosHint", "notConfigured", "remove"] as const).map((k) => [k, t(`push.${k}`)]),
+            ),
+          } as Parameters<typeof PushDeviceControls>[0]["labels"]}
+        />
+        <p className="text-muted">{t("push.quietNote")}</p>
+        {pushDevices.length > 0 && (
+          <div>
+            <h3 className="text-xl font-semibold">{t("push.devicesTitle")}</h3>
+            <ul className="mt-2 flex flex-col gap-2">
+              {pushDevices.map((d) => (
+                <li key={d.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-sunken px-4 py-3">
+                  <span>
+                    <span className="block font-semibold">{d.label ?? t("push.deviceUnknown")}</span>
+                    <span className="text-muted">{t("push.deviceSince", { date: formatter.format(d.createdAt) })}</span>
+                  </span>
+                  <RemovePushDevice id={d.id} label={t("push.remove")} messages={{ network: t("common.errorNetwork"), generic: t("common.errorGeneric") }} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
 
       <section aria-labelledby="notif-heading" className="card">

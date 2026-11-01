@@ -17,6 +17,8 @@ import {
   doseEventHistory,
   doseEvents,
   emailOutbox,
+  pushOutbox,
+  pushSubscriptions,
   emergencyContacts,
   emergencyInfoCards,
   medications,
@@ -43,12 +45,16 @@ export async function exportMyData(ctx: ServiceContext) {
     .select({ id: users.id, email: users.email, name: users.name, locale: users.locale, timeZone: users.timeZone, createdAt: users.createdAt })
     .from(users)
     .where(eq(users.id, ctx.userId));
-  const [preferences, devices, circles, myNotifications, myUpdates, myDoseRecords, myAudit] = await Promise.all([
+  const [preferences, devices, alertDevices, circles, myNotifications, myUpdates, myDoseRecords, myAudit] = await Promise.all([
     ctx.db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, ctx.userId)),
     ctx.db
       .select({ createdAt: sessions.createdAt, lastSeenAt: sessions.lastSeenAt, expiresAt: sessions.expiresAt, userAgent: sessions.userAgent })
       .from(sessions)
       .where(eq(sessions.userId, ctx.userId)),
+    ctx.db
+      .select({ label: pushSubscriptions.label, createdAt: pushSubscriptions.createdAt, lastAlertDeliveredAt: pushSubscriptions.lastSuccessAt })
+      .from(pushSubscriptions)
+      .where(eq(pushSubscriptions.userId, ctx.userId)),
     ctx.db
       .select({ circle: careCircles.name, role: memberships.role, status: memberships.status, joinedAt: memberships.createdAt, expiresAt: memberships.expiresAt })
       .from(memberships)
@@ -72,6 +78,7 @@ export async function exportMyData(ctx: ServiceContext) {
     account,
     notificationPreferences: preferences[0] ?? null,
     signedInDevices: devices,
+    phoneAlertDevices: alertDevices,
     circles,
     notifications: myNotifications,
     updatesIWrote: myUpdates,
@@ -191,6 +198,7 @@ export async function deleteMyAccount(ctx: ServiceContext, input: z.infer<typeof
 export const RETENTION = {
   readNotificationsDays: 180,
   deliveredEmailDays: 30,
+  deliveredPushDays: 30,
   rateLimitHours: 48,
 };
 
@@ -206,9 +214,13 @@ export async function purgeExpiredData(db: ServiceContext["db"], now: Date) {
     .delete(emailOutbox)
     .where(and(or(eq(emailOutbox.status, "sent"), eq(emailOutbox.status, "logged"), eq(emailOutbox.status, "failed")), lt(emailOutbox.createdAt, days(RETENTION.deliveredEmailDays))))
     .returning({ id: emailOutbox.id });
+  const oldPush = await db
+    .delete(pushOutbox)
+    .where(and(inArray(pushOutbox.status, ["sent", "failed"]), lt(pushOutbox.createdAt, days(RETENTION.deliveredPushDays))))
+    .returning({ id: pushOutbox.id });
   const staleLimits = await db
     .delete(rateLimits)
     .where(lt(rateLimits.windowStart, new Date(now.getTime() - RETENTION.rateLimitHours * 3_600_000)))
     .returning({ key: rateLimits.key });
-  return { sessions: expiredSessions.length, notifications: oldNotifications.length, emails: oldEmails.length, rateLimits: staleLimits.length };
+  return { sessions: expiredSessions.length, notifications: oldNotifications.length, emails: oldEmails.length, pushAlerts: oldPush.length, rateLimits: staleLimits.length };
 }

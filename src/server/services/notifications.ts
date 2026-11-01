@@ -2,7 +2,9 @@ import { and, desc, eq, inArray, isNotNull, isNull, lt, sql } from "drizzle-orm"
 import { z } from "zod";
 import { LOCAL_TIME_PATTERN } from "@/server/domain/schedule";
 import { emailOutbox, memberships, notificationPreferences, notifications, users } from "@/server/db/schema";
+import { translatorFor } from "@/server/notifications/audience";
 import { enqueueEmail } from "@/server/notifications/email";
+import { enqueuePush, getPushTransport } from "@/server/notifications/push";
 import { quietUntil } from "@/server/notifications/quiet-hours";
 import { effectiveAlertSettings, ALERT_CAPABILITY, ALERT_KINDS, alertColumn, offersChoice } from "@/server/notifications/alert-settings";
 import { AppError } from "@/server/http";
@@ -48,14 +50,18 @@ export async function notifyUsers(db: DbOrTx, now: Date, items: (NewNotification
     now,
   );
   const emailFor = new Map(items.map((i) => [i.dedupeKey, i.email]));
+  // Phone alerts for anything above low priority (low-priority news waits for the evening digest).
+  const pushing = getPushTransport() !== null;
   const withEmail = created.filter((n) => emailFor.get(n.dedupeKey));
-  if (withEmail.length === 0) return created;
+  const toPush = pushing ? created.filter((n) => n.priority !== "low") : [];
+  if (withEmail.length === 0 && toPush.length === 0) return created;
 
-  const ids = [...new Set(withEmail.map((n) => n.userId))];
+  const ids = [...new Set([...withEmail, ...toPush].map((n) => n.userId))];
   const people = await db
     .select({
       id: users.id,
       email: users.email,
+      locale: users.locale,
       timeZone: users.timeZone,
       emailEnabled: notificationPreferences.emailEnabled,
       quietStart: notificationPreferences.quietStart,
@@ -65,11 +71,27 @@ export async function notifyUsers(db: DbOrTx, now: Date, items: (NewNotification
     .leftJoin(notificationPreferences, eq(notificationPreferences.userId, users.id))
     .where(inArray(users.id, ids));
   const byId = new Map(people.map((p) => [p.id, p]));
+  // Urgent alerts ignore quiet hours; everything else waits until they end.
+  const notBeforeFor = (n: (typeof created)[number], person: (typeof people)[number]) =>
+    n.priority === "critical" ? now : (quietUntil(now, person.timeZone, person.quietStart, person.quietEnd) ?? now);
+
+  for (const n of toPush) {
+    const person = byId.get(n.userId);
+    if (!person) continue;
+    await enqueuePush(db, {
+      userId: n.userId,
+      notificationId: n.id,
+      // The lock screen is visible to anyone nearby: the title only, details stay behind sign-in.
+      payload: { title: n.title, body: translatorFor(person.locale)("notif.pushOpenForDetails"), link: n.link, tag: n.groupKey, urgent: n.priority === "critical" },
+      dedupeKey: `notification:${n.id}`,
+      notBefore: notBeforeFor(n, person),
+    });
+  }
 
   for (const n of withEmail) {
     const person = byId.get(n.userId);
     if (!person || person.emailEnabled === false) continue;
-    const notBefore = n.priority === "critical" ? now : (quietUntil(now, person.timeZone, person.quietStart, person.quietEnd) ?? now);
+    const notBefore = notBeforeFor(n, person);
     const content = emailFor.get(n.dedupeKey)!;
     await enqueueEmail(db, {
       to: person.email,

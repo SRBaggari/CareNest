@@ -351,6 +351,55 @@ export const emailOutbox = pgTable(
   (t) => [index("email_outbox_due_idx").on(t.status, t.nextAttemptAt), index("email_outbox_notification_idx").on(t.notificationId)],
 );
 
+// ── Phone alerts: web push (Tier 2) ──────────────────────────────────────────────────────────
+
+/**
+ * A browser on one device that asked for alerts. The endpoint is the push service URL the browser
+ * gave us (only well-known push services are accepted); p256dh/auth encrypt the message to it.
+ */
+export const pushSubscriptions = pgTable(
+  "push_subscriptions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    endpoint: text("endpoint").notNull().unique(),
+    p256dh: text("p256dh").notNull(),
+    auth: text("auth").notNull(),
+    /** A readable device name for the Account page, e.g. "Chrome on Android". */
+    label: text("label"),
+    createdAt: createdAt(),
+    lastSuccessAt: timestamp("last_success_at", { withTimezone: true }),
+  },
+  (t) => [index("push_subscriptions_user_idx").on(t.userId)],
+);
+
+/** Outgoing phone alerts, claimed and retried like emails; the payload is erased once delivered. */
+export const pushOutbox = pgTable(
+  "push_outbox",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    subscriptionId: uuid("subscription_id")
+      .notNull()
+      .references(() => pushSubscriptions.id, { onDelete: "cascade" }),
+    notificationId: uuid("notification_id").references(() => notifications.id, { onDelete: "set null" }),
+    /** JSON shown by the service worker: title, body, link, tag, urgent. */
+    payload: text("payload"),
+    urgent: boolean("urgent").notNull().default(false),
+    /** gone = the push service says this device no longer exists; its subscription is removed. */
+    status: text("status", { enum: ["pending", "sending", "sent", "failed", "gone"] }).notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    nextAttemptAt: timestamp("next_attempt_at", { withTimezone: true }).notNull(),
+    lockedUntil: timestamp("locked_until", { withTimezone: true }),
+    lastError: text("last_error"),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    dedupeKey: text("dedupe_key").notNull().unique(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("push_outbox_due_idx").on(t.status, t.nextAttemptAt)],
+);
+
 // ── Appointments (M5) ────────────────────────────────────────────────────────────────────────
 
 export const appointments = pgTable(

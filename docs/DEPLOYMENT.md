@@ -56,6 +56,8 @@ To create one by hand: `CREATE DATABASE carenest ENCODING 'UTF8' TEMPLATE templa
 | `TRUST_PROXY` | behind a proxy | `true` only when a reverse proxy you control sets `X-Forwarded-For`. Otherwise leave unset: the header is client-controlled and would let people dodge rate limits. |
 | `SMTP_URL` | for email | e.g. `smtps://user:pass@smtp.provider.com:465`. Without it, no email is sent and the app says so. Not yet verified against a real provider. |
 | `EMAIL_FROM` | for email | Sender, e.g. `CareNest <no-reply@care.example.org>` (must be allowed by your provider). |
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | for phone alerts | Web push keys. Create once with `npx web-push generate-vapid-keys`; keep the private key secret and never change it (changing it silently stops alerts to every device until people turn them on again). Without them, phone alerts are off and the Account page says so. |
+| `VAPID_SUBJECT` | for phone alerts | A contact the push services can reach, e.g. `mailto:admin@care.example.org`. |
 | `CRON_SECRET` | if using the tick endpoint | Long random string. The tick endpoint is disabled (404) when unset. |
 | `WORKER_INTERVAL_MS` | no | Worker tick interval, default 30000. |
 | `DATABASE_POOL_MAX` | no | Connection pool size per process, default 10. |

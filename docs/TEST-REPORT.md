@@ -185,3 +185,21 @@ Defects these tests found, both fixed in the same change:
 - Lesson: tests that create one family per database can't catch leaks between families. New tests for
   lists now set up a second family alongside.
 
+## Update, 2026-11-01: T2-1 phone alerts (web push)
+
+- Unit and integration tests (fake push service) cover saving and removing devices (own devices only,
+  sign-in required, at most 10), the allowlist of push services (requests to any other address, such as
+  a cloud metadata IP or a look-alike host, are refused: server-side request forgery), what is sent
+  (title only and "Open CareNest to see details", in each person's language; low-priority news never
+  buzzes), quiet hours (held until they end, except a request for help, which goes first and stays on
+  screen), retries after temporary failures, forgetting devices the push service reports as gone, no
+  alerts to anyone outside the circle, and export and deletion with the account. Payloads are erased once
+  delivered.
+- **Verified for real, not only with fakes:** in a full Chromium browser, the Account page turned alerts
+  on through Google's push service, the server signed and encrypted a test alert with its own keys, Google
+  accepted it, and the browser's service worker displayed "CareNest test alert – Alerts are working on
+  this device". Two things only this real test found: open-source Chromium uses Google's
+  `jmt17.google.com` push address (now allowed), and Chrome has no push in private windows (the page now
+  says so instead of a generic error).
+- Not verified on physical phones (Android Chrome, iPhone Safari) yet.
+

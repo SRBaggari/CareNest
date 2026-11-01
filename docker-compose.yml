@@ -14,6 +14,9 @@ x-app: &app
     INSECURE_COOKIES: ${INSECURE_COOKIES:-false}
     SMTP_URL: ${SMTP_URL:-}
     EMAIL_FROM: ${EMAIL_FROM:-CareNest <no-reply@example.com>}
+    VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+    VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+    VAPID_SUBJECT: ${VAPID_SUBJECT:-}
     CRON_SECRET: ${CRON_SECRET:-}
 
 services:

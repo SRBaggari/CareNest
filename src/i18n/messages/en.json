@@ -423,7 +423,10 @@
     "digestSubject": "CareNest: today's news ({count})",
     "digestIntro": "Here is what happened today that you haven't seen in CareNest yet:",
     "digestMore": "…and {count} more.",
-    "digestFooter": "See everything: {link}\nYou can turn this daily summary off under Account → Notifications."
+    "digestFooter": "See everything: {link}\nYou can turn this daily summary off under Account → Notifications.",
+    "pushOpenForDetails": "Open CareNest to see details.",
+    "pushTestTitle": "CareNest test alert",
+    "pushTestBody": "Alerts are working on this device."
   },
   "inbox": {
     "title": "Notifications",
@@ -852,5 +855,24 @@
     "visitPlanned": "{name} at {time}",
     "handover": "Latest handover note from {name}",
     "seeAll": "See all"
+  },
+  "push": {
+    "title": "Alerts on this device",
+    "intro": "Get CareNest alerts as notifications on this phone or computer, even when CareNest is closed. Turn this on on each device you use.",
+    "turnOn": "Turn on alerts on this device",
+    "turnOff": "Turn off alerts on this device",
+    "on": "Alerts are on for this device.",
+    "test": "Send a test alert",
+    "testSent": "Test alert sent. It should appear within a few seconds.",
+    "blocked": "Notifications are blocked for CareNest in this browser's settings. Allow them there, then try again.",
+    "unsupported": "This browser can't show CareNest alerts.",
+    "subscribeFailed": "This browser couldn't turn on alerts. Private or incognito windows can't receive them: open CareNest in a normal window and try again.",
+    "iosHint": "On an iPhone or iPad, first add CareNest to your Home Screen (Share → Add to Home Screen), open it from there, then turn alerts on.",
+    "notConfigured": "Phone alerts aren't set up on this CareNest server yet.",
+    "devicesTitle": "Devices with alerts on",
+    "deviceUnknown": "A device",
+    "deviceSince": "Since {date}",
+    "remove": "Remove",
+    "quietNote": "Quiet hours apply to phone alerts too, except urgent ones such as a request for help. Everyday news isn't sent to your phone; it comes in the evening summary."
   }
 }
