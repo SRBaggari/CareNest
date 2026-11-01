@@ -56,6 +56,8 @@ export function HelpButton({ url, circleId, practice, labels }: { url: string; c
     return (
       <button
         type="button"
+        // Voice ("I need help") presses this same button, so it goes through the same confirmation.
+        data-voice-help={practice ? undefined : ""}
         onClick={() => setStage("confirm")}
         className={
           practice

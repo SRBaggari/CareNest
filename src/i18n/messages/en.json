@@ -1126,5 +1126,32 @@
     "removePaymentConfirm": "Remove this payment? It stays in the activity log.",
     "none": "No expenses yet. Add the first one when someone pays for something.",
     "download": "Download all (CSV)"
+  },
+  "voice": {
+    "readAloud": "Read my day aloud",
+    "stop": "Stop reading",
+    "medsNow": "Medicines to take now: {list}.",
+    "medsLater": "Later today: {list}.",
+    "helpHint": "If you need help, press the red Help button.",
+    "speak": "Speak instead of tapping",
+    "notice": "To understand you, your browser may send your voice to its maker (for example Google). CareNest does not record it. You can turn this off at any time.",
+    "turnOn": "Turn on speaking",
+    "notNow": "Not now",
+    "turnOff": "Turn off speaking",
+    "tapToSpeak": "Tap and speak",
+    "listening": "Listening…",
+    "examples": "Say “I took my medicine”, “I need help”, “I'm fine” or “I'm not well”.",
+    "heard": "You said: “{text}”",
+    "confirmTook": "Record {list} as taken?",
+    "confirmFine": "Tell your family you're fine today?",
+    "confirmUnwell": "Tell your family you're not feeling well?",
+    "yes": "Yes",
+    "no": "No",
+    "notUnderstood": "Sorry, I didn't understand. Please try again, or use the buttons.",
+    "noDoseNow": "There's no medicine to take right now.",
+    "recorded": "Done. Your family can see it.",
+    "helpOpened": "Press the red button to confirm, and your family will be told.",
+    "helpAlready": "Your family has already been asked to help.",
+    "micBlocked": "CareNest can't use the microphone. You can allow it in your browser settings, or use the buttons."
   }
 }

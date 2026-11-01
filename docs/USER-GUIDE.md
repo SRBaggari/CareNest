@@ -186,6 +186,21 @@ medical record. You see only the parts you're allowed to see: if the parent does
 health details with you, those sections are left out. Making a report or downloading readings is noted in
 the circle's activity log.
 
+## Listening and speaking (Simple view)
+
+On the parent's Simple view:
+
+- **Read my day aloud** reads today's plan (medicines now and later, visits and appointments) in the
+  parent's language. The button only appears when the phone or computer has a voice for that language;
+  many phones have Hindi, fewer have Telugu or Tamil.
+- **Speak instead of tapping** lets the parent say "I took my medicine", "I need help", "I'm fine" or
+  "I'm not well", in English, Hindi, Telugu or Tamil (mixing is fine). It is **off until they turn it on**,
+  because to understand speech the browser may send the voice to its maker (for example Google);
+  CareNest itself does not record it. The choice is remembered on that device and can be turned off.
+- Nothing is saved from speech alone: CareNest shows what it heard and asks **Yes / No** first. "I need
+  help" opens the same "Alert your family now?" confirmation as the red Help button. "I didn't take my
+  medicine" is never recorded as taken.
+
 ## Expenses
 
 Open **Expenses** (under Family) to keep track of care costs the family shares, such as medicines,

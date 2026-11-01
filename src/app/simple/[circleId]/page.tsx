@@ -14,6 +14,8 @@ import { listDoses } from "@/server/services/doses";
 import { listEmergencyContacts } from "@/server/services/emergency";
 import { listVisits } from "@/server/services/visits";
 import { CheckIn, DoseQuestion } from "./simple-actions";
+import { ReadAloud, VoiceCommands } from "./voice";
+import { SPEECH_LANG } from "@/lib/voice";
 
 export const metadata: Metadata = { title: "My day" };
 
@@ -84,16 +86,47 @@ export default async function SimpleView({ params }: PageProps<"/simple/[circleI
     ...messages,
     ...Object.fromEntries(["didYouTake", "tookIt", "didNotTake", "whyNot", "later", "skipped", "refused", "back", "savedTaken", "savedOther"].map((k) => [k, t(`simple.${k}`)])),
   } as Parameters<typeof DoseQuestion>[0]["labels"];
+  // Today's plan as plain sentences, for reading aloud.
+  const greeting = t(`simple.greeting_${greetingFor(now, tz)}`, { name });
+  const dateLine = t("simple.todayIs", { date: new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", timeZone: tz }).format(now) });
+  const spoken = [
+    greeting,
+    dateLine,
+    ...(doses
+      ? [
+          doses.now.length ? t("voice.medsNow", { list: doses.now.map((d) => `${d.medication.name}, ${d.medication.dosage}`).join("; ") }) : t("simple.medsNone"),
+          ...(doses.later.length ? [t("voice.medsLater", { list: doses.later.map((d) => (d.scheduledFor ? `${d.medication.name} ${t("simple.atTime", { time: time(d.scheduledFor) })}` : d.medication.name)).join("; ") })] : []),
+        ]
+      : []),
+    ...coming.map((c) => (c.extra ? `${c.text} ${c.extra}` : c.text)),
+    t("voice.helpHint"),
+  ];
+  const speechLang = SPEECH_LANG[locale] ?? "en-IN";
+  const canAnswerDoses = active && caps.has("dose.record");
+  const voiceLabels = {
+    ...messages,
+    updateFine: t("simple.updateFine"),
+    updateUnwell: t("simple.updateUnwell"),
+    ...(Object.fromEntries(
+      ["speak", "notice", "turnOn", "notNow", "turnOff", "tapToSpeak", "listening", "examples", "heard", "confirmTook", "confirmFine", "confirmUnwell", "yes", "no", "notUnderstood", "noDoseNow", "recorded", "helpOpened", "helpAlready", "micBlocked"].map(
+        (k) => [k, t(`voice.${k}`)],
+      ),
+    ) as Record<string, string>),
+  } as Parameters<typeof VoiceCommands>[0]["labels"];
+
   const statusLabel = { taken: "statusTaken", administered: "statusGiven", skipped: "statusSkipped", refused: "statusRefused" } as const;
 
   return (
     <div lang={locale} className="flex flex-col gap-6">
       <div className="rounded-3xl bg-gradient-to-br from-primary-soft to-surface px-5 py-6">
-        <h1 className="text-4xl font-bold leading-tight">{t(`simple.greeting_${greetingFor(now, tz)}`, { name })}</h1>
+        <h1 className="text-4xl font-bold leading-tight">{greeting}</h1>
         <p className="mt-2 flex items-center gap-2 text-2xl text-muted">
           <CalendarDays aria-hidden="true" className="size-7 shrink-0" />
-          {t("simple.todayIs", { date: new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", timeZone: tz }).format(now) })}
+          {dateLine}
         </p>
+        <div className="mt-4">
+          <ReadAloud lang={speechLang} sentences={spoken} labels={{ read: t("voice.readAloud"), stop: t("voice.stop") }} />
+        </div>
       </div>
 
       {/* Help comes first, always. */}
@@ -116,6 +149,16 @@ export default async function SimpleView({ params }: PageProps<"/simple/[circleI
           {t("emergency.call", { number })}
         </a>
       </section>
+
+      {active && (canAnswerDoses || caps.has("update.post")) && (
+        <VoiceCommands
+          lang={speechLang}
+          locale={locale}
+          dosesNow={canAnswerDoses && doses ? doses.now.map((d) => ({ url: `/api/v1/circles/${circleId}/doses/${d.id}/record`, name: d.medication.name })) : []}
+          checkinUrl={caps.has("update.post") ? `/api/v1/circles/${circleId}/updates` : null}
+          labels={voiceLabels}
+        />
+      )}
 
       {doses && (
         <section aria-labelledby="meds-heading" className={card}>
