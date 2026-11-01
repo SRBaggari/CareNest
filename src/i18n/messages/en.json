@@ -253,7 +253,9 @@
     "assistance_raised": "asked for help",
     "assistance_acknowledged": "responded to a request for help",
     "assistance_resolved": "resolved a request for help",
-    "assistance_cancelled": "cancelled a request for help"
+    "assistance_cancelled": "cancelled a request for help",
+    "circle_exported": "downloaded a full copy of the circle's records",
+    "member_account_deleted": "{name} deleted their CareNest account"
   },
   "meds": {
     "dayTitle": "Doses for {date}",
