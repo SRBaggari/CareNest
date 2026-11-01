@@ -57,6 +57,7 @@ To create one by hand: `CREATE DATABASE carenest ENCODING 'UTF8' TEMPLATE templa
 | `SMTP_URL` | for email | e.g. `smtps://user:pass@smtp.provider.com:465`. Without it, no email is sent and the app says so. Not yet verified against a real provider. |
 | `EMAIL_FROM` | for email | Sender, e.g. `CareNest <no-reply@care.example.org>` (must be allowed by your provider). |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | for phone alerts | Web push keys. Create once with `npx web-push generate-vapid-keys`; keep the private key secret and never change it (changing it silently stops alerts to every device until people turn them on again). Without them, phone alerts are off and the Account page says so. |
+| `DOCUMENT_STORAGE_DIR` | no | Folder for uploaded health documents (default `.data/documents`; `/data/documents` in the Docker image, on the `documents` volume). Keep it outside the web root and back it up with the database. |
 | `VAPID_SUBJECT` | for phone alerts | A contact the push services can reach, e.g. `mailto:admin@care.example.org`. |
 | `CRON_SECRET` | if using the tick endpoint | Long random string. The tick endpoint is disabled (404) when unset. |
 | `WORKER_INTERVAL_MS` | no | Worker tick interval, default 30000. |
@@ -76,7 +77,7 @@ To create one by hand: `CREATE DATABASE carenest ENCODING 'UTF8' TEMPLATE templa
 
 ## Backups and recovery
 
-All state is in PostgreSQL. Use your provider's automated backups with point-in-time recovery, or:
+All state is in PostgreSQL, except uploaded health documents (files, see below). Use your provider's automated backups with point-in-time recovery, or:
 
 ```bash
 # Nightly logical backup (keep at least 30 days; store off the server, encrypted)
@@ -85,6 +86,10 @@ pg_dump --format=custom --no-owner "$DATABASE_URL" > carenest-$(date +%F).dump
 # Restore into an empty database, then start web and worker
 pg_restore --no-owner --dbname "$DATABASE_URL" carenest-2026-11-01.dump
 ```
+
+**Health documents are files, not database rows**: back up the documents folder (`DOCUMENT_STORAGE_DIR`,
+or the `documents` volume with Docker Compose) at the same time as the database, and restore both
+together. For example: `docker run --rm -v carenest_documents:/d -v "$PWD":/b alpine tar czf /b/documents-$(date +%F).tgz -C /d .`
 
 Test a restore at least once before going live. After restoring, run `npm run db:migrate` (a no-op
 if the backup is from the same release).

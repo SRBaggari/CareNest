@@ -128,6 +128,7 @@ Capabilities (✅ allowed, ◐ allowed unless the care recipient restricts it vi
 | update.view / update.post | ✅ | ✅ | ✅ | ✅ | ✅ | — |
 | health.view (observations, notes) | ✅ | ◐ | ◐ | ✅ | ✅ | — |
 | measurement.record (health readings) | ✅ | ◐ | ◐ | ✅ | ✅ | — |
+| document.upload (health documents) | ✅ | ◐ | ◐ | ✅ | ✅ | — |
 | emergency.view (info card, contacts) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | emergency.raise / acknowledge | ✅ | ✅ | ✅ | ✅ | — | ✅ |
 | audit.view | ✅ | ✅ | — | — | — | — |
@@ -291,7 +292,7 @@ browser + axe tests, its own branch merged with `--no-ff`, pushed to both repos,
 | T2-1 Phone alerts (web push) | Installable app (manifest + service worker), "Alert me on this phone" per device, push delivery from an outbox with retries, quiet hours honoured except for urgent alerts, help requests pushed immediately | Today an alert only reaches someone who opens the app or email; a phone that buzzes matters most when a parent asks for help | ✅ (tag `t2-1`) |
 | T2-2 Calendar export | Private, revocable calendar link (ICS) per person per circle: appointments, visits, task due dates | Small; families already live in Google/Apple calendars | ✅ (tag `t2-2`) |
 | T2-3 Well-being & measurements | Daily check-in history; blood pressure, blood sugar, weight, temperature, pulse with units, who recorded, charts over time; consent follows "health details" | Most-asked-for after medicines; no medical interpretation, only trends | ✅ (tag `t2-3`) |
-| T2-4 Health documents | Upload prescriptions, reports, discharge summaries; versions; who viewed it; storage adapter (local disk now, S3-compatible later); size/type limits | Needs a storage decision and careful access control | ⏳ |
+| T2-4 Health documents | Upload prescriptions, reports, discharge summaries; versions; who viewed it; storage adapter (local disk now, S3-compatible later); size/type limits | Needs a storage decision and careful access control | ✅ (tag `t2-4`) |
 | T2-5 Circle messages | Threads per circle (and per appointment/task), mentions, read state, notifications | Replaces the family WhatsApp thread for care matters | ⏳ |
 | T2-6 Reports & exports | Printable "for the doctor" summary (medicines, adherence, measurements, recent notes) for a chosen period; CSV of measurements | Builds on T2-3 and T2-4 | ⏳ |
 | T2-7 Expenses | Record care expenses, who paid, split between family, settle-up summary | Independent; common source of family friction | ⏳ |

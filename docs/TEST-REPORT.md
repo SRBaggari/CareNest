@@ -221,3 +221,18 @@ Defects these tests found, both fixed in the same change:
   languages. Chart colours were checked with the data-visualisation palette validator (lightness, chroma,
   colour-blind separation, contrast) in light and dark mode.
 
+## Update, 2026-11-01: T2-4 health documents
+
+- 4 unit tests: the real file type is read from the first bytes (PDF, JPEG, PNG, WebP), so a program,
+  HTML page, SVG or zip renamed to `.pdf` is refused; download names are cleaned of paths and quotes and
+  keep Telugu/Tamil/Hindi characters (with a plain fallback for old browsers).
+- 6 integration tests (in-memory file store): upload and download with safe headers (type checked at
+  upload, `nosniff`, `no-store`, a sandboxing Content-Security-Policy), versions, who opened what, refusal
+  of fake and oversized files and non-multipart requests, the parent's health-sharing choice (seeing,
+  opening, adding, and the activity log), outsiders and signed-out requests, two families on one server,
+  and removal deleting the files.
+- Browser: a caregiver photographs a prescription on a phone, the family opens it, and the document shows
+  who looked. The Documents page is in the accessibility scan and the phone-layout check in four languages.
+- Checked in full Chromium: an uploaded PDF still displays inline in the browser's PDF viewer with the
+  sandbox header in place.
+
