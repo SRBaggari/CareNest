@@ -41,14 +41,15 @@ export function SectionCard({
   children: ReactNode;
 }) {
   return (
-    <section aria-labelledby={id} className={`card flex flex-col gap-4 ${className}`}>
-      <div className="flex items-center gap-3">
+    <section aria-labelledby={id} className={`card flex min-w-0 flex-col gap-4 ${className}`}>
+      {/* The link drops below the title when both don't fit (long words in Tamil, Telugu). */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <IconTile icon={icon} tone={tone} />
-        <h3 id={id} className="min-w-0 flex-1 text-xl font-bold">
+        <h3 id={id} className="min-w-0 flex-1 basis-40 text-xl font-bold">
           {title}
         </h3>
         {action && (
-          <Link href={action.href} className="inline-flex min-h-12 shrink-0 items-center gap-1 whitespace-nowrap rounded-lg px-2 font-semibold text-primary hover:underline">
+          <Link href={action.href} className="ml-auto inline-flex min-h-12 items-center gap-1 rounded-lg px-2 font-semibold text-primary hover:underline">
             {action.label}
             <ChevronRight aria-hidden="true" className="size-5" />
           </Link>

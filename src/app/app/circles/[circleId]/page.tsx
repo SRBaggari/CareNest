@@ -122,7 +122,7 @@ export default async function CircleToday({ params }: PageProps<"/app/circles/[c
             ) : (
               <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {tally.map((x) => (
-                  <div key={x.key} className={`flex flex-col-reverse rounded-xl px-4 py-3 ${tallyStyle[x.key]}`}>
+                  <div key={x.key} className={`flex min-w-0 flex-col-reverse rounded-xl px-4 py-3 break-words ${tallyStyle[x.key]}`}>
                     <dt className="font-semibold">{t(`today.${x.key}`)}</dt>
                     <dd className="text-3xl font-bold leading-none">{x.count}</dd>
                   </div>

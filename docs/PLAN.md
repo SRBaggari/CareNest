@@ -65,8 +65,8 @@ appointments with transport/companion owners · family & caregiver tasks (recurr
 caregiver visits (check-in/out, observations, handover) · shared care updates & unified timeline ·
 in-app notifications + email channel adapter, reminders, escalation, quiet hours, delivery tracking ·
 emergency contacts, emergency info card, assistance request with alert sequence & acknowledgment ·
-role-specific accessible dashboards (elder simplified UI) · i18n architecture (en complete, hi/te/ta
-partial) · CI, deployment config, docs.
+role-specific accessible dashboards (elder simplified UI) · i18n architecture (en, hi, te, ta complete;
+hi/te/ta pending native-speaker review) · CI, deployment config, docs.
 
 ### Tier 2 — Enhanced (Dec 2026 – Feb 2027)
 Health documents (upload, versions, access history) · daily well-being check-ins & measurements with
@@ -274,7 +274,7 @@ user is not a member of, to avoid leaking existence.
 | M5 Appointments & tasks | Nov 18 – 21 | Appointments with transport/companion, tasks (recurring, overdue escalation) | ✅ done (tag `m5`) |
 | M6 Caregiver & timeline | Nov 21 – 24 | Visits check-in/out, observations, handover, care updates, unified timeline with corrections | ✅ done (tag `m6`) |
 | M7 Emergency | Nov 24 – 27 | Contacts, info card, assistance request, alert sequence, acknowledgments, failure visibility | ✅ done (tag `m7`) |
-| M8 Dashboards & hardening | Nov 27 – Dec 1 | ✅ backend: today/dashboard APIs, data export & account deletion, retention, real-PostgreSQL tests, Docker + compose + CI deploy smoke test, deployment guide, user guide, labelled demo seed · ✅ UI: Simple view for the person receiving care, family/caregiver Today dashboard, home-page circle status, data download & account deletion buttons, new visual design (palette, Atkinson Hyperlegible, icons) · ✅ Playwright + axe browser tests in CI · ⏳ remaining: full hi/te/ta translations of the full app | 🟡 UI in progress |
+| M8 Dashboards & hardening | Nov 27 – Dec 1 | ✅ backend: today/dashboard APIs, data export & account deletion, retention, real-PostgreSQL tests, Docker + compose + CI deploy smoke test, deployment guide, user guide, labelled demo seed · ✅ UI: Simple view for the person receiving care, family/caregiver Today dashboard, home-page circle status, data download & account deletion buttons, new visual design (palette, Atkinson Hyperlegible, icons) · ✅ Playwright + axe browser tests in CI, incl. no sideways scrolling on phones in all four languages · ✅ full hi/te/ta translations (pending native-speaker review) | ✅ |
 
 ## 12. Known limitations (MVP)
 
@@ -286,7 +286,8 @@ user is not a member of, to avoid leaking existence.
 - Clinician role is an access level only; professional credentials are **not** verified.
 - A signed-in non-member opening a circle URL sees the not-found page, but with HTTP 200 (the page
   streams); the JSON API returns a real 404.
-- Hindi, Telugu and Tamil strings are partial and need review by native speakers.
+- Hindi, Telugu and Tamil are complete but were machine-assisted; they need review by native speakers before
+  launch, especially the emergency, medicine and "not an emergency service" wording.
 - Email delivery uses SMTP (`SMTP_URL`). It is tested against a fake transport only; it has **not** been
   verified against a real provider yet. Without `SMTP_URL`, emails are logged and shown as "not sent".
 - Notifications are in-app and email only: no push or SMS yet (Tier 2), so a phone that is not checking
