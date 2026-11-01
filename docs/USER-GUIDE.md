@@ -100,6 +100,12 @@ Admins can send a clearly labelled **practice alert** to check the setup; it nev
 - Notifications appear in CareNest (the number next to **Notifications**). If email is set up, you
   also get an email — without medical details; the details stay behind your sign-in.
 - **Quiet hours** (Account) hold emails overnight. Urgent alerts (emergencies) are always sent.
+- **Alerts on your phone.** Under Account → Alerts on this device, tap "Turn on alerts on this device"
+  and allow notifications. Do this on each phone or computer you use. On an iPhone or iPad, first add
+  CareNest to the Home Screen (Share → Add to Home Screen) and open it from there. The alert shows only
+  a short title, such as "Amma asked for help"; open CareNest for details. Quiet hours apply, except for
+  urgent alerts such as a request for help, which also stay on screen until you tap them. Private or
+  incognito windows can't receive alerts. Your server administrator must have set up phone alerts.
 - **Daily summary.** Everyday news (a visit that went fine, an ordinary update such as "I'm fine today")
   doesn't email you one by one. Instead, at 6 pm your time you get one email listing what you haven't
   already seen in the app — titles only, no details. Turn it off under Account → Notifications.
