@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionButton } from "@/components/action-button";
@@ -85,14 +86,16 @@ export default async function MedicinesPage({ params, searchParams }: PageProps<
             {t("meds.dayTitle", { date: dayLabel })}
           </h2>
           <nav aria-label={t("meds.dayTitle", { date: dayLabel })} className="flex flex-wrap gap-2">
-            <Link href={`${base}?date=${addDays(day.fromDate, -1)}`} className="inline-flex min-h-12 items-center rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4 font-medium">
-              ← {t("meds.previousDay")}
+            <Link href={`${base}?date=${addDays(day.fromDate, -1)}`} className="inline-flex min-h-12 items-center gap-1 rounded-xl border-2 border-border bg-surface px-4 font-medium transition hover:border-primary">
+              <ChevronLeft aria-hidden="true" className="size-5" />
+            {t("meds.previousDay")}
             </Link>
-            <Link href={base} className="inline-flex min-h-12 items-center rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4 font-medium">
+            <Link href={base} className="inline-flex min-h-12 items-center gap-1 rounded-xl border-2 border-border bg-surface px-4 font-medium transition hover:border-primary">
               {t("meds.today")}
             </Link>
-            <Link href={`${base}?date=${addDays(day.fromDate, 1)}`} className="inline-flex min-h-12 items-center rounded-xl border-2 border-border bg-surface transition hover:border-primary px-4 font-medium">
-              {t("meds.nextDay")} →
+            <Link href={`${base}?date=${addDays(day.fromDate, 1)}`} className="inline-flex min-h-12 items-center gap-1 rounded-xl border-2 border-border bg-surface px-4 font-medium transition hover:border-primary">
+              {t("meds.nextDay")}
+            <ChevronRight aria-hidden="true" className="size-5" />
             </Link>
           </nav>
         </div>

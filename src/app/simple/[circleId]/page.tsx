@@ -1,7 +1,9 @@
+import { CalendarDays, Check, Clock, HeartPulse, Minus, Phone, PhoneCall, Pill, UsersRound } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { HelpButton } from "@/app/app/circles/[circleId]/emergency/help-button";
+import { IconTile } from "@/components/ui/section";
 import { getRequestTranslator } from "@/i18n/server";
 import { clockTime, dayLabel, greetingFor, groupDoses } from "@/lib/simple-view";
 import { orNotFound, pageContext } from "@/server/page";
@@ -15,8 +17,8 @@ import { CheckIn, DoseQuestion } from "./simple-actions";
 
 export const metadata: Metadata = { title: "My day" };
 
-const card = "flex flex-col gap-4 rounded-2xl border-2 border-border bg-surface p-5";
-const heading = "text-3xl font-bold";
+const card = "card flex flex-col gap-5 rounded-3xl";
+const heading = "flex items-center gap-3 text-3xl font-bold";
 
 export default async function SimpleView({ params }: PageProps<"/simple/[circleId]">) {
   const { circleId } = await params;
@@ -86,9 +88,10 @@ export default async function SimpleView({ params }: PageProps<"/simple/[circleI
 
   return (
     <div lang={locale} className="flex flex-col gap-6">
-      <div>
+      <div className="rounded-3xl bg-gradient-to-br from-primary-soft to-surface px-5 py-6">
         <h1 className="text-4xl font-bold leading-tight">{t(`simple.greeting_${greetingFor(now, tz)}`, { name })}</h1>
-        <p className="mt-1 text-2xl text-muted">
+        <p className="mt-2 flex items-center gap-2 text-2xl text-muted">
+          <CalendarDays aria-hidden="true" className="size-7 shrink-0" />
           {t("simple.todayIs", { date: new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", timeZone: tz }).format(now) })}
         </p>
       </div>
@@ -98,30 +101,38 @@ export default async function SimpleView({ params }: PageProps<"/simple/[circleI
         {openHelp ? (
           <Link
             href={`/app/circles/${circleId}/emergency/${openHelp.id}`}
-            className="inline-flex min-h-20 items-center justify-center rounded-2xl border-4 border-warning bg-surface px-6 text-2xl font-bold"
+            className="inline-flex min-h-20 items-center justify-center rounded-3xl border-4 border-warning bg-warning-soft px-6 text-2xl font-bold"
           >
             {t("emergency.activeTitle")}
           </Link>
         ) : (
           active && caps.has("emergency.raise") && <HelpButton url={`/api/v1/circles/${circleId}/emergency/requests`} circleId={circleId} labels={helpLabels} />
         )}
-        <a href={`tel:${number}`} className="inline-flex min-h-16 items-center justify-center rounded-2xl border-4 border-danger bg-surface px-6 text-2xl font-bold text-danger">
-          📞 {t("emergency.call", { number })}
+        <a
+          href={`tel:${number}`}
+          className="inline-flex min-h-16 items-center justify-center gap-3 rounded-3xl border-4 border-danger bg-surface px-4 py-2 text-xl font-bold text-danger sm:text-2xl transition hover:bg-danger-soft"
+        >
+          <Phone aria-hidden="true" className="size-7 shrink-0" />
+          {t("emergency.call", { number })}
         </a>
       </section>
 
       {doses && (
         <section aria-labelledby="meds-heading" className={card}>
           <h2 id="meds-heading" className={heading}>
-            💊 {t("simple.medsTitle")}
+            <IconTile icon={Pill} size="lg" />
+            {t("simple.medsTitle")}
           </h2>
           {doses.now.length === 0 && <p className="text-xl">{t("simple.medsNone")}</p>}
           {doses.now.map((d) => (
-            <article key={d.id} className="flex flex-col gap-3 rounded-xl border-2 border-primary p-4">
-              <p className="text-2xl font-bold">
-                {d.scheduledFor && <span className="mr-2">{time(d.scheduledFor)}</span>}
-                {d.medication.name}
-              </p>
+            <article key={d.id} className="flex flex-col gap-3 rounded-2xl border-2 border-primary bg-surface p-4">
+              {d.scheduledFor && (
+                <p className="inline-flex items-center gap-2 self-start rounded-full bg-primary-soft px-4 py-1 text-xl font-bold text-primary">
+                  <Clock aria-hidden="true" className="size-5" />
+                  {time(d.scheduledFor)}
+                </p>
+              )}
+              <p className="text-3xl font-bold">{d.medication.name}</p>
               <p className="text-xl">{d.medication.dosage}</p>
               {d.medication.instructions && <p className="text-xl text-muted">{d.medication.instructions}</p>}
               {active && caps.has("dose.record") && <DoseQuestion url={`/api/v1/circles/${circleId}/doses/${d.id}/record`} locale={locale} labels={doseLabels} />}
@@ -130,11 +141,14 @@ export default async function SimpleView({ params }: PageProps<"/simple/[circleI
 
           {doses.later.length > 0 && (
             <div>
-              <h3 className="text-2xl font-semibold">{t("simple.laterToday")}</h3>
-              <ul className="mt-2 flex flex-col gap-2 text-xl">
+              <h3 className="text-2xl font-bold">{t("simple.laterToday")}</h3>
+              <ul className="mt-3 flex flex-col gap-2 text-xl">
                 {doses.later.map((d) => (
-                  <li key={d.id}>
-                    <span className="font-semibold">{d.scheduledFor && t("simple.atTime", { time: time(d.scheduledFor) })}</span> · {d.medication.name} ({d.medication.dosage})
+                  <li key={d.id} className="flex items-baseline gap-3 rounded-2xl bg-sunken px-4 py-3">
+                    <span className="shrink-0 font-bold text-primary">{d.scheduledFor && t("simple.atTime", { time: time(d.scheduledFor) })}</span>
+                    <span>
+                      {d.medication.name} ({d.medication.dosage})
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -143,15 +157,24 @@ export default async function SimpleView({ params }: PageProps<"/simple/[circleI
 
           {doses.done.length > 0 && (
             <div>
-              <h3 className="text-2xl font-semibold">{t("simple.doneToday")}</h3>
-              <ul className="mt-2 flex flex-col gap-2 text-xl">
-                {doses.done.map((d) => (
-                  <li key={d.id}>
-                    <span aria-hidden="true">{d.status === "taken" || d.status === "administered" ? "✓ " : "– "}</span>
-                    {d.medication.name}
-                    {d.scheduledFor && ` (${time(d.scheduledFor)})`}: {t(`simple.${statusLabel[d.status as keyof typeof statusLabel]}`)}
-                  </li>
-                ))}
+              <h3 className="text-2xl font-bold">{t("simple.doneToday")}</h3>
+              <ul className="mt-3 flex flex-col gap-2 text-xl">
+                {doses.done.map((d) => {
+                  const ok = d.status === "taken" || d.status === "administered";
+                  return (
+                    <li key={d.id} className={`flex items-start gap-3 rounded-2xl px-4 py-3 ${ok ? "bg-success-soft" : "bg-sunken"}`}>
+                      {ok ? (
+                        <Check aria-hidden="true" className="mt-1 size-6 shrink-0 text-success" strokeWidth={3} />
+                      ) : (
+                        <Minus aria-hidden="true" className="mt-1 size-6 shrink-0 text-muted" strokeWidth={3} />
+                      )}
+                      <span>
+                        {d.medication.name}
+                        {d.scheduledFor && ` (${time(d.scheduledFor)})`}: <span className="font-bold">{t(`simple.${statusLabel[d.status as keyof typeof statusLabel]}`)}</span>
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
@@ -160,15 +183,16 @@ export default async function SimpleView({ params }: PageProps<"/simple/[circleI
 
       <section aria-labelledby="coming-heading" className={card}>
         <h2 id="coming-heading" className={heading}>
-          📅 {t("simple.comingUp")}
+          <IconTile icon={CalendarDays} size="lg" />
+          {t("simple.comingUp")}
         </h2>
         {coming.length === 0 ? (
           <p className="text-xl">{t("simple.nothingComing")}</p>
         ) : (
           <ul className="flex flex-col gap-3">
             {coming.map((c, i) => (
-              <li key={i} className="text-xl">
-                <p className="font-semibold">{c.text}</p>
+              <li key={i} className="rounded-2xl bg-sunken px-4 py-3 text-xl">
+                <p className="font-bold">{c.text}</p>
                 {c.extra && <p>{c.extra}</p>}
               </li>
             ))}
@@ -179,6 +203,7 @@ export default async function SimpleView({ params }: PageProps<"/simple/[circleI
       {active && caps.has("update.post") && (
         <section aria-labelledby="checkin-heading" className={card}>
           <h2 id="checkin-heading" className={heading}>
+            <IconTile icon={HeartPulse} size="lg" />
             {t("simple.howAreYou")}
           </h2>
           <CheckIn
@@ -196,7 +221,8 @@ export default async function SimpleView({ params }: PageProps<"/simple/[circleI
 
       <section aria-labelledby="call-heading" className={card}>
         <h2 id="call-heading" className={heading}>
-          ☎️ {t("simple.callFamily")}
+          <IconTile icon={UsersRound} size="lg" />
+          {t("simple.callFamily")}
         </h2>
         {contacts.length === 0 ? (
           <p className="text-xl">{t("simple.noContacts")}</p>
@@ -206,10 +232,15 @@ export default async function SimpleView({ params }: PageProps<"/simple/[circleI
               <li key={c.id}>
                 <a
                   href={`tel:${c.phone}`}
-                  className="flex min-h-16 flex-col justify-center rounded-2xl bg-primary px-6 py-2 text-2xl font-bold text-primary-foreground"
+                  className="flex min-h-20 items-center gap-4 rounded-3xl bg-primary px-5 py-3 text-primary-foreground shadow-sm transition hover:brightness-110"
                 >
-                  <span>📞 {t("simple.callName", { name: c.name })}</span>
-                  {c.relationship && <span className="text-lg font-normal">{c.relationship}</span>}
+                  <span aria-hidden="true" className="inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-primary-foreground/15">
+                    <PhoneCall className="size-6" />
+                  </span>
+                  <span className="flex flex-col">
+                    <span className="text-2xl font-bold">{t("simple.callName", { name: c.name })}</span>
+                    {c.relationship && <span className="text-lg">{c.relationship}</span>}
+                  </span>
                 </a>
               </li>
             ))}
