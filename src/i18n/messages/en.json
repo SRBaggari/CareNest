@@ -780,5 +780,20 @@
     "updateNeed": "I need something.",
     "moreOptions": "More options",
     "simpleView": "Simple view"
+  },
+  "data": {
+    "title": "Your data",
+    "intro": "Download a copy of everything CareNest holds about you, or delete your account.",
+    "download": "Download my data",
+    "downloadHint": "A file (JSON) with your account, circles, signed-in devices and what you wrote. It never includes your password.",
+    "deleteTitle": "Delete my account",
+    "deleteIntro": "This signs you out everywhere and removes your account, memberships and notifications. Care notes and medicine records you wrote stay in the care history so the family keeps a complete record, but your name is removed from them. This cannot be undone.",
+    "deleteLastManager": "If you are the only person who can manage a care circle, make someone else an admin (or archive the circle) first.",
+    "password": "Your password",
+    "confirmLabel": "Type DELETE to confirm",
+    "deleteButton": "Delete my account permanently",
+    "deleted": "Your account has been deleted.",
+    "circleExport": "Download this circle's records",
+    "circleExportHint": "A complete copy of this circle's records (medicines, doses, appointments, tasks, visits, updates, emergency details and the activity log). Downloading is recorded in the activity log."
   }
 }

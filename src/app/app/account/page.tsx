@@ -8,6 +8,7 @@ import { getDb } from "@/server/db";
 import { emailDeliveryConfigured } from "@/server/notifications/email";
 import { getPreferences } from "@/server/services/notifications";
 import { DeviceList, PasswordForm, ProfileForm } from "./account-forms";
+import { DeleteAccountForm } from "./delete-account-form";
 import { NotificationPreferencesForm } from "./notification-preferences-form";
 
 export const metadata: Metadata = { title: "Account" };
@@ -97,6 +98,38 @@ export default async function AccountPage() {
             lastActive: t("account.lastActive", { time: formatter.format(d.lastSeenAt) }),
           }))}
           labels={{ ...common, thisDevice: t("account.thisDevice"), signOutDevice: t("account.signOutDevice") }}
+        />
+      </section>
+      <section aria-labelledby="data-heading" className="rounded-xl border border-border bg-surface p-6">
+        <h2 id="data-heading" className="text-2xl font-semibold">
+          {t("data.title")}
+        </h2>
+        <p className="mt-2 text-muted">{t("data.intro")}</p>
+        <a
+          href="/api/v1/me/export"
+          download
+          className="mt-4 inline-flex min-h-12 items-center rounded-lg border-2 border-primary px-5 font-semibold text-primary"
+        >
+          ⬇ {t("data.download")}
+        </a>
+        <p className="mt-2 text-muted">{t("data.downloadHint")}</p>
+      </section>
+
+      <section aria-labelledby="delete-heading" className="rounded-xl border-2 border-danger bg-surface p-6">
+        <h2 id="delete-heading" className="text-2xl font-semibold">
+          {t("data.deleteTitle")}
+        </h2>
+        <p className="mt-2">{t("data.deleteIntro")}</p>
+        <p className="mt-2 font-medium">{t("data.deleteLastManager")}</p>
+        <DeleteAccountForm
+          labels={{
+            network: common.network,
+            generic: common.generic,
+            fixErrors: common.fixErrors,
+            password: t("data.password"),
+            confirmLabel: t("data.confirmLabel"),
+            deleteButton: t("data.deleteButton"),
+          }}
         />
       </section>
     </div>

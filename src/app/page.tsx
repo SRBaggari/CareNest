@@ -2,15 +2,16 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getRequestTranslator } from "@/i18n/server";
 
-export default function Home() {
+export default function Home({ searchParams }: PageProps<"/">) {
   return (
     <Suspense fallback={<div className="flex-1" aria-busy="true" />}>
-      <Landing />
+      <Landing searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function Landing() {
+async function Landing({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
+  const deleted = (await searchParams).deleted === "1";
   const { locale, t } = await getRequestTranslator();
   const features = [
     { title: t("landing.featureMedsTitle"), body: t("landing.featureMedsBody") },
@@ -38,6 +39,11 @@ async function Landing() {
       </header>
 
       <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 py-12">
+        {deleted && (
+          <p role="status" className="mb-8 rounded-lg border-l-4 border-success bg-surface px-4 py-3 text-lg font-medium">
+            {t("data.deleted")}
+          </p>
+        )}
         <h1 className="max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">{t("app.tagline")}</h1>
         <p className="mt-6 max-w-2xl text-lg text-muted">{t("landing.intro")}</p>
         <Link

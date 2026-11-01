@@ -129,6 +129,22 @@ export default async function SettingsPage({ params }: PageProps<"/app/circles/[
         )}
       </section>
 
+      {caps.has("circle.manage") && (
+        <section aria-labelledby="export-heading" className="rounded-xl border border-border bg-surface p-6">
+          <h2 id="export-heading" className="text-2xl font-semibold">
+            {t("data.circleExport")}
+          </h2>
+          <p className="mt-2 text-muted">{t("data.circleExportHint")}</p>
+          <a
+            href={`/api/v1/circles/${circleId}/export`}
+            download
+            className="mt-4 inline-flex min-h-12 items-center rounded-lg border-2 border-primary px-5 font-semibold text-primary"
+          >
+            ⬇ {t("data.circleExport")}
+          </a>
+        </section>
+      )}
+
       {caps.has("circle.manage") && active && (
         <section aria-labelledby="archive-heading" className="rounded-xl border-2 border-warning bg-surface p-6">
           <h2 id="archive-heading" className="text-2xl font-semibold">
