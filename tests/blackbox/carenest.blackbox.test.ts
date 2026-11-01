@@ -225,6 +225,37 @@ describe.skipIf(!BASE)("CareNest black-box", () => {
       expect(redirectIn((await elder.get("/app")).text)).toBeUndefined();
     });
 
+    it("the Today dashboard lists what needs attention and respects the parent's sharing choices", async () => {
+      const owner = await new Actor("Priya").register();
+      const elder = await new Actor("Amma").register("Asia/Kolkata");
+      const family = await new Actor("Ravi").register();
+      const circleId = await circleWith(owner, [[elder, "care_recipient"], [family, "family"]]);
+      await owner.post(`/api/v1/circles/${circleId}/medications`, { name: "Metformin", dosage: "500 mg", times: ["08:00"] });
+      const startsAt = new Date(Date.now() + 24 * 3_600_000).toISOString();
+      expect((await owner.post(`/api/v1/circles/${circleId}/appointments`, { title: "Eye clinic", startsAt, transportNeeded: true })).status).toBe(201);
+      expect((await owner.post(`/api/v1/circles/${circleId}/tasks`, { title: "Buy pills" })).status).toBe(201);
+
+      const page = await owner.get(`/app/circles/${circleId}`);
+      expect(page.status).toBe(200);
+      expect(page.text).toContain("Needs attention");
+      expect(page.text).toContain("No driver yet for Eye clinic");
+      expect(page.text).toContain("Tasks nobody has taken yet: 1");
+      expect(page.text).toContain("Medicines today");
+      expect((await owner.get("/app")).text).toContain("Needs attention: 2");
+
+      // Once Amma stops sharing medicines with family, the dashboard leaves them out for family and admins alike.
+      expect((await elder.put(`/api/v1/circles/${circleId}/consent`, { shareMedications: false, shareAppointments: true, shareHealth: true })).status).toBe(200);
+      for (const viewer of [owner, family]) {
+        const after = await viewer.get(`/app/circles/${circleId}`);
+        expect(after.text).toContain("Eye clinic");
+        expect(after.text).not.toContain("Medicines today");
+      }
+
+      const stranger = await new Actor("Eve").register();
+      expect((await stranger.get(`/app/circles/${circleId}`)).text).not.toContain("Eye clinic");
+      expect((await new Actor().get(`/app/circles/${circleId}`)).status).toBe(307);
+    });
+
     it("injection-shaped input is stored and returned as plain text", async () => {
       const owner = await new Actor().register();
       const circleId = await circleWith(owner);
