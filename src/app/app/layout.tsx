@@ -9,6 +9,8 @@ import { requireSession } from "@/server/auth/current-user";
 import { getDb } from "@/server/db";
 import { unreadCount } from "@/server/services/notifications";
 import { SignOutButton } from "./sign-out-button";
+import { LanguageMenu } from "@/components/language-menu";
+import { LOCALE_NAMES, LOCALES } from "@/i18n";
 
 // On phones each item stacks a small label under its icon so they fit beside the logo; labels
 // are never dropped, because an icon alone is not enough for everyone. Signing out moves to
@@ -77,6 +79,9 @@ async function AppHeader() {
             <UserRound aria-hidden="true" className="size-5" />
             {t("common.account")}
           </Link>
+          <div className="max-sm:hidden">
+            <LanguageMenu current={locale} options={LOCALES.map((l) => ({ value: l, label: LOCALE_NAMES[l] }))} label={t("common.changeLanguage")} className={navItem} />
+          </div>
           <SignOutButton label={t("common.signOut")} className={`${navItem} max-sm:hidden`} />
         </nav>
       </div>

@@ -29,7 +29,8 @@
     "notificationsUnread": "सूचनाएँ ({count} नहीं पढ़ी गईं)",
     "notificationsShort": "सूचनाएँ",
     "done": "हो गया।",
-    "unreadCount": "({count} अपठित)"
+    "unreadCount": "({count} अपठित)",
+    "changeLanguage": "भाषा बदलें"
   },
   "landing": {
     "getStarted": "शुरू करें",

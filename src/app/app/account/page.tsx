@@ -11,6 +11,7 @@ import { DeviceList, PasswordForm, ProfileForm } from "./account-forms";
 import { DeleteAccountForm } from "./delete-account-form";
 import { NotificationPreferencesForm } from "./notification-preferences-form";
 import { SignOutButton } from "../sign-out-button";
+import { LanguageMenu } from "@/components/language-menu";
 import { listPushDevices, pushConfig } from "@/server/services/push-devices";
 import { PushDeviceControls, RemovePushDevice } from "./push-device-controls";
 import { SmsControls } from "./sms-controls";
@@ -46,8 +47,16 @@ export default async function AccountPage() {
     <div lang={locale} className="flex flex-col gap-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl font-bold">{t("account.title")}</h1>
-        {/* On phones the header has no room for it, so signing out lives here. */}
-        <SignOutButton label={t("common.signOut")} />
+        {/* On phones the header has no room for them, so language and signing out live here. */}
+        <div className="flex flex-wrap gap-2">
+          <LanguageMenu
+            current={locale}
+            options={LOCALES.map((l) => ({ value: l, label: LOCALE_NAMES[l] }))}
+            label={t("common.changeLanguage")}
+            className="inline-flex min-h-12 items-center gap-2 rounded-xl border-2 border-border px-4 font-semibold hover:border-primary hover:text-primary"
+          />
+          <SignOutButton label={t("common.signOut")} />
+        </div>
       </div>
 
       <section aria-labelledby="profile-heading" className="card">

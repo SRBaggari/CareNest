@@ -5,6 +5,8 @@ import { Suspense } from "react";
 import { LogoMark } from "@/components/ui/logo";
 import { getRequestTranslator } from "@/i18n/server";
 import { SignOutButton } from "@/app/app/sign-out-button";
+import { LanguageMenu } from "@/components/language-menu";
+import { LOCALE_NAMES, LOCALES } from "@/i18n";
 
 const headerButton =
   "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-border bg-surface px-3 text-base font-semibold leading-tight transition hover:border-primary sm:text-lg";
@@ -38,10 +40,11 @@ async function SimpleHeader({ params }: { params: LayoutProps<"/simple/[circleId
           <span className="text-2xl font-bold">{t("app.name")}</span>
         </span>
         <nav aria-label={t("common.mainNav")} className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
-          <Link href={`/view?mode=full&next=${encodeURIComponent(`/app/circles/${circleId}`)}`} className={headerButton}>
+          <Link href={`/view?mode=full&next=${encodeURIComponent(`/app/circles/${circleId}`)}`} className={`${headerButton} col-span-2`}>
             <LayoutGrid aria-hidden="true" className="size-5" />
             {t("simple.moreOptions")}
           </Link>
+          <LanguageMenu current={locale} options={LOCALES.map((l) => ({ value: l, label: LOCALE_NAMES[l] }))} label={t("common.changeLanguage")} className={headerButton} align="left" />
           <SignOutButton label={t("common.signOut")} className={headerButton} />
         </nav>
       </div>
