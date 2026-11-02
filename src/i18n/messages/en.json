@@ -29,7 +29,8 @@
     "notificationsUnread": "Notifications ({count} unread)",
     "notificationsShort": "Alerts",
     "done": "Done.",
-    "unreadCount": "({count} unread)"
+    "unreadCount": "({count} unread)",
+    "changeLanguage": "Change language"
   },
   "landing": {
     "getStarted": "Get started",

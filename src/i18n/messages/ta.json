@@ -29,7 +29,8 @@
     "notificationsUnread": "அறிவிப்புகள் ({count} படிக்காதவை)",
     "notificationsShort": "எச்சரிக்கைகள்",
     "done": "முடிந்தது.",
-    "unreadCount": "({count} படிக்காதவை)"
+    "unreadCount": "({count} படிக்காதவை)",
+    "changeLanguage": "மொழியை மாற்று"
   },
   "landing": {
     "getStarted": "தொடங்குங்கள்",

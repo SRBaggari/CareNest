@@ -29,7 +29,8 @@
     "notificationsUnread": "నోటిఫికేషన్లు ({count} చదవనివి)",
     "notificationsShort": "హెచ్చరికలు",
     "done": "పూర్తయింది.",
-    "unreadCount": "({count} చదవనివి)"
+    "unreadCount": "({count} చదవనివి)",
+    "changeLanguage": "భాష మార్చండి"
   },
   "landing": {
     "getStarted": "ప్రారంభించండి",
